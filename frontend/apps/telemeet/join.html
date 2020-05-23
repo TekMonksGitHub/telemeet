@@ -1,0 +1,17 @@
+<!-- 
+(C) 2015 TekMonks. All rights reserved.
+License: MIT - see enclosed license.txt file.
+-->
+<!doctype html>
+<html>
+	
+<head>
+	<script>
+	const url = new URL(window.location.href); 
+	let redirect = `./index.html?join=${url.search?url.searchParams.get("room"):""}`;
+	if (url.search && url.searchParams.get("pass")) redirect+=`&pass=${url.searchParams.get("pass")}`;
+	if (url.search && url.searchParams.get("name")) redirect+=`&name=${url.searchParams.get("name")}`;
+	window.location = redirect;
+	</script>
+</head>
+</html>

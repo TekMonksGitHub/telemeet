@@ -1,0 +1,26 @@
+input#name, input#name:focus, input#room, input#room:focus, input#roompass, input#roompass:focus{
+    width: 166px; 
+    border: 0px solid transparent;
+    box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.25);
+    display: inline-flex;
+    border-radius: 6px;
+} 
+
+span#join{
+    border: 0px solid transparent;
+    box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.25);
+    border-radius: 6px;
+}
+
+img#camicon{
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.25));
+}
+
+div#content {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    top: inherit !important;
+    left: inherit !important;
+    transform: none !important;
+}

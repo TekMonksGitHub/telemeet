@@ -1,0 +1,138 @@
+<style>
+@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
+
+ 
+body {
+	margin: 0; padding: 0;
+	font-family: 'Raleway';
+	background-color: rgb(79, 180, 237);
+}
+
+body::after {
+  content: "";
+  background: url(./img/logob.png);
+  background-size: auto 100%;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  position: absolute;
+  z-index: -1;   
+}
+
+.lgbox {
+	position: fixed;
+	top: calc(50% - 220px);
+	left: calc(100% - 680px - 40px);
+	width: 680px;
+	height: 385px;
+	background-color:transparent;
+	border-radius: 20px;
+	text-align: center;
+	font-size: smaller;
+}
+
+.langbox {
+	position: absolute;
+	bottom: 15px;
+	right: 40px;
+	color: white;
+	text-align: center;
+	z-index: -1;
+}
+
+.langsel {
+	cursor: pointer;
+	font-size: 11px;
+}
+
+a:link {text-decoration:none; color:black;}    /* unvisited link */
+a:visited {text-decoration:none;} /* visited link */
+a:hover {text-decoration:underline;}   /* mouse over link */
+a:active {text-decoration:underline;}  /* selected link */
+
+.advtextbox{
+	position: fixed;
+	top: calc(50% - 20%);
+	left: 5%;
+	width: 30%;
+	color: #ffffff;
+	text-align: center;
+}
+
+.advtextbox > h1 {
+	font-weight: 250;
+	font-family: 'Raleway';
+}
+
+.advtextbox > h2 {
+	font-weight: 250;
+	font-family: 'Raleway';
+	font-size: medium;
+}
+
+.advtextbox > p {
+	font-weight: 500;
+	font-family: 'Raleway';
+	font-size: medium;
+	background-color: #ffffff;
+	color: #444444;
+	border-radius: 10px;
+	padding: 10px 5px 10px 5px;
+	width: 100px;
+	left: calc(50% - 50px);
+	position: relative;
+	font-size: smaller;
+	margin-top: 30px;
+	cursor: default;
+}
+
+img.logo {
+	top: 40px;
+	left: 100px;
+	width: 148px;
+	height: 25px;
+	position: absolute;
+}
+</style>
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	
+	<title>{{i18n.Title}}</title>
+	
+	<script type="module">
+	import {dialog_box} from "./components/dialog-box/dialog-box.mjs";
+	import {language} from "./js/language.mjs"; window.language=language;
+	import {telemeet_join} from "./components/telemeet-join/telemeet-join.mjs";
+	import {page_generator} from "./components/page-generator/page-generator.mjs";
+	</script>
+</head>
+
+<body>
+<img class="logo" src="./img/logo.png"></img>
+
+<div class="advtextbox">
+	<h1>{{i18n.logintagline}}</h1>
+	<h2>{{i18n.loginsubtag}}</h2>
+	<p onclick="window.open('http://teleworkr.com', '_blank')">{{i18n.learn}}</p>
+</div>
+
+<div class="lgbox">
+	<page-generator file="./pages/loginroom.page"></page-generator>
+</div>
+
+<dialog-box id="dialog"></dialog-box>
+
+<div class="langbox">
+	<span class="langsel" onclick="language.changeLanguage('en')">English</span>&nbsp;&nbsp;
+	<span class="langsel" onclick="language.changeLanguage('hi')">हिंदी</span>&nbsp;&nbsp;
+	<span class="langsel" onclick="language.changeLanguage('ja')">日本語</span>
+	<span class="langsel" onclick="language.changeLanguage('th')">&nbsp;ภาษาไทย</span>
+	<span class="langsel" onclick="language.changeLanguage('zh')">中文</span>
+</div>	
+</body>
+
+</html>

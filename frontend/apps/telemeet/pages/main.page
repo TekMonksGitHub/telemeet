@@ -1,0 +1,31 @@
+SCHEMA
+======
+{
+    "telemeet": {"html":"telemeet-join", "id":"telemeet"}
+}
+======
+
+
+LAYOUT
+=================
+-----------------------------
+| telemeet                  |
+-----------------------------
+=================
+Row Heights = minmax(600px, max-content)
+Col Widths = 100%
+=================
+
+
+CSS CLASSES
+===========
+CONTAINER CLASSES = grid-container-extension
+ITEM CLASSES = grid-item-extension
+PER ITEM CLASS = class
+===========
+
+
+CSS
+=======
+body {margin: 0%;}
+=======

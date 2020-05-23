@@ -1,0 +1,9 @@
+{
+    "/apps/telemeet/login" : "/apis/login.js?needsToken=false&addsToken=sub:access",
+    "/apps/telemeet/createroom" : "/apis/createroom.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
+    "/apps/telemeet/deleteroom" : "/apis/deleteroom.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
+    "/apps/telemeet/enterroom" : "/apis/enterroom.js?get=true&key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false&addsToken=sub:access",
+    "/apps/telemeet/setstatus" : "/apis/setstatus.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
+    "/apps/telemeet/changepassword" : "/apis/changepassword.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
+    "/apps/telemeet/fwcontrol" : "/apis/fwcontrol.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true"
+}

@@ -1,0 +1,132 @@
+<!-- 
+(C) 2020 TekMonks. All rights reserved.
+-->
+<style>
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Raleway';
+}
+
+body::after {
+	content: "";
+	background: url(./img/logob.png);
+	background-size: auto 100%;
+	width: 100%;
+	height: 120%;
+	top: -20%;
+	left: -10%;
+	background-repeat: no-repeat;
+	opacity: 0.05;
+	position: absolute;
+	z-index: -1;
+	bottom: 0;
+}
+
+img#textlogo {
+	top: 30px;
+	left: 20px;
+	position: absolute;
+	height: 16px;
+	width: 100px;
+}
+
+span#rightheader {
+	top: 20px;
+	right: 20px;
+	position: absolute;
+	color: #41cf70;
+	font-size: 0.85em;
+	font-weight: 500;
+	font-family: "Raleway";
+}
+
+span#rightheader > span#name {
+	padding-right: 40px;
+	font-family: "Raleway";
+}
+
+span#rightheader > span-with-menu#status, span#rightheader > span-with-menu#gear {
+	padding-left: 40px;
+	font-family: "Raleway";
+	display: inline-block;
+}
+
+span#rightheader > span#signoff {
+	padding-left: 65px;
+	padding-right: 20px;
+	vertical-align: middle;
+}
+
+span#rightheader > span#signoff > img {
+	height: 30px;
+	width: 30px;
+	vertical-align: middle;
+}
+
+span#rightheader > span#img {
+	box-shadow: 1px 1px 15px -5px rgba(0,0,0,0.75);
+	border-radius: 50%;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+span#rightheader > span#img > img {
+	height: 40px;
+	width: 40px;
+	border-radius: 50%;
+}
+
+div#maincontent {
+	position: absolute;
+	background-color: transparent;
+}
+</style>
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="expires" content="-1">
+
+	<link href="./img/favicon.ico" rel="icon" type="image/x-icon">
+
+	<script type="module">
+	import {main} from "./js/main.mjs"; window.main = main; 
+	import {dialog_box} from "./components/dialog-box/dialog-box.mjs";
+	import {telemeet_join} from "./components/telemeet-join/telemeet-join.mjs";
+	import {span_with_menu} from "./components/span-with-menu/span-with-menu.mjs";
+	import {page_generator} from "./components/page-generator/page-generator.mjs";
+	import {loginmanager} from "./js/loginmanager.mjs"; window.loginmanager = loginmanager;
+	</script>
+		
+	<title>{{i18n.Title}}</title>
+</head>
+
+<body style="margin: 0%">
+<img id="textlogo" src="./img/textlogo.png">
+<span id="rightheader">
+	<span id="name">{{i18n.Hi}} {{url.name}}!</span>
+	<span id="img"><img src="./img/person.png"></span>
+	<span-with-menu id="status" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}">{{i18n.MyStatus}}&nbsp;&nbsp;▼
+		<menu-item onclick="main.changeStatus('Working')">Working</menu-item>
+		<menu-item onclick="main.changeStatus('Break')">On Break</menu-item>
+		<menu-item onclick="main.changeStatus('Offline')">Offline</menu-item>
+	</span-with-menu>
+	<span-with-menu id="gear" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}"><img src="./img/settings.svg" style="height: 30px;width: 30px;vertical-align: middle;">
+		<menu-item onclick="main.changePassword(this)">Change Password</menu-item>
+	</span-with-menu>
+	<span id="signoff"><img src="./img/poweroff.svg" onclick="loginmanager.logout()"></span>
+</span>
+
+<div id="maincontent">
+	<page-generator file="./pages/main.page"></page-generator>
+</div>
+
+<dialog-box id="dialog"></dialog-box>
+
+</body>
+</html>
