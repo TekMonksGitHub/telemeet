@@ -4,7 +4,6 @@
  */
 import {i18n} from "/framework/js/i18n.mjs";
 import {session} from "/framework/js/session.mjs";
-import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
@@ -43,7 +42,7 @@ async function toggleVideo(element) {
 async function joinRoom(element) {
 	const shadowRoot = telemeet_join.getShadowRootByContainedElement(element);
 	const hostElement = telemeet_join.getHostElement(element);
-	const enterOnly = hostElement.getAttribute("enterOnly")?true:false;
+	const enterOnly = hostElement.getAttribute("enterOnly")?true:false;	// enterOnly means guest user joining the room
 	const roomName = shadowRoot.querySelector("input#room").value;
 	const roomPass = shadowRoot.querySelector("input#roompass").value;
 
@@ -68,13 +67,14 @@ async function joinRoom(element) {
 		return;
 	}
 
-	const fwOpenResult = await _openFirewall(true, enterOnly);
-	if (result && result.result && fwOpenResult) _openTelemeet(result.url, roomPass, element, enterOnly, result.isModerator);
-	else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
+	if (result) {	// open firewall and join the room
+		if (await _openFirewall(true, enterOnly)) _openTelemeet(result.url, roomPass, element, enterOnly, result.isModerator);
+		else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
+	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 }
 
 async function _openFirewall(allow, isGuest) {
-	const req = {id: session.get(isGuest?APP_CONSTANTS.USERNAME:APP_CONSTANTS.USERID), operation: allow?"allow":"disallow", ip:await _getPublicIP()};
+	const req = {id: session.get(isGuest?APP_CONSTANTS.USERNAME:APP_CONSTANTS.USERID), operation: allow?"allow":"disallow", ip:await _getPublicIP(), fwInAutoCloseMode:true};
 	const result = await apiman.rest(APP_CONSTANTS.API_FWCONTROL, "POST", req, true, false);
 	return result?result.result:false;
 }
@@ -96,6 +96,7 @@ function _stopVideo(shadowRoot) {
 	if (!videoOn) return;
 	const video = shadowRoot.querySelector("video#video");
 	if (video.srcObject) for (const track of video.srcObject.getTracks()) if (track.readyState == "live") track.stop();
+	delete video.srcObject;
 	videoOn = false;
 }
 
@@ -142,7 +143,6 @@ async function _openTelemeet(url, roomPass, element, isGuest, isModerator) {
 		modalcurtain.style.display = "none";  telemeet.classList.remove("visible");
 		while (telemeet.firstChild) telemeet.removeChild(telemeet.firstChild);	// remove the iframe
 		meetAPI.dispose();
-		_openFirewall(false, isGuest);	// close the firewall
 		if (!isGuest && isModerator) {	// delete the room on moderator exit
 			const req = {room: roomName, pass: roomPass, id: session.get(APP_CONSTANTS.USERID)};
 			apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", req, true, false);

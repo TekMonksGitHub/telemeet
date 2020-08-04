@@ -8,9 +8,9 @@
 const net = require("net");
 const crypt = require(`${CONSTANTS.LIBDIR}/crypt.js`);
 
-module.exports.sendFirewallMessage = function sendFirewallMessage(host, port, fromip, toport, key, allow=false) {
+module.exports.sendFirewallMessage = function sendFirewallMessage(host, port, fromip, toport, key, sfwMode, allow=false) {
     return new Promise((resolve, _) => {
-        const msg = `${allow?"allow":"disallow"},${fromip}${toport==null||"all"?"":","+toport}`;
+        const msg = `${allow?"allow":"disallow"},${fromip},${toport==null||"all"?"":""+toport}${sfwMode?",sfw_mode":""}`;
 
         let responseReceived = false;
 
@@ -28,8 +28,8 @@ module.exports.sendFirewallMessage = function sendFirewallMessage(host, port, fr
             try {
                 responseReceived = true;
                 const response = JSON.parse(crypt.decrypt(chunk.toString("utf8"), key)); 
-                if (response == "true") console.log("Firewall operation succeeded.")
-                else console.log("Firewall operation failed.")
+                if (response == "true") LOG.debug("Firewall operation succeeded.")
+                else LOG.debug("Firewall operation failed.")
                 resolve(response == "true");
             } catch (err) {errorHandler(err);}
             socket.end(); socket.destroy();

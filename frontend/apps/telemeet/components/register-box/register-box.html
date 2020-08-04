@@ -1,0 +1,113 @@
+<!--
+/* 
+ * (C) 2018 TekMonks. All rights reserved.
+ * License: MIT - see enclosed license.txt file.
+ */
+ -->
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
+
+body{
+    margin: 0; padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 0;
+    border-style: none;
+    outline: none;
+    text-align: left;
+    background-color: transparent;
+    margin: 20px 5% 0px 5%;
+    border-bottom: 1px solid darkgray;
+    font-family: inherit;
+    font-size: smaller;
+}
+
+button {
+    width: 80%;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border-style: none;
+    outline: none;
+    text-align: center;
+    background-color: rgb(51, 204, 102);
+    color: white;
+    position: relative;
+    margin: 30px 0% 20px 0%;
+    font-family: inherit;
+    font-size: inherit;
+    text-transform: uppercase;
+}
+
+button:hover {
+    filter: brightness(110%);
+    transition: all 0.3s ease;
+}
+
+span#error {
+    color: #e40000;
+    display: none;
+}
+
+span#otp, span#password {
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+    padding-bottom: 0px;
+}
+
+span#otp > img {
+    margin: 10px 10px 0px 16px;
+    width: 110px;
+    height: 110px;
+    border: 1px solid darkgray;
+}
+
+span#otp > div#otp_help_and_input {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+span#otp > div#otp_help_and_input > p {
+    font-family: inherit;
+    font-size: smaller;
+    text-align: justify;
+    margin: 10px 12px 0px 10px;
+}
+
+span#otp > div#otp_help_and_input > input {
+    margin-top: 0px;
+}
+
+</style>
+
+{{{styleBody}}}
+
+<div id="container"><form spellcheck="false" onsubmit="monkshu_env.components['register-box'].register(this); return false;">
+<span id="error">{{i18n.RegisterError}}</span>
+<input type="text" id="name" placeholder="{{i18n.Name}}" required oninvalid="this.setCustomValidity('{{i18n.FillField}}')">
+<input type="text" id="id" placeholder="{{i18n.Email}}" required oninvalid="this.setCustomValidity('{{i18n.FillField}}')">
+<input type="text" id="org" placeholder="{{i18n.Org}}" required oninvalid="this.setCustomValidity('{{i18n.FillField}}')">
+<span id="password">
+    <input type="password" id="pass" placeholder="{{i18n.Password}}" required minlength="8" oninvalid="this.setCustomValidity('{{i18n.FillField}}')">
+    <input type="password" id="pass" placeholder="{{i18n.PasswordAgain}}" required minlength="8" oninvalid="this.setCustomValidity('{{i18n.FillField}}')">
+</span>
+<span id="otp">
+    <img src="{{totpQRCodeData}}">
+    <div id="otp_help_and_input">
+        <p>{{i18n.DownloadAuthenticatorMsg}}</p>
+        <input type="number" id="otp" placeholder="{{i18n.Otp}}" required minlength="6"
+            oninvalid="this.setCustomValidity('{{i18n.FillField}}')"
+            onkeyup="if (event.keyCode == 13) monkshu_env.components['register-box'].getShadowRootByContainedElement(this).querySelector('#submit').click();">
+    </div>
+</span>
+<button id="submit">{{i18n.Register}}</button>
+</form></div>

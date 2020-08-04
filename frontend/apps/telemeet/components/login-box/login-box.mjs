@@ -3,7 +3,6 @@
  * License: MIT - see enclosed license.txt file.
  */
 import {router} from "/framework/js/router.mjs";
-import {session} from "/framework/js/session.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
@@ -18,16 +17,18 @@ async function elementConnected(element) {
 }
 
 async function signin(signInButton) {	
-	let shadowRoot = login_box.getShadowRootByContainedElement(signInButton);
-	let userid = shadowRoot.getElementById("userid").value;
-	let pass = shadowRoot.getElementById("pass").value;
+	const shadowRoot = login_box.getShadowRootByContainedElement(signInButton);
+	const userid = shadowRoot.getElementById("userid").value;
+	const pass = shadowRoot.getElementById("pass").value;
+	const otp = shadowRoot.getElementById("otp").value;
+	const routeOnSuccess = login_box.getHostElement(signInButton).getAttribute("routeOnSuccess");
 		
-	_handleLoginResult(await loginmanager.signin(userid, pass), shadowRoot);
+	_handleLoginResult(await loginmanager.signin(userid, pass, otp), shadowRoot, routeOnSuccess);
 }
 
-function _handleLoginResult(result, shadowRoot) {
-	if (result) router.loadPage(`${APP_CONSTANTS.MAIN_HTML}?name=${session.get(APP_CONSTANTS.USERNAME)}`);
-	else shadowRoot.getElementById("notifier").MaterialSnackbar.showSnackbar({message:"Login Failed"});
+function _handleLoginResult(result, shadowRoot, routeOnSuccess) {
+	if (result) router.loadPage(routeOnSuccess);
+	else shadowRoot.getElementById("notifier").style.display = "inline";
 }
 
 const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM

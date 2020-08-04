@@ -6,6 +6,7 @@ body {
 	margin: 0; padding: 0;
 	font-family: 'Raleway';
 	background-color: rgb(79, 180, 237);
+	min-height: 600px;
 }
 
 body::after {
@@ -21,9 +22,9 @@ body::after {
 }
 
 .lgbox {
-	position: fixed;
-	top: calc(50% - 20%);
-	left: calc(70% - 160px);
+	position: absolute;
+	top: max(80px, calc(50% - 22%));
+	left: max(400px, calc(70% - 160px));
 	width: 320px;
 	background-color: #ffffff;
 	border-radius: 20px;
@@ -31,14 +32,21 @@ body::after {
 	padding: 10px 20px 10px 20px;
 	text-align: center;
 	font-size: smaller;
+	padding-right: 40px;
+}
+
+div.lgbox > span {
+	font-weight: 600;
+	font-size: small;
 }
 
 .langbox {
 	position: absolute;
-	bottom: 15px;
+	top: max(560px, calc(100vh - 40px));
 	right: 40px;
 	color: white;
 	text-align: center;
+	cursor: default;
 }
 
 .langsel {
@@ -52,7 +60,7 @@ a:hover {text-decoration:underline;}   /* mouse over link */
 a:active {text-decoration:underline;}  /* selected link */
 
 .advtextbox{
-	position: fixed;
+	position: absolute;
 	top: calc(50% - 20%);
 	left: 10%;
 	width: 400px;
@@ -94,6 +102,29 @@ img.logo {
 	height: 25px;
 	position: absolute;
 }
+
+span#signin {
+	top: 40px;
+	right: 100px;
+	position: absolute;
+	font-size: 0.8em;
+	font-weight: 500;
+	color: #ffffff;
+	cursor: default;
+}
+
+span#signin > span {padding-right: 30px;}
+
+span#signin > span:last-child {
+	color: #ffca36;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+span#signin > span > a {
+	text-decoration: none;
+	color: inherit;
+}
 </style>
 
 <!doctype html>
@@ -114,6 +145,12 @@ img.logo {
 <body>
 <img class="logo" src="./img/logo.png"></img>
 
+<span id="signin">
+	<span><a href="{{#_org_monkshu_makeLink}}./loginroom.html{{/_org_monkshu_makeLink}}">{{i18n.RoomLoginMsg}}</a></span>
+	<span><a href="{{#_org_monkshu_makeLink}}./register.html{{/_org_monkshu_makeLink}}">{{i18n.Register}}</a></span>
+	<span><a href="{{#_org_monkshu_makeLink}}./login.html{{/_org_monkshu_makeLink}}">{{i18n.SignIn}}</a></span>
+</span>
+
 <div class="advtextbox">
 	<h1>{{i18n.logintagline}}</h1>
 	<h2>{{i18n.loginsubtag}}</h2>
@@ -121,8 +158,8 @@ img.logo {
 </div>
 
 <div class="lgbox">
-	<br>{{i18n.LoginMsg}}<br><br>
-	<login-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]"></login-box>
+	<span><br><br>{{i18n.LoginMsg}}<br><br></span>
+	<login-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" routeOnSuccess="./main.html"></login-box>
 </div>
 
 <div class="langbox">

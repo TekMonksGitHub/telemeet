@@ -8,6 +8,7 @@ body {
 	margin: 0;
 	padding: 0;
 	font-family: 'Raleway';
+	min-height: 600px;
 }
 
 body::after {
@@ -109,7 +110,7 @@ div#maincontent {
 <body style="margin: 0%">
 <img id="textlogo" src="./img/textlogo.png">
 <span id="rightheader">
-	<span id="name">{{i18n.Hi}} {{url.name}}!</span>
+	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
 	<span id="img"><img src="./img/person.png"></span>
 	<span-with-menu id="status" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}">{{i18n.MyStatus}}&nbsp;&nbsp;▼
 		<menu-item onclick="main.changeStatus('Working')">Working</menu-item>
@@ -118,6 +119,7 @@ div#maincontent {
 	</span-with-menu>
 	<span-with-menu id="gear" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}"><img src="./img/settings.svg" style="height: 30px;width: 30px;vertical-align: middle;">
 		<menu-item onclick="main.changePassword(this)">Change Password</menu-item>
+		<menu-item onclick="main.showOTPQRCode(this)">Change Phone</menu-item>
 	</span-with-menu>
 	<span id="signoff"><img src="./img/poweroff.svg" onclick="loginmanager.logout()"></span>
 </span>

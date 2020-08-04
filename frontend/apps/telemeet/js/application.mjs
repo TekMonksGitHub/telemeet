@@ -5,8 +5,8 @@
  
 import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
-import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
+import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
 const init = async _ => {
 	window.APP_CONSTANTS = (await import ("./constants.mjs")).APP_CONSTANTS;
@@ -18,12 +18,15 @@ const init = async _ => {
 
 const main = async _ => {
 	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER);
-	const location = window.location.href;
+	const decodedURL = new URL(router.decodeURL(window.location.href));
 
-	const params = new URL(window.location.href).searchParams; const test = params.get("join");
-	if (router.isInHistory(location)) router.loadPage(location);
-	else if (test || test == "") router.loadPage(`${APP_CONSTANTS.LOGIN_ROOM_HTML}?room=${test}&name=${params.get("name")||""}&pass=${params.get("pass")||""}`);
-	else if (!(session.get(APP_CONSTANTS.USERID) && session.get(APP_CONSTANTS.USERNAME))) router.loadPage(APP_CONSTANTS.LOGIN_HTML);
+	if (decodedURL.href.startsWith(APP_CONSTANTS.INDEX_HTML)) {
+		const params = decodedURL.searchParams; const test = params.get("join");
+		if (test || test == "") router.loadPage(`${APP_CONSTANTS.LOGIN_ROOM_HTML}?room=${test}&name=${params.get("name")||""}&pass=${params.get("pass")||""}`);
+	}
+
+	if (securityguard.isAllowed(decodedURL.href)) router.loadPage(decodedURL.href);
+	else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 }
 
 export const application = {init, main};

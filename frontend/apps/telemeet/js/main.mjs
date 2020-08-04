@@ -22,4 +22,15 @@ async function changePassword(_element) {
     });
 }
 
-export const main = {changeStatus, changePassword};
+async function showOTPQRCode(_element) {
+    const id = session.get(APP_CONSTANTS.USERID).toString(); const title = await i18n.get("Title", session.get($$.MONKSHU_CONSTANTS.LANG_ID));
+    const qrcode = await apiman.rest(APP_CONSTANTS.API_GETQRCODE, "GET", {id, provider: title}, true, false); if (!qrcode || !qrcode.result) return;
+    monkshu_env.components['dialog-box'].showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/changephone.html`, true, true, {img:qrcode.img}, "dialog", ["otpcode"], async result=>{
+        const otpValidates = await apiman.rest(APP_CONSTANTS.API_VALIDATE_TOTP, "GET", {totpsec: qrcode.totpsec, otp:result.otpcode, id}, true, false);
+        if (!otpValidates||!otpValidates.result) monkshu_env.components['dialog-box'].error("dialog", 
+            await i18n.get("PHONECHANGEFAILED", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
+        else monkshu_env.components['dialog-box'].hideDialog("dialog");
+    });
+}
+
+export const main = {changeStatus, changePassword, showOTPQRCode};

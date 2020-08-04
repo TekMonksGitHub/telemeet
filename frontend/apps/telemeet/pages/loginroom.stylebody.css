@@ -17,7 +17,7 @@ img#camicon{
 }
 
 div#content {
-    position: fixed;
+    position: absolute;
     display: flex;
     flex-direction: column;
     top: inherit !important;

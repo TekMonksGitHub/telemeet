@@ -10,15 +10,14 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
 let currTimeout; let logoutListeners = [];
 
-async function signin(id, pass) {
+async function signin(id, pass, otp) {
     const pwph = `${id} ${pass}`;
     logoutListeners = [];   // reset listeners on sign in
         
     return new Promise(async (resolve, _reject) => {
         await $$.require(`${APP_CONSTANTS.APP_PATH}/3p/bcrypt.js`);
         dcodeIO.bcrypt.hash(pwph, APP_CONSTANTS.BCRYPT_SALT, async (_err, hash) => {
-            const req = {}; req[APP_CONSTANTS.PWPH] = hash;
-            const resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", req, false, true);
+            const resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", {pwph: hash, otp}, false, true);
             if (resp && resp.result) {
                 session.set(APP_CONSTANTS.USERID, resp.id); 
                 session.set(APP_CONSTANTS.USERNAME, resp.name);
@@ -31,21 +30,22 @@ async function signin(id, pass) {
     });
 }
 
-async function register(name, uid, pass) {
-    const pwph = `${uid} ${pass}`;
+async function register(name, id, pass, org, totpSecret, totpCode) {
+    const pwph = `${id} ${pass}`;
 
     return new Promise(async (resolve, _reject) => {
         await $$.require(`${APP_CONSTANTS.APP_PATH}/3p/bcrypt.js`);
         dcodeIO.bcrypt.hash(pwph, APP_CONSTANTS.BCRYPT_SALT, async (_err, hash) => {
-            const req = {}; req[APP_CONSTANTS.PWPH] = hash; req[APP_CONSTANTS.USERID] = uid; req[APP_CONSTANTS.USERNAME] = name;
-            const resp = await apiman.rest(APP_CONSTANTS.API_REGISTER, "POST", req, true, false);
+            const req = {name, id, pwph: hash, org, totpSecret, totpCode}; 
+            const resp = await apiman.rest(APP_CONSTANTS.API_REGISTER, "POST", req, false, true);
             if (resp && resp.result) {
-                session.set(APP_CONSTANTS.USERID, resp.id); 
-                session.set(APP_CONSTANTS.USERNAME, resp.name);
+                session.set(APP_CONSTANTS.USERID, id); 
+                session.set(APP_CONSTANTS.USERNAME, name);
+                session.set(APP_CONSTANTS.USERORG, org);
                 securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
                 startAutoLogoutTimer();
                 resolve(true);
-            } else resolve(false);
+            } else {LOG.error(`Registration failed for ${id}`); resolve(false);}
         });
     });
 }

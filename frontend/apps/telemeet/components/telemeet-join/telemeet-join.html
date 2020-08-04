@@ -12,6 +12,7 @@ body{
     margin: 0; padding: 0;
     font-family: inherit;
     font-size: inherit;
+    position: absolute;
 }
 
 video#video {
@@ -24,12 +25,14 @@ video#video {
 }
 
 div#content {
-    position: fixed;
+    position: absolute;
     display: flex;
     flex-direction: column;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    width: 680px;
+    top: max(100px, calc(50vh - 221px));
+    left: calc(50vw - 340px);
 }
 
 span#bottombar {
@@ -137,7 +140,8 @@ div#telemeet > iframe {
     <input id="name" type="text" placeholder="{{i18n.Name}}" value="{{name}}">&nbsp;&nbsp;
     <input id="room" type="text" placeholder="{{i18n.RoomID}}" value="{{room}}">&nbsp;&nbsp;
     <input id="roompass" type="text" placeholder="{{i18n.Password}}" value="{{pass}}">
-<span id="join" onclick="monkshu_env.components['telemeet-join'].joinRoom(this)">{{i18n.Join}}</span></span>
+    <span id="join" onclick="monkshu_env.components['telemeet-join'].joinRoom(this)">{{i18n.Join}}</span>
+</span>
 <span id="camcontrol" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this)"><img id="camicon" src="./img/{{camicon}}"></span>
 </span>
 </div>

@@ -10,8 +10,10 @@ const API_PATH = `${BACKEND}/apps/${APP_NAME}`;
 
 export const APP_CONSTANTS = {
     FRONTEND, BACKEND, APP_PATH, APP_NAME, 
+    INDEX_HTML: APP_PATH+"/index.html",
     MAIN_HTML: APP_PATH+"/main.html",
     LOGIN_HTML: APP_PATH+"/login.html",
+    REGISTER_HTML: APP_PATH+"/register.html",
     LOGIN_ROOM_HTML: APP_PATH+"/loginroom.html",
 
     DIALOGS_PATH: APP_PATH+"/dialogs",
@@ -21,12 +23,15 @@ export const APP_CONSTANTS = {
     // Login constants
     MIN_PASS_LENGTH: 8,
     API_LOGIN: API_PATH+"/login",
+    API_REGISTER: API_PATH+"/register",
     API_ENTERROOM: API_PATH+"/enterroom",
     API_STATUS: API_PATH+"/setstatus",
     API_CHANGEPW: API_PATH+"/changepassword",
     API_CREATEROOM: API_PATH+"/createroom",
     API_DELETEROOM: API_PATH+"/deleteroom",
     API_FWCONTROL: API_PATH+"/fwcontrol",
+    API_VALIDATE_TOTP: API_PATH+"/validatetotp",
+    API_GETQRCODE: API_PATH+"/getqrcode",
     BCRYPT_SALT: "$2a$10$VFyiln/PpFyZc.ABoi4ppf",
     USERID: "userid",
     PWPH: "pwph",
@@ -37,8 +42,8 @@ export const APP_CONSTANTS = {
     USER_ROLE: "user",
     GUEST_ROLE: "guest",
     PERMISSIONS_MAP: {
-        user:[APP_PATH+"/main.html", APP_PATH+"/loginroom.html", APP_PATH+"/login.html", $$.MONKSHU_CONSTANTS.ERROR_THTML], 
-        guest:[APP_PATH+"/login.html", APP_PATH+"/loginroom.html", $$.MONKSHU_CONSTANTS.ERROR_THTML]
+        user:[APP_PATH+"/main.html", APP_PATH+"/register.html", APP_PATH+"/loginroom.html", APP_PATH+"/login.html", $$.MONKSHU_CONSTANTS.ERROR_THTML], 
+        guest:[APP_PATH+"/register.html", APP_PATH+"/login.html", APP_PATH+"/loginroom.html", $$.MONKSHU_CONSTANTS.ERROR_THTML]
     },
     API_KEYS: {"*":"fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389"},
     KEY_HEADER: "X-API-Key"

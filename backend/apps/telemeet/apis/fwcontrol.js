@@ -1,4 +1,7 @@
-/* 
+/**
+ * Controls the firewall on the mirror. Uses SFW mode, so a close request
+ * is not needed, as firewall will auto close on TCP/IP session disconnect.
+ * 
  * (C) 2020 TekMonks. All rights reserved.
  */
 
@@ -14,15 +17,14 @@ exports.doService = async (jsonReq, servObject) => {
 
 async function _openFW(jsonReq, servObject) {
     const clientIP = jsonReq.ip || servObject.req.connection.remoteAddress;
-    const ipCheck = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.IP_FW_MAPPINGS_KEY)||{};
-    if (ipCheck[jsonReq.id] == clientIP) return true;  // already open
 
-    // client's IP has changed, close old firewall rule
-    if (ipCheck[jsonReq.id]) await fwControl.sendFirewallMessage(telemeet.host, telemeet.fwPort, clientIP, null, telemeet.key, false);
-    delete ipCheck[jsonReq.id];
+    if (!jsonReq.fwInAutoCloseMode) {   // in auto close mode the firewall will auto close so this test is useless
+        const ipCheck = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.IP_FW_MAPPINGS_KEY)||{};
+        if (ipCheck[jsonReq.id] == clientIP) return true;  // already open
+    }
 
     // open the firewall for the client IP
-    const result = await fwControl.sendFirewallMessage(telemeet.host, telemeet.fwPort, clientIP, null, telemeet.key, true);
+    const result = await fwControl.sendFirewallMessage(telemeet.host, telemeet.fwPort, clientIP, null, telemeet.key, true, true);
     ipCheck[jsonReq.id] = clientIP;
     DISTRIBUTED_MEMORY.set(APP_CONSTANTS.IP_FW_MAPPINGS_KEY, ipCheck);
 
@@ -37,7 +39,7 @@ async function _closeFW(jsonReq, servObject) {
     if (!ipCheck[jsonReq.id]) return true;  // already closed
 
     // close the firewall for the client IP
-    const result = await fwControl.sendFirewallMessage(telemeet.host, telemeet.fwPort, clientIP, null, telemeet.key, false);
+    const result = await fwControl.sendFirewallMessage(telemeet.host, telemeet.fwPort, clientIP, null, telemeet.key, true, false);
     delete ipCheck[jsonReq.id];
     DISTRIBUTED_MEMORY.set(APP_CONSTANTS.IP_FW_MAPPINGS_KEY, ipCheck);
 
