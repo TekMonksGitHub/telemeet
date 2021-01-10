@@ -2,9 +2,6 @@
  * (C) 2020 TekMonks. All rights reserved.
  */
 
-const enterroom = require(`${__dirname}/enterroom.js`);
-const telemeet = require(`${APP_CONSTANTS.CONF_DIR}/telemeet.json`);
-
 exports.doService = async jsonReq => {
     if (!validateRequest(jsonReq)) {LOG.error("Validation failure."); return CONSTANTS.FALSE_RESULT;}
 

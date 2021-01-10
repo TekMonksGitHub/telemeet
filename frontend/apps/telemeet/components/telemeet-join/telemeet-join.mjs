@@ -1,5 +1,5 @@
 /* 
- * (C) 2018 TekMonks. All rights reserved.
+ * (C) 2020 TekMonks. All rights reserved.
  * License: MIT - see enclosed license.txt file.
  */
 import {i18n} from "/framework/js/i18n.mjs";
@@ -7,10 +7,10 @@ import {session} from "/framework/js/session.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-let videoOn = false;
+const roomExitListeners = []; let videoOn = false; let id;
 
 async function elementConnected(element) {
-	const data = {};
+	const data = {}; id = element.id;
 
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
 	data.camicon = element.getAttribute("camicon")||"camera.svg";
@@ -62,21 +62,40 @@ async function joinRoom(element) {
 		enterOnly?"GET":"POST", req, enterOnly?false:true, enterOnly?true:false);
 
 	if (result && !result.result) {
-		_showError(await i18n.get(enterOnly?"RoomPasswordError":"RoomExistsPasswordError", 
+		_showError(await i18n.get(enterOnly?(result.failureReason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"):"RoomExistsPasswordError", 
 			session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 		return;
 	}
 
 	if (result) {	// open firewall and join the room
-		if (await _openFirewall(true, enterOnly)) _openTelemeet(result.url, roomPass, element, enterOnly, result.isModerator);
-		else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
+		if (await _operateFirewall("allow", enterOnly)) {
+			const exitListener = (isGuest, isModerator, room, pass) => {	// delete the room, close FW on moderator exit
+				roomExitListeners.splice(roomExitListeners.indexOf(exitListener), 1);
+				if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", 
+					{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
+				_operateFirewall("disallow", enterOnly)
+			}; roomExitListeners.push(exitListener);
+			_openTelemeet(result.url, roomPass, element, enterOnly, result.isModerator);
+		} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 }
 
-async function _openFirewall(allow, isGuest) {
-	const req = {id: session.get(isGuest?APP_CONSTANTS.USERNAME:APP_CONSTANTS.USERID), operation: allow?"allow":"disallow", ip:await _getPublicIP(), fwInAutoCloseMode:true};
+async function _operateFirewall(operation, isGuest) {
+	if (operation == "disallow") _stopBackendHeartbeats();	// this will auto close the firewall after heartbeat timeout, as we open it in heartbeat mode
+	const req = {id: session.get(isGuest?APP_CONSTANTS.USERNAME:APP_CONSTANTS.USERID), operation, ip:await _getPublicIP(), mode:"heartbeat_mode"};
 	const result = await apiman.rest(APP_CONSTANTS.API_FWCONTROL, "POST", req, true, false);
+	if (result && result.result && operation == "allow") _startBackendHeartbeats(isGuest);
 	return result?result.result:false;
+}
+
+function _stopBackendHeartbeats() {
+	const memory = telemeet_join.getSessionMemory(id); 
+	if (memory.heartbeatTimer) { for (const timer of memory.heartbeatTimer) clearInterval(timer); memory.heartbeatTimer = []; }
+}
+
+function _startBackendHeartbeats(isGuest) {
+	_stopBackendHeartbeats(); const memory = telemeet_join.getSessionMemory(id); memory.heartbeatTimer = memory.heartbeatTimer || [];
+	memory.heartbeatTimer.push(setInterval(_operateFirewall, APP_CONSTANTS.FW_HEARTBEATINTERVAL, "keepopen", isGuest));
 }
 
 async function _startVideo(shadowRoot) {
@@ -128,25 +147,31 @@ async function _openTelemeet(url, roomPass, element, isGuest, isModerator) {
 		parentNode: telemeet,
 		noSSL: false,
 		configOverwrite: { startWithVideoMuted: !videoOn, remoteVideoMenu: {disableKick: true} },
-		interfaceConfigOverwrite: { AUTHENTICATION_ENABLE: false,
+		interfaceConfigOverwrite: { 
+			AUTHENTICATION_ENABLE: false,
 			TOOLBAR_BUTTONS: [
 				'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
 				'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
 				'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-				'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+				'videoquality', 'filmstrip', 'feedback', 'stats', 'shortcuts',
 				'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
-				'e2ee', 'security'
-			] },
+				'e2ee'
+			], 
+			DEFAULT_BACKGROUND: "#000000",
+			DEFAULT_REMOTE_DISPLAY_NAME: "Fellow Teleworkr",
+			DEFAULT_LOCAL_DISPLAY_NAME: "Fellow Teleworkr",
+			APP_NAME: "Teleworkr Meet",
+			NATIVE_APP_NAME: "Teleworkr Meet",
+			JITSI_WATERMARK_LINK: "http://teleworkr.com",
+			HIDE_INVITE_MORE_HEADER: true
+		},
 	});
 	meetAPI.executeCommand("displayName", session.get(APP_CONSTANTS.USERNAME));
 	meetAPI.addEventListener("videoConferenceLeft", _=>{
 		modalcurtain.style.display = "none";  telemeet.classList.remove("visible");
 		while (telemeet.firstChild) telemeet.removeChild(telemeet.firstChild);	// remove the iframe
 		meetAPI.dispose();
-		if (!isGuest && isModerator) {	// delete the room on moderator exit
-			const req = {room: roomName, pass: roomPass, id: session.get(APP_CONSTANTS.USERID)};
-			apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", req, true, false);
-		}
+		for (const roomExitListener of roomExitListeners) roomExitListener(isGuest, isModerator, roomName, roomPass);
 	});
 
 	modalcurtain.style.display = "block"; telemeet.classList.add("visible");

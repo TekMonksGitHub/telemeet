@@ -65,12 +65,25 @@ span#notifier {
     display: none;
 }
 
+span#notifier2 {
+    color: #003de4;
+    padding: 0;
+    margin: 0;
+    display: none;
+}
+
+span#notifier>span:hover {
+    text-decoration: underline;
+    cursor: default;
+}
+
 </style>
 
 {{{styleBody}}}
 
 <div id="container"><form spellcheck="false" onsubmit="monkshu_env.components['login-box'].signin(this); return false;">
-<span id="notifier">{{i18n.BadLogin}}</span>
+<span id="notifier">{{i18n.BadLogin}}<span onclick="monkshu_env.components['login-box'].resetAccount(this)">{{i18n.LoginReset}}</span></span>
+<span id="notifier2">{{i18n.LoginWasReset}}</span>
 <input type="text" id="userid" placeholder="{{i18n.UserID}}" 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')"
     required>

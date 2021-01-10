@@ -20,6 +20,8 @@ export const APP_CONSTANTS = {
 
     SESSION_NOTE_ID: "com_monkshu_ts",
 
+    FW_HEARTBEATINTERVAL: 1000,
+
     // Login constants
     MIN_PASS_LENGTH: 8,
     API_LOGIN: API_PATH+"/login",

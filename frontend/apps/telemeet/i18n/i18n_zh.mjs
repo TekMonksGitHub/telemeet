@@ -22,6 +22,7 @@ export const i18n = {
 "RegisterMsg": "Customer Registration",
 "RoomLoginMsg": "Join Room",
 "RoomPasswordError": "Incorrect room name or password",
+"RoomNotCreatedError": "Room has not been opened for guests by the moderator yet",
 "RoomExistsPasswordError": "Room exists and the password is incorrect to join it",
 "UserID" : "用户账号",
 "DesiredUserID" : "所需用户账号",

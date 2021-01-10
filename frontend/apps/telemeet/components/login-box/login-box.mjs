@@ -17,7 +17,7 @@ async function elementConnected(element) {
 }
 
 async function signin(signInButton) {	
-	const shadowRoot = login_box.getShadowRootByContainedElement(signInButton);
+	const shadowRoot = login_box.getShadowRootByContainedElement(signInButton); _hideErrors(shadowRoot);
 	const userid = shadowRoot.getElementById("userid").value;
 	const pass = shadowRoot.getElementById("pass").value;
 	const otp = shadowRoot.getElementById("otp").value;
@@ -26,11 +26,24 @@ async function signin(signInButton) {
 	_handleLoginResult(await loginmanager.signin(userid, pass, otp), shadowRoot, routeOnSuccess);
 }
 
+function resetAccount(element) {
+	const shadowRoot = login_box.getShadowRootByContainedElement(element);
+	shadowRoot.getElementById("notifier").style.display = "none";
+	shadowRoot.getElementById("notifier2").style.display = "inline";
+
+	// TODO: Call API to email reset instructions
+}
+
+function _hideErrors(shadowRoot) {
+	shadowRoot.getElementById("notifier").style.display = "none";
+	shadowRoot.getElementById("notifier2").style.display = "none";
+}
+
 function _handleLoginResult(result, shadowRoot, routeOnSuccess) {
 	if (result) router.loadPage(routeOnSuccess);
 	else shadowRoot.getElementById("notifier").style.display = "inline";
 }
 
 const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM
-export const login_box = {signin, trueWebComponentMode, elementConnected}
+export const login_box = {signin, resetAccount, trueWebComponentMode, elementConnected}
 monkshu_component.register("login-box", `${APP_CONSTANTS.APP_PATH}/components/login-box/login-box.html`, login_box);

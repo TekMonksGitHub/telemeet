@@ -1,6 +1,7 @@
 {
-    "host": "host1.telimeet.com",
-    "url": "https://host1.telimeet.com",
+    "url": "https://telimeetng1.southeastasia.cloudapp.azure.com/",
+    "fwHost": "telimeetng1.southeastasia.cloudapp.azure.com",
+    "fwEnabled": false,
     "fwPort": 1003,
-    "key":"C77AE67918DAF5A819EE6EF2E9930554W2"
+    "fwKey":"063ab3f72a271cebf218ee95bfb15e8c5f4a40968b6a8e05cbad49adac4ea89c83c8d396af1ac91d34fc"
 }

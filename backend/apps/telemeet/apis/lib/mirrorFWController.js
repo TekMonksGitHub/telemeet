@@ -8,9 +8,9 @@
 const net = require("net");
 const crypt = require(`${CONSTANTS.LIBDIR}/crypt.js`);
 
-module.exports.sendFirewallMessage = function sendFirewallMessage(host, port, fromip, toport, key, sfwMode, allow=false) {
+module.exports.sendFirewallMessage = function sendFirewallMessage(host, port, fromip, toport, mode, msgType, key) {
     return new Promise((resolve, _) => {
-        const msg = `${allow?"allow":"disallow"},${fromip},${toport==null||"all"?"":""+toport}${sfwMode?",sfw_mode":""}`;
+        const msg = `${msgType},${fromip},${(toport==null||toport=="all")?"":""+toport}${mode?`,${mode}`:""}`;
 
         let responseReceived = false;
 
