@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "telemeet": {"html":"telemeet-join", "id":"telemeet", "name":"{{url.name}}", "room":"{{url.room}}", "pass":"{{url.pass}}", "enterOnly":"true", "camicon":"cameraw.svg", "nocamicon":"nocameraw.svg", "stylebody":"url(./pages/loginroom.styleBody.css)"}
+    "telemeet": {"html":"telemeet-join", "id":"telemeet", "name":"{{url.name}}", "room":"{{url.room}}", "pass":"{{url.pass}}", "enterOnly":"true", "camicon":"cameraw.svg", "nocamicon":"nocameraw.svg", "stylebody":"url(./pages/loginroom.stylebody.css)"}
 }
 ======
 
