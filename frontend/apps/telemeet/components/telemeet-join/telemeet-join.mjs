@@ -68,7 +68,7 @@ async function joinRoom(element) {
 				roomExitListeners.splice(roomExitListeners.indexOf(exitListener), 1);
 				if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", 
 					{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
-				_operateFirewall("disallow", enterOnly)
+				_operateFirewall("disallow", enterOnly); if (videoOn) _startVideo(shadowRoot);
 			}; roomExitListeners.push(exitListener);
 			_openTelemeet(result.url, roomPass, element, enterOnly, result.isModerator);
 		} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
@@ -169,7 +169,8 @@ async function _openTelemeet(url, roomPass, element, isGuest, isModerator) {
 		for (const roomExitListener of roomExitListeners) roomExitListener(isGuest, isModerator, roomName, roomPass);
 	});
 
-	modalcurtain.style.display = "block"; telemeet.classList.add("visible");
+	// modal curtain, show telemeet, and stop local video - as it hits performance otherwise
+	modalcurtain.style.display = "block"; telemeet.classList.add("visible"); if (videoOn) _stopVideo(shadowRoot);
 }
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
