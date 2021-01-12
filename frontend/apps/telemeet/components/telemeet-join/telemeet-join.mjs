@@ -23,11 +23,6 @@ async function elementConnected(element) {
 	} else telemeet_join.data = data;
 }
 
-async function elementRendered(element) {
-	const shadowRoot = telemeet_join.getShadowRootByHostId(element.id);
-	//_startVideo(shadowRoot);
-}
-
 async function toggleVideo(element) {
 	const shadowRoot = telemeet_join.getShadowRootByContainedElement(element);
 	const camicon = shadowRoot.querySelector("img#camicon");
@@ -35,8 +30,8 @@ async function toggleVideo(element) {
 	const hostElement = telemeet_join.getHostElement(element);
 	const camiconimg = hostElement.getAttribute("camicon")||"camera.svg";
 	const nocamiconimg = hostElement.getAttribute("nocamicon")||"nocamera.svg";
-	if (videoOn) {_stopVideo(shadowRoot); camicon.src = `./img/${nocamiconimg}`;}
-	else {await _startVideo(shadowRoot); camicon.src = `./img/${camiconimg}`;}
+	if (videoOn) {_stopVideo(shadowRoot); camicon.src = `./img/${camiconimg}`;}
+	else {await _startVideo(shadowRoot); camicon.src = `./img/${nocamiconimg}`;}
 }
 
 async function joinRoom(element) {
@@ -178,5 +173,5 @@ async function _openTelemeet(url, roomPass, element, isGuest, isModerator) {
 }
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
-export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, joinRoom};
+export const telemeet_join = {trueWebComponentMode, elementConnected, toggleVideo, joinRoom};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);
