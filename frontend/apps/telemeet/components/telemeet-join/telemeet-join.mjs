@@ -133,7 +133,7 @@ async function _openTelemeet(url, roomPass, element, isGuest, isModerator) {
 	const modalcurtain = shadowRoot.querySelector("div#modalcurtain"); 
 	const telemeet = shadowRoot.querySelector("div#telemeet");
 
-	const hostURL = new URL(url), roomName = hostURL.pathname.substring(1);
+	const hostURL = new URL(url), roomName = hostURL.pathname.replace(/^\/+/,"");
 	await $$.require("./components/telemeet-join/3p/external_api.js");
 	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
 		roomName,
