@@ -30,14 +30,14 @@ async function signin(id, pass, otp) {
     });
 }
 
-async function register(name, id, pass, org, totpSecret, totpCode) {
+async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCode) {
     const pwph = `${id} ${pass}`;
 
     return new Promise(async (resolve, _reject) => {
         await $$.require(`${APP_CONSTANTS.APP_PATH}/3p/bcrypt.js`);
         dcodeIO.bcrypt.hash(pwph, APP_CONSTANTS.BCRYPT_SALT, async (_err, hash) => {
-            const req = {name, id, pwph: hash, org, totpSecret, totpCode}; 
-            const resp = await apiman.rest(APP_CONSTANTS.API_REGISTER, "POST", req, false, true);
+            const req = {name, id, pwph: hash, org, totpSecret, totpCode}; if (old_id) req.old_id = old_id;
+            const resp = await apiman.rest(old_id?APP_CONSTANTS.API_UPDATE:APP_CONSTANTS.API_REGISTER, "POST", req, old_id?true:false, true);
             if (resp && resp.result) {
                 session.set(APP_CONSTANTS.USERID, id); 
                 session.set(APP_CONSTANTS.USERNAME, name);
@@ -45,7 +45,7 @@ async function register(name, id, pass, org, totpSecret, totpCode) {
                 securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
                 startAutoLogoutTimer();
                 resolve(true);
-            } else {LOG.error(`Registration failed for ${id}`); resolve(false);}
+            } else {LOG.error(`${old_id?"Update":"Registration"} failed for ${id}`); resolve(false);}
         });
     });
 }
@@ -76,6 +76,11 @@ async function logout() {
 	application.main();
 }
 
+async function getProfileData(id) {
+    const resp = await apiman.rest(APP_CONSTANTS.API_GETPROFILE, "GET", {id}, false, true);
+    if (resp && resp.result) return resp; else return null;
+}
+
 function startAutoLogoutTimer() {
     router.addOnLoadPage(startAutoLogoutTimer);
 
@@ -87,8 +92,13 @@ function startAutoLogoutTimer() {
     resetTimer();   // start the timing
 }
 
+async function checkResetSecurity() {
+    const id = (await router.getPageData(router.getCurrentURL())).url.e;
+    if (!id || id == "") router.doIndexNavigation();
+}
+
 function _stoptAutoLogoutTimer() {
     if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;}
 }
 
-export const loginmanager = {signin, register, logout, changepassword, startAutoLogoutTimer, addLogoutListener}
+export const loginmanager = {signin, registerOrUpdate, logout, changepassword, startAutoLogoutTimer, addLogoutListener, getProfileData, checkResetSecurity}

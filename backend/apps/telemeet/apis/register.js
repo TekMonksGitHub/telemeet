@@ -10,13 +10,13 @@ exports.doService = async jsonReq => {
 	LOG.debug("Got register request for ID: " + jsonReq.id);
 
 	if (!totp.verifyTOTP(jsonReq.totpSecret, jsonReq.totpCode)) {
-		LOG.error(`Unable to register: ${jsonReq.name}, wrong totp code`);
+		LOG.error(`Unable to register: ${jsonReq.name}, ID: ${jsonReq.id}, wrong totp code`);
 		return CONSTANTS.FALSE_RESULT;
 	}
 
 	const result = await userid.register(jsonReq.id, jsonReq.name, jsonReq.org, jsonReq.pwph, jsonReq.totpSecret);
 
-	if (result.result) LOG.info(`User registered and logged in: ${jsonReq.name}`); else LOG.error(`Unable to register: ${jsonReq.name}, DB error`);
+	if (result.result) LOG.info(`User registered and logged in: ${jsonReq.name}, ID: ${jsonReq.id}`); else LOG.error(`Unable to register: ${jsonReq.name}, ID: ${jsonReq.id} DB error`);
 
 	return {result: result.result};
 }

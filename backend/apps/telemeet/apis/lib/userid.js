@@ -24,13 +24,25 @@ exports.getUserHash = data => {
 
 exports.register = async (id, name, org, pwph, totpSecret) => {
 	return new Promise(async resolve => {
-		const exists = await exports.exists(pwph);
-		if (exists.result) {resolve({result:false}); return;}
 		const existsID = await exports.existsID(id);
 		if (existsID.result) {resolve({result:false}); return;}
 		pwph = await exports.getUserHash(pwph);
-		usersDB.run(`INSERT INTO users(id, name, org, pwph, totpsec) VALUES (?,?,?,?,?)`, 
+		const exists = await exports.exists(pwph);
+		if (exists.result) {resolve({result:false}); return;}
+		usersDB.run("INSERT INTO users (id, name, org, pwph, totpsec) VALUES (?,?,?,?,?)", 
 			[id,name,org,pwph,totpSecret], err => err?resolve({result:false, err}):resolve({result:true}));
+	});
+}
+
+exports.update = async (oldid, id, name, org, pwph, totpSecret) => {
+	return new Promise(async resolve => {
+		pwph = await exports.getUserHash(pwph);
+		const exists = await exports.exists(pwph);
+		if (exists.result) {resolve({result:false}); return;}
+		if (totpSecret) usersDB.run("UPDATE users SET id=?, name=?, org=?, pwph=?, totpsec=? WHERE id=?", 
+			[id,name,org,pwph,totpSecret,oldid], err => err?resolve({result:false, err}):resolve({result:true}));
+		else usersDB.run("UPDATE users SET id=?, name=?, org=?, pwph=? WHERE id=?", 
+			[id,name,org,pwph,oldid], err => err?resolve({result:false, err}):resolve({result:true}));
 	});
 }
 
@@ -39,7 +51,7 @@ exports.exists = exports.login = pwph => {
 		initDB()
 		.then(_ => exports.getUserHash(pwph))
 		.then(pwph => {
-			usersDB.all(`SELECT id, name, org, totpsec FROM users WHERE pwph = ? COLLATE NOCASE;`, [pwph], (err, rows) => {
+			usersDB.all("SELECT id, name, org, totpsec FROM users WHERE pwph = ? COLLATE NOCASE;", [pwph], (err, rows) => {
 				if (err || !rows.length) resolve({result: false, err});
 				else resolve({result: true, name: rows[0].name, org: rows[0].org, id: rows[0].id, totpsec: rows[0].totpsec});
 			})
@@ -51,7 +63,7 @@ exports.exists = exports.login = pwph => {
 exports.existsID = id => {
 	return new Promise(async resolve => {
 		await initDB();
-		usersDB.all(`SELECT id, name, org, totpsec FROM users WHERE id = ? COLLATE NOCASE;`, [id], (err, rows) => {
+		usersDB.all("SELECT id, name, org, totpsec FROM users WHERE id = ? COLLATE NOCASE;", [id], (err, rows) => {
 			if (err || !rows.length) resolve({result: false, err});
 			else resolve({result: true, name: rows[0].name, org: rows[0].org, id: rows[0].id, totpsec: rows[0].totpsec});
 		});
@@ -63,7 +75,7 @@ exports.changepwph = (id, pwph) => {
 		initDB()
 		.then(_ => exports.getUserHash(pwph))
 		.then(pwph => {
-			usersDB.all(`UPDATE users SET pwph = ? WHERE id = ?;`, [pwph,id], err => {
+			usersDB.all("UPDATE users SET pwph = ? WHERE id = ?;", [pwph,id], err => {
 				if (err) resolve({result: false, err});
 				else resolve({result: true});
 			})
@@ -75,7 +87,7 @@ exports.changepwph = (id, pwph) => {
 exports.getTOTPSec = id => {
 	return new Promise(async resolve => {
 		await initDB();
-		usersDB.all(`SELECT id, totpsec FROM users WHERE id = ? COLLATE NOCASE;`, [id], (err, rows) => {
+		usersDB.all("SELECT id, totpsec FROM users WHERE id = ? COLLATE NOCASE;", [id], (err, rows) => {
 			if (err || !rows.length) resolve({result: false, err});
 			else resolve({result: true, totpsec: rows[0].totpsec});
 		});

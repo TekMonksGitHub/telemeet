@@ -18,14 +18,13 @@ const init = async _ => {
 
 const main = async _ => {
 	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER);
-	const decodedURL = new URL(router.decodeURL(window.location.href));
+	const decodedURL = new URL(router.decodeURL(window.location.href)), justURL = decodedURL.href.split("?")[0];
 
-	if (decodedURL.href.startsWith(APP_CONSTANTS.INDEX_HTML)) {
+	if (justURL == APP_CONSTANTS.INDEX_HTML) {
 		const params = decodedURL.searchParams; const test = params.get("join");
 		if (test || test == "") router.loadPage(`${APP_CONSTANTS.LOGIN_ROOM_HTML}?room=${test}&name=${params.get("name")||""}&pass=${params.get("pass")||""}`);
-	}
-
-	if (securityguard.isAllowed(decodedURL.href)) router.loadPage(decodedURL.href);
+		else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
+	} else if (securityguard.isAllowed(justURL)) router.loadPage(decodedURL.href);
 	else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 }
 
