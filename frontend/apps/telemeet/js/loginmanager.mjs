@@ -30,6 +30,8 @@ async function signin(id, pass, otp) {
     });
 }
 
+const reset = id => apiman.rest(APP_CONSTANTS.API_RESET, "POST", {id, lang: session.get($$.MONKSHU_CONSTANTS.LANG_ID)});
+
 async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCode) {
     const pwph = `${id} ${pass}`;
 
@@ -101,4 +103,4 @@ function _stoptAutoLogoutTimer() {
     if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;}
 }
 
-export const loginmanager = {signin, registerOrUpdate, logout, changepassword, startAutoLogoutTimer, addLogoutListener, getProfileData, checkResetSecurity}
+export const loginmanager = {signin, reset, registerOrUpdate, logout, changepassword, startAutoLogoutTimer, addLogoutListener, getProfileData, checkResetSecurity}

@@ -31,7 +31,7 @@ function resetAccount(element) {
 	shadowRoot.getElementById("notifier").style.display = "none";
 	shadowRoot.getElementById("notifier2").style.display = "inline";
 
-	// TODO: Call API to email reset instructions
+	loginmanager.reset(shadowRoot.getElementById("userid").value);
 }
 
 function _hideErrors(shadowRoot) {

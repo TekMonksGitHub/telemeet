@@ -25,6 +25,7 @@ export const APP_CONSTANTS = {
     // Login constants
     MIN_PASS_LENGTH: 8,
     API_LOGIN: API_PATH+"/login",
+    API_RESET: API_PATH+"/reset",
     API_REGISTER: API_PATH+"/register",
     API_UPDATE: API_PATH+"/update",
     API_ENTERROOM: API_PATH+"/enterroom",

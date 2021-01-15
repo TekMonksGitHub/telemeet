@@ -1,7 +1,7 @@
 /* 
  * (C) 2020 TekMonks. All rights reserved.
  */
-const totp = require(`${__dirname}/lib/totp.js`);
+const totp = require(`${APP_CONSTANTS.LIB_DIR}/totp.js`);
 
 exports.doService = async jsonReq => {
 	if (!validateRequest(jsonReq)) {LOG.error("Validation failure."); return CONSTANTS.FALSE_RESULT;}

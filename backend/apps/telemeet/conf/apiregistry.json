@@ -1,5 +1,6 @@
 {
     "/apps/telemeet/login" : "/apis/login.js?needsToken=false&addsToken=sub:access",
+    "/apps/telemeet/reset" : "/apis/reset.js?needsToken=false",
     "/apps/telemeet/register" : "/apis/register.js?needsToken=false&addsToken=sub:access",
     "/apps/telemeet/update" : "/apis/update.js?needsToken=true&addsToken=sub:access",
     "/apps/telemeet/createroom" : "/apis/createroom.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
