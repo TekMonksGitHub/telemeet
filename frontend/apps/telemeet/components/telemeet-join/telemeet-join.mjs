@@ -43,22 +43,19 @@ async function joinRoom(element) {
 
 	if (enterOnly) {
 		const name = shadowRoot.querySelector("input#name").value;
-		if (!name || name.trim() == "") {_showError(await i18n.get("NoName", session.get($$.MONKSHU_CONSTANTS.LANG_ID))); return;}
+		if (!name || name.trim() == "") {_showError(await i18n.get("NoName")); return;}
 		session.set(APP_CONSTANTS.USERNAME, name);
 	}
 	
-	if (roomName.trim() == "" || roomPass.trim() == "") {
-		_showError(await i18n.get("NoRoomOrPass", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
-		return;
-	}
+	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
+	if (roomPass.trim() == "") {_showError(await i18n.get("NoPass")); return;}
 
 	const req = {room: roomName, pass: roomPass, id: session.get(APP_CONSTANTS.USERID)};
 	const result = await apiman.rest(enterOnly?APP_CONSTANTS.API_ENTERROOM:APP_CONSTANTS.API_CREATEROOM, 
 		enterOnly?"GET":"POST", req, enterOnly?false:true, enterOnly?true:false);
 
 	if (result && !result.result) {
-		_showError(await i18n.get(enterOnly?(result.failureReason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"):"RoomExistsPasswordError", 
-			session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
+		_showError(await i18n.get(enterOnly?(result.failureReason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"):"RoomExistsPasswordError"));
 		return;
 	}
 
