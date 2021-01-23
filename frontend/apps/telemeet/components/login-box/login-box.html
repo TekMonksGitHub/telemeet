@@ -85,12 +85,12 @@ span#notifier>span:hover {
 <span id="notifier">{{i18n.BadLogin}}<span onclick="monkshu_env.components['login-box'].resetAccount(this)">{{i18n.LoginReset}}</span></span>
 <span id="notifier2">{{i18n.LoginWasReset}}</span>
 <input type="text" id="userid" placeholder="{{i18n.UserID}}" 
-    oninvalid="this.setCustomValidity('{{i18n.FillField}}')"
+    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')"
     required>
 <input type="password" id="pass" placeholder="{{i18n.Password}}" required minlength="8" 
-    oninvalid="this.setCustomValidity('{{i18n.FillField}}')">
+    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
 <input type="text" id="otp" placeholder="{{i18n.Otp}}" 
-    oninvalid="this.setCustomValidity('{{i18n.FillField}}')"
+    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')"
     required
     onkeyup="if (event.keyCode == 13) monkshu_env.components['login-box'].getShadowRootByContainedElement(this).querySelector('#submit').click();">
 <button type="submit" id="submit">{{i18n.SignIn}}</button>
