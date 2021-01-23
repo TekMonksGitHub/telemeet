@@ -53,7 +53,7 @@ async function registerOrUpdate(element) {
 	const routeOnSuccess = register_box.getHostElement(element).getAttribute("routeOnSuccess");
 	
 	if (!await loginmanager.registerOrUpdate(id_old, name, id, pass, org, totpCode?memory.totpKey:null, totpCode)) shadowRoot.querySelector("span#error").style.display = "inline";
-	else router.loadPage(routeOnSuccess);
+	else router.loadPage(routeOnSuccess, {showDialog: {message: await i18n.get(id_old?"ResetSuccess":"RegisterSuccess")}});
 }
 
 function _doPasswordsMatch(shadowRoot) {

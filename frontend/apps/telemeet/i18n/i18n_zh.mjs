@@ -23,6 +23,8 @@ export const i18n = {
 "LoginMsg": "请登录",
 "RegisterMsg": "Customer Registration",
 "ResetMsg": "Reset Profile",
+"ResetSuccess": "Reset was successful",
+"RegisterSuccess": "Welcome! Registration successful",
 "RoomLoginMsg": "Join Room",
 "RoomPasswordError": "Incorrect room name or password",
 "RoomNotCreatedError": "Room has not been opened for guests by the moderator yet",
