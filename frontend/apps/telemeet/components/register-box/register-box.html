@@ -59,7 +59,7 @@ span#error {
 span#otp, span#password {
     display: flex;
     flex-direction: row;
-    padding-top: 10px;
+    padding-top: 0px;
     padding-bottom: 0px;
 }
 
@@ -91,7 +91,11 @@ span#otp > div#otp_help_and_input > input {
 
 {{{styleBody}}}
 
-<div id="container"><form spellcheck="false" onsubmit="monkshu_env.components['register-box'].registerOrUpdate(this); return false;">
+<script type="module">
+    import {password_box} from "./components/password-box/password-box.mjs"; 
+</script>
+
+<div id="container">
 <span id="error">{{i18n.RegisterError}}</span>
 <input type="text" id="name" placeholder="{{i18n.Name}}" value="{{name}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
@@ -100,10 +104,10 @@ span#otp > div#otp_help_and_input > input {
 <input type="text" id="org" placeholder="{{i18n.Org}}" value="{{org}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
 <span id="password">
-    <input type="password" id="pass" placeholder="{{Password}}" required minlength="8" 
-        oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
-    <input type="password" id="pass" placeholder="{{PasswordAgain}}" required minlength="8" 
-        oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
+    <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass1" placeholder="{{Password}}" 
+        required="true" minlength="8" customValidity="{{i18n.FillField}}"></password-box>
+    <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass2" placeholder="{{PasswordAgain}}" 
+        required="true" minlength="8" customValidity="{{i18n.FillField}}"></password-box>
 </span>
 <span id="otp">
     <img src="{{totpQRCodeData}}">
@@ -114,5 +118,5 @@ span#otp > div#otp_help_and_input > input {
             onkeyup="if (event.keyCode == 13) monkshu_env.components['register-box'].getShadowRootByContainedElement(this).querySelector('#submit').click();">
     </div>
 </span>
-<button id="submit">{{Submit}}</button>
-</form></div>
+<button id="submit" onclick="monkshu_env.components['register-box'].registerOrUpdate(this);">{{Submit}}</button>
+</div>

@@ -7,9 +7,10 @@ const BACKEND = "http://localhost:9090";
 const APP_NAME = "telemeet";
 const APP_PATH = `${FRONTEND}/apps/${APP_NAME}`;
 const API_PATH = `${BACKEND}/apps/${APP_NAME}`;
+const COMPONENTS_PATH = `${FRONTEND}/apps/${APP_NAME}/components`;
 
 export const APP_CONSTANTS = {
-    FRONTEND, BACKEND, APP_PATH, APP_NAME, 
+    FRONTEND, BACKEND, APP_PATH, APP_NAME, COMPONENTS_PATH,
     INDEX_HTML: APP_PATH+"/index.html",
     MAIN_HTML: APP_PATH+"/main.html",
     LOGIN_HTML: APP_PATH+"/login.html",

@@ -18,11 +18,13 @@ async function elementConnected(element) {
 
 async function signin(signInButton) {	
 	const shadowRoot = login_box.getShadowRootByContainedElement(signInButton); _hideErrors(shadowRoot);
-	const userid = shadowRoot.getElementById("userid").value;
-	const pass = shadowRoot.getElementById("pass").value;
-	const otp = shadowRoot.getElementById("otp").value;
+	if (!_validateForm(shadowRoot)) return;	// HTML5 validation failed
+
+	const userid = shadowRoot.querySelector("#userid").value;
+	const pass = shadowRoot.querySelector("#pass").value;
+	const otp = shadowRoot.querySelector("#otp").value;
 	const routeOnSuccess = login_box.getHostElement(signInButton).getAttribute("routeOnSuccess");
-		
+
 	_handleLoginResult(await loginmanager.signin(userid, pass, otp), shadowRoot, routeOnSuccess);
 }
 
@@ -32,6 +34,14 @@ function resetAccount(element) {
 	shadowRoot.getElementById("notifier2").style.display = "inline";
 
 	loginmanager.reset(shadowRoot.getElementById("userid").value);
+}
+
+function _validateForm(shadowRoot) {
+	const userid = shadowRoot.querySelector("input#userid"), pass = shadowRoot.querySelector("#pass"), otp = shadowRoot.querySelector("#otp");
+	if (!userid.checkValidity()) {userid.reportValidity(); return false;}
+	if (!pass.checkValidity()) {pass.reportValidity(); return false;}
+	if (!otp.checkValidity()) {otp.reportValidity(); return false;}
+	return true;
 }
 
 function _hideErrors(shadowRoot) {

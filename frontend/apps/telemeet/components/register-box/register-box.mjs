@@ -39,15 +39,13 @@ async function initialRender(element) {
 }
 
 async function registerOrUpdate(element) {	
+	const shadowRoot = register_box.getShadowRootByContainedElement(element); if (!_validateForm(shadowRoot)) return;
 	const id_old = register_box.getHostElement(element).getAttribute("email");
-	const shadowRoot = register_box.getShadowRootByContainedElement(element); 
 	const memory = register_box.getMemoryByContainedElement(element);
-
-	if (!_doPasswordsMatch(shadowRoot)) {shadowRoot.querySelector("span#error").style.display = "inline"; return;}
 
 	const nameSelector = shadowRoot.querySelector("input#name"); const name = nameSelector.value;
 	const idSelector = shadowRoot.querySelector("input#id"); const id = idSelector.value;
-	const passSelector = shadowRoot.querySelector("input#pass"); const pass = passSelector.value;
+	const passSelector = shadowRoot.querySelector("password-box#pass1"); const pass = passSelector.value;
 	const orgSelector = shadowRoot.querySelector("input#org"); const org = orgSelector.value;
 	const totpCodeSelector = shadowRoot.querySelector("input#otp"); const totpCode = totpCodeSelector.value && totpCodeSelector.value != ""?totpCodeSelector.value:null;
 	const routeOnSuccess = register_box.getHostElement(element).getAttribute("routeOnSuccess");
@@ -56,9 +54,25 @@ async function registerOrUpdate(element) {
 	else router.loadPage(routeOnSuccess, {showDialog: {message: await i18n.get(id_old?"ResetSuccess":"RegisterSuccess")}});
 }
 
+function _validateForm(shadowRoot) {
+	const name = shadowRoot.querySelector("input#name"), id = shadowRoot.querySelector("input#id"),
+		pass1 = shadowRoot.querySelector("password-box#pass1"), pass2 = shadowRoot.querySelector("password-box#pass2"),
+		org = shadowRoot.querySelector("input#org"), otp = shadowRoot.querySelector("input#otp"); 
+
+	if (!name.checkValidity()) {name.reportValidity(); return false;}
+	if (!id.checkValidity()) {id.reportValidity(); return false;}
+	if (!pass1.checkValidity()) {pass1.reportValidity(); return false;}
+	if (!pass2.checkValidity()) {pass2.reportValidity(); return false;}
+	if (!org.checkValidity()) {org.reportValidity(); return false;}
+	if (!otp.checkValidity()) {otp.reportValidity(); return false;}
+	if (!_doPasswordsMatch(shadowRoot)) {shadowRoot.querySelector("span#error").style.display = "inline"; return false;}
+
+	return true;
+}
+
 function _doPasswordsMatch(shadowRoot) {
-	const passSelector = shadowRoot.querySelectorAll("input#pass");
-	return passSelector[0].value == passSelector[1].value;
+	const pass1 = shadowRoot.querySelector("password-box#pass1"), pass2 = shadowRoot.querySelector("password-box#pass2")
+	return pass1.value == pass2.value;
 }
 
 function _getTOTPRandomKey() {
