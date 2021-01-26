@@ -7,6 +7,7 @@ import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
+import { APP_CONSTANTS } from "./constants.mjs";
 
 const init = async _ => {
 	window.APP_CONSTANTS = (await import ("./constants.mjs")).APP_CONSTANTS;
@@ -17,7 +18,7 @@ const init = async _ => {
 }
 
 const main = async _ => {
-	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER); await _addPageLoadInterceptors();
+	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER); await _addPageLoadInterceptors(); await _readConfig();
 	const decodedURL = new URL(router.decodeURL(window.location.href)), justURL = decodedURL.href.split("?")[0];
 
 	if (justURL == APP_CONSTANTS.INDEX_HTML) {
@@ -28,6 +29,12 @@ const main = async _ => {
 		if (decodedURL.toString() == router.getLastSessionURL().toString()) router.reload();
 		else router.loadPage(decodedURL.href);
 	} else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
+}
+
+
+async function _readConfig() {
+	const conf = await(await fetch(`${APP_CONSTANTS.APP_PATH}/conf/app.json`)).json();
+	for (const key of Object.keys(conf)) APP_CONSTANTS[key] = conf[key];
 }
 
 async function _addPageLoadInterceptors() {

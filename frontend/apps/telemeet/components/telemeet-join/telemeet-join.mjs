@@ -6,6 +6,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {session} from "/framework/js/session.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
+import {loginmanager} from "../../js/loginmanager.mjs";
 
 const roomExitListeners = []; let videoOn = false; let id;
 
@@ -60,13 +61,27 @@ async function joinRoom(element) {
 	}
 
 	if (result) {	// open firewall and join the room
-		if (await _operateFirewall("allow", enterOnly)) {
+		if (await _operateFirewall("allow", enterOnly)) {	// room created, add listeners to delete it on close and logouts
+			let roomClosed = false;	// room is open now
+
 			const exitListener = (isGuest, isModerator, room, pass) => {	// delete the room, close FW on moderator exit
 				roomExitListeners.splice(roomExitListeners.indexOf(exitListener), 1);
+				if (roomClosed) return;	// already closed
 				if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", 
 					{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
 				_operateFirewall("disallow", enterOnly); if (videoOn) _startVideo(shadowRoot);
+				roomClosed = true;
 			}; roomExitListeners.push(exitListener);
+
+			loginmanager.addLogoutListener(_=>{	// delete room on session timeout, logout etc
+				if (roomClosed) return;	// already closed
+				const isGuest = !result.isModerator, isModerator = result.isModerator, room = roomName, pass = roomPass;
+				if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", 
+					{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
+				_operateFirewall("disallow", enterOnly);
+				roomClosed = true;
+			});
+
 			_openTelemeet(result.url, roomPass, element, enterOnly, result.isModerator);
 		} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
