@@ -7,7 +7,6 @@ import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
-import { APP_CONSTANTS } from "./constants.mjs";
 
 const init = async _ => {
 	window.APP_CONSTANTS = (await import ("./constants.mjs")).APP_CONSTANTS;
@@ -17,17 +16,17 @@ const init = async _ => {
 	securityguard.setCurrentRole(securityguard.getCurrentRole() || APP_CONSTANTS.GUEST_ROLE);
 }
 
-const main = async _ => {
+const main = async (desiredURL, desiredData) => {
 	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER); await _addPageLoadInterceptors(); await _readConfig();
-	const decodedURL = new URL(router.decodeURL(window.location.href)), justURL = decodedURL.href.split("?")[0];
+	const decodedURL = new URL(desiredURL || router.decodeURL(window.location.href)), justURL = decodedURL.href.split("?")[0];
 
 	if (justURL == APP_CONSTANTS.INDEX_HTML) {
 		const params = decodedURL.searchParams; const test = params.get("join");
 		if (test || test == "") router.loadPage(`${APP_CONSTANTS.LOGIN_ROOM_HTML}?room=${test}&name=${params.get("name")||""}&pass=${params.get("pass")||""}`);
 		else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 	} else if (securityguard.isAllowed(justURL)) {
-		if (decodedURL.toString() == router.getLastSessionURL().toString()) router.reload();
-		else router.loadPage(decodedURL.href);
+		if (router.getLastSessionURL() && decodedURL.toString() == router.getLastSessionURL().toString()) router.reload();
+		else router.loadPage(decodedURL.href, desiredData);
 	} else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 }
 
@@ -36,6 +35,7 @@ const interceptPageLoadData = _ => router.addOnLoadPageData("*", (data, _url) =>
 async function _readConfig() {
 	const conf = await(await fetch(`${APP_CONSTANTS.APP_PATH}/conf/app.json`)).json();
 	for (const key of Object.keys(conf)) APP_CONSTANTS[key] = conf[key];
+	LOG.info(JSON.stringify(APP_CONSTANTS));
 }
 
 async function _addPageLoadInterceptors() {

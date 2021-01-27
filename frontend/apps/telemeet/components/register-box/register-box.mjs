@@ -9,7 +9,6 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {router} from "/framework/js/router.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
-import { APP_CONSTANTS } from "../../js/constants.mjs";
 
 async function elementConnected(element) {
 	const data = {};

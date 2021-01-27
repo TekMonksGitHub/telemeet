@@ -21,6 +21,7 @@ export const i18n = {
 "Back" : "返回",
 "Home" : "返回主页",
 "LoginMsg": "请登录",
+"ReloginMsg": "Relogin - Logged out due to inactivity",
 "RegisterMsg": "Customer Registration",
 "ResetMsg": "Reset Profile",
 "ResetSuccess": "Reset was successful",

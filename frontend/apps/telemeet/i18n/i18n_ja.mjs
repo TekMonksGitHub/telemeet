@@ -21,6 +21,7 @@ export const i18n = {
 "Back" : "バック",
 "Home" : "ホームに戻る",
 "LoginMsg": "ログインしてください",
+"ReloginMsg": "Relogin - Logged out due to inactivity",
 "RegisterMsg": "Customer Registration",
 "ResetMsg": "Reset Profile",
 "ResetSuccess": "Reset was successful",

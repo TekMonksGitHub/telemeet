@@ -157,7 +157,8 @@ span#signin > span > a {
 </div>
 
 <div class="lgbox">
-	<span><br><br>{{i18n.LoginMsg}}<br><br></span>
+	{{#relogin_due_to_timeout}}<span><br><br>{{i18n.ReloginMsg}}<br><br></span>{{/relogin_due_to_timeout}}
+	{{^relogin_due_to_timeout}}<span><br><br>{{i18n.LoginMsg}}<br><br></span>{{/relogin_due_to_timeout}}
 	<login-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" routeOnSuccess="./main.html"
 		minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}"></login-box>
 </div>

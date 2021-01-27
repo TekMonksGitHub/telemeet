@@ -21,6 +21,7 @@ export const i18n = {
 "Back" : "กลับไป",
 "Home" : "กลับบ้าน",
 "LoginMsg": "กรุณาเข้าสู่ระบบ",
+"ReloginMsg": "Relogin - Logged out due to inactivity",
 "RegisterMsg": "Customer Registration",
 "ResetMsg": "Reset Profile",
 "ResetSuccess": "Reset was successful",

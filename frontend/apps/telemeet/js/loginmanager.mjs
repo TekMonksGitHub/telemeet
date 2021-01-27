@@ -68,14 +68,16 @@ async function changepassword(id, pass) {
 
 const addLogoutListener = listener => logoutListeners.push(listener);
 
-async function logout() {
+async function logout(dueToTimeout) {
     for (const listener of logoutListeners) await listener();
 
     const savedLang = session.get($$.MONKSHU_CONSTANTS.LANG_ID);
     _stoptAutoLogoutTimer(); session.destroy(); 
     securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
     session.set($$.MONKSHU_CONSTANTS.LANG_ID, savedLang);
-	application.main();
+    
+    if (dueToTimeout) application.main(APP_CONSTANTS.LOGIN_HTML, {relogin_due_to_timeout:true}); 
+    else application.main(APP_CONSTANTS.LOGIN_HTML);
 }
 
 async function getProfileData(id) {
@@ -89,7 +91,7 @@ function startAutoLogoutTimer() {
     if (!session.get(APP_CONSTANTS.USERID)) return; // not logged in
     
     const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
-    const resetTimer = _=> {_stoptAutoLogoutTimer(); currTimeout = setTimeout(_=>logout(), APP_CONSTANTS.TIMEOUT);}
+    const resetTimer = _=> {_stoptAutoLogoutTimer(); currTimeout = setTimeout(_=>logout(true), APP_CONSTANTS.TIMEOUT);}
     for (const event of events) {document.addEventListener(event, resetTimer);}
     resetTimer();   // start the timing
 }

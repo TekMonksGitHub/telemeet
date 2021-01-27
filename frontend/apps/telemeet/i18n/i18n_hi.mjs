@@ -21,6 +21,7 @@ export const i18n = {
 "Back" : "वापस",
 "Home" : "घर चलें",
 "LoginMsg": "लॉगिन कीजिये",
+"ReloginMsg": "Relogin - Logged out due to inactivity",
 "RegisterMsg": "Customer Registration",
 "ResetMsg": "Reset Profile",
 "ResetSuccess": "Reset was successful",
