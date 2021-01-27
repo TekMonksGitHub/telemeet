@@ -41,7 +41,6 @@ export const APP_CONSTANTS = {
     BCRYPT_SALT: "$2a$10$VFyiln/PpFyZc.ABoi4ppf",
     USERID: "userid",
     PWPH: "pwph",
-    MIN_PW_LENGTH: 10,
     TIMEOUT: 600000,
     USERNAME: "username",
     USERORG: "userorg",

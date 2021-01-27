@@ -22,6 +22,7 @@ async function elementConnected(element) {
 	data.Password = await i18n.get(element.getAttribute("type") == "reset"?"NewPassword":"Password");
 	data.PasswordAgain = await i18n.get(element.getAttribute("type") == "reset"?"NewPasswordAgain":"PasswordAgain");
 	data.Submit = await i18n.get(element.getAttribute("type") == "reset"?"Modify":"Register");
+	data.minlength = element.getAttribute("minlength");
 	if (element.getAttribute("email") && element.getAttribute("type") == "reset") 
 		await _checkAndFillAccountProfile(data, element.getAttribute("email"));
 

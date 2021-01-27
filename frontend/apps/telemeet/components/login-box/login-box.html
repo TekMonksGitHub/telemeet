@@ -89,7 +89,7 @@ span#notifier>span:hover {
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')"
     required>
 <password-box style="width:90%; padding-top: 20px;" id="pass" placeholder="{{i18n.Password}}" 
-    required="true" minlength="8" customValidity="{{i18n.FillField}}"></password-box>
+    required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
 <input type="text" id="otp" placeholder="{{i18n.Otp}}" 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')"
     required

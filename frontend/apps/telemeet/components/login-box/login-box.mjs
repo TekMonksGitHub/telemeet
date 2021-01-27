@@ -10,6 +10,7 @@ async function elementConnected(element) {
 	let data = {};
 
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
+	data.minlength = element.getAttribute("minlength");
 	
 	if (element.id) {
 		if (!login_box.datas) login_box.datas = {}; login_box.datas[element.id] = data;

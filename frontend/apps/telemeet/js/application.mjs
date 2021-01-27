@@ -31,6 +31,7 @@ const main = async _ => {
 	} else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 }
 
+const interceptPageLoadData = _ => router.addOnLoadPageData("*", (data, _url) => data.APP_CONSTANTS = APP_CONSTANTS);
 
 async function _readConfig() {
 	const conf = await(await fetch(`${APP_CONSTANTS.APP_PATH}/conf/app.json`)).json();
@@ -47,4 +48,4 @@ async function _addPageLoadInterceptors() {
 }
 
 
-export const application = {init, main};
+export const application = {init, main, interceptPageLoadData};

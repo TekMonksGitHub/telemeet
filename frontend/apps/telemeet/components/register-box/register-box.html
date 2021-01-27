@@ -105,9 +105,9 @@ span#otp > div#otp_help_and_input > input {
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
 <span id="password">
     <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass1" placeholder="{{Password}}" 
-        required="true" minlength="8" customValidity="{{i18n.FillField}}"></password-box>
+        required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
     <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass2" placeholder="{{PasswordAgain}}" 
-        required="true" minlength="8" customValidity="{{i18n.FillField}}"></password-box>
+        required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
 </span>
 <span id="otp">
     <img src="{{totpQRCodeData}}">

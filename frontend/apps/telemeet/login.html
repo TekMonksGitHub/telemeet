@@ -10,15 +10,15 @@ body {
 }
 
 body::after {
-  content: "";
-  background: url(./img/logob.png);
-  background-size: auto 100%;
-  width: 100%;
-  height: 100%;
-  background-repeat: no-repeat;
-  opacity: 0.05;
-  position: absolute;
-  z-index: -1;   
+	content: "";
+	background: url(./img/logob.png);
+	background-size: auto 100%;
+	width: 100%;
+	height: 100%;
+	background-repeat: no-repeat;
+	opacity: 0.05;
+	position: absolute;
+	z-index: -1;   
 }
 
 .lgbox {
@@ -158,7 +158,8 @@ span#signin > span > a {
 
 <div class="lgbox">
 	<span><br><br>{{i18n.LoginMsg}}<br><br></span>
-	<login-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" routeOnSuccess="./main.html"></login-box>
+	<login-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" routeOnSuccess="./main.html"
+		minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}"></login-box>
 </div>
 
 <div class="langbox">

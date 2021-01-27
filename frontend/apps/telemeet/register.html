@@ -159,7 +159,8 @@ span#signin > span > a {
 
 <div class="lgbox">
 	<span><br><br>{{i18n.RegisterMsg}}<br><br></span>
-	<register-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" routeOnSuccess="./main.html" type="register"></register-box>
+	<register-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" 
+		routeOnSuccess="./main.html" type="register" minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}"></register-box>
 </div>
 
 <div class="langbox">
