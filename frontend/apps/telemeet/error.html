@@ -5,16 +5,18 @@
 body {
 	margin: 0; padding: 0;
 	font-family: 'Raleway';
-	background-color: rgb(79, 180, 237);
+	background-color: #333333;
 	min-height: 600px;
 }
 
 body::after {
 	content: "";
-	background: url(./img/logob.png);
+	background: url(./img/logob.svg);
 	background-size: auto 100%;
 	width: 100%;
 	height: 100%;
+	top: -100px;
+	left: -200px;
 	background-repeat: no-repeat;
 	opacity: 0.05;
 	position: absolute;
@@ -23,20 +25,20 @@ body::after {
 
 .lgbox {
 	position: absolute;
-	top: max(80px, calc(50% - 22%));
-	left: max(400px, calc(70% - 160px));
-	width: 320px;
 	background-color: #ffffff;
 	border-radius: 20px;
-	box-shadow: -2px 6px 53px -23px rgba(0,0,0,0.75);
+	box-shadow: -2px 6px 53px -23px rgba(209, 209, 209, 0.75);
 	padding: 10px 30px 10px 30px;
 	text-align: center;
 	font-size: smaller;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
 }
 
 div.lgbox > span {
-	font-weight: 600;
-	font-size: small;
+	font-weight: 400;
+	font-size: larger;
 }
 
 .langbox {
@@ -57,42 +59,6 @@ a:link {text-decoration:none; color:black;}    /* unvisited link */
 a:visited {text-decoration:none;} /* visited link */
 a:hover {text-decoration:underline;}   /* mouse over link */
 a:active {text-decoration:underline;}  /* selected link */
-
-.advtextbox{
-	position: absolute;
-	top: calc(50% - 20%);
-	left: 10%;
-	width: 400px;
-	color: #ffffff;
-	text-align: center;
-}
-
-.advtextbox > h1 {
-	font-weight: 250;
-	font-family: 'Raleway';
-}
-
-.advtextbox > h2 {
-	font-weight: 250;
-	font-family: 'Raleway';
-	font-size: medium;
-}
-
-.advtextbox > p {
-	font-weight: 400;
-	font-family: 'Raleway';
-	font-size: medium;
-	background-color: #ffffff;
-	color: black;
-	border-radius: 10px;
-	padding: 10px 5px 10px 5px;
-	width: 120px;
-	left: calc(50% - 60px);
-	position: relative;
-	font-size: smaller;
-	margin-top: 30px;
-	cursor: default;
-}
 
 img.logo {
 	top: 40px;
@@ -124,6 +90,29 @@ span#signin > span > a {
 	text-decoration: none;
 	color: inherit;
 }
+
+button {
+    width: 50%;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border-style: none;
+    outline: none;
+    text-align: center;
+    background-color: rgb(51, 204, 102);
+    color: white;
+    position: relative;
+    margin: 30px 0% 20px 0%;
+    font-family: inherit;
+    font-size: inherit;
+    text-transform: uppercase;
+}
+
+button:hover {
+    filter: brightness(98%);
+    transition: all 0.3s ease;
+}
 </style>
 
 <!doctype html>
@@ -150,16 +139,9 @@ span#signin > span > a {
 	<span><a href="{{#_org_monkshu_makeLink}}./login.html{{/_org_monkshu_makeLink}}">{{i18n.SignIn}}</a></span>
 </span>
 
-<div class="advtextbox">
-	<h1>{{i18n.logintagline}}</h1>
-	<h2>{{i18n.loginsubtag}}</h2>
-	<p onclick="window.open('http://teleworkr.com', '_blank')">{{i18n.learn}}</p>
-</div>
-
 <div class="lgbox">
-	<span><br><br>{{i18n.LoginMsg}}<br><br></span>
-	<login-box roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" routeOnSuccess="./main.html"
-		minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}"></login-box>
+	<span><br><br>{{error}}<br><br></span>
+	<button onclick="window.location='{{link}}'">{{button}}</button>
 </div>
 
 <div class="langbox">

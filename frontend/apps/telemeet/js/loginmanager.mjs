@@ -2,6 +2,7 @@
  * (C) 2018 TekMonks. All rights reserved.
  * License: MIT - see enclosed license.txt file.
  */
+import {i18n} from "/framework/js/i18n.mjs";
 import {application} from "./application.mjs";
 import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
@@ -76,7 +77,8 @@ async function logout(dueToTimeout) {
     securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
     session.set($$.MONKSHU_CONSTANTS.LANG_ID, savedLang);
     
-    if (dueToTimeout) application.main(APP_CONSTANTS.LOGIN_HTML, {relogin_due_to_timeout:true}); 
+    if (dueToTimeout) application.main(APP_CONSTANTS.ERROR_HTML, {error: await i18n.get("Timeout_Error"), 
+        button: await i18n.get("Relogin"), link: router.encodeURL(APP_CONSTANTS.LOGIN_HTML)}); 
     else application.main(APP_CONSTANTS.LOGIN_HTML);
 }
 

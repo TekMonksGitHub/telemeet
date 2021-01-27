@@ -35,7 +35,6 @@ const interceptPageLoadData = _ => router.addOnLoadPageData("*", (data, _url) =>
 async function _readConfig() {
 	const conf = await(await fetch(`${APP_CONSTANTS.APP_PATH}/conf/app.json`)).json();
 	for (const key of Object.keys(conf)) APP_CONSTANTS[key] = conf[key];
-	LOG.info(JSON.stringify(APP_CONSTANTS));
 }
 
 async function _addPageLoadInterceptors() {
