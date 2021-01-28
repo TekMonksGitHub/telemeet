@@ -12,6 +12,11 @@ async function changeStatus(status) {
     const req = {id: session.get(APP_CONSTANTS.USERID), status};
     const resp = await apiman.rest(APP_CONSTANTS.API_STATUS, "POST", req, true, false);
     if (!(resp && resp.result)) LOG.error("Status update failed");
+    else switch (status) {
+        case "Working": document.querySelector("#img").style.boxShadow = "1px 1px 20px -3px #41cf70"; break;
+        case "Break": document.querySelector("#img").style.boxShadow = "1px 1px 20px -3px #bdbd00"; break;
+        case "Offline": document.querySelector("#img").style.boxShadow = "1px 1px 20px -3px #cc0000"; break;
+    }
 }
 
 async function changePassword(_element) {
