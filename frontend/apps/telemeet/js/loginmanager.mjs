@@ -9,7 +9,7 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-let currTimeout; let logoutListeners = [];
+let currTimeout, logoutListeners = [];
 
 async function signin(id, pass, otp) {
     const pwph = `${id} ${pass}`;
@@ -24,7 +24,7 @@ async function signin(id, pass, otp) {
                 session.set(APP_CONSTANTS.USERNAME, resp.name);
                 session.set(APP_CONSTANTS.USERORG, resp.org);
                 securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
-                startAutoLogoutTimer();
+                router.addOnLoadPage("*", startAutoLogoutTimer); 
                 resolve(true);
             } else {LOG.error(`Login failed for ${id}`); resolve(false);}
         });
@@ -46,7 +46,7 @@ async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCod
                 session.set(APP_CONSTANTS.USERNAME, name);
                 session.set(APP_CONSTANTS.USERORG, org);
                 securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
-                startAutoLogoutTimer();
+                router.addOnLoadPage("*", startAutoLogoutTimer); 
                 resolve(true);
             } else {LOG.error(`${old_id?"Update":"Registration"} failed for ${id}`); resolve(false);}
         });
@@ -73,7 +73,7 @@ async function logout(dueToTimeout) {
     for (const listener of logoutListeners) await listener();
 
     const savedLang = session.get($$.MONKSHU_CONSTANTS.LANG_ID);
-    _stoptAutoLogoutTimer(); session.destroy(); 
+    _stopAutoLogoutTimer(); session.destroy(); 
     securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
     session.set($$.MONKSHU_CONSTANTS.LANG_ID, savedLang);
     
@@ -88,23 +88,21 @@ async function getProfileData(id) {
 }
 
 function startAutoLogoutTimer() {
-    router.addOnLoadPage(startAutoLogoutTimer);
-
     if (!session.get(APP_CONSTANTS.USERID)) return; // not logged in
     
     const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
-    const resetTimer = _=> {_stoptAutoLogoutTimer(); currTimeout = setTimeout(_=>logout(true), APP_CONSTANTS.TIMEOUT);}
+    const resetTimer = _=> {_stopAutoLogoutTimer(); currTimeout = setTimeout(_=>logout(true), APP_CONSTANTS.TIMEOUT);}
     for (const event of events) {document.addEventListener(event, resetTimer);}
     resetTimer();   // start the timing
+}
+
+function _stopAutoLogoutTimer() {
+    if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;}
 }
 
 async function checkResetSecurity() {
     const id = (await router.getPageData(router.getCurrentURL())).url.e;
     if (!id || id == "") router.doIndexNavigation();
-}
-
-function _stoptAutoLogoutTimer() {
-    if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;}
 }
 
 export const loginmanager = {signin, reset, registerOrUpdate, logout, changepassword, startAutoLogoutTimer, addLogoutListener, getProfileData, checkResetSecurity}
