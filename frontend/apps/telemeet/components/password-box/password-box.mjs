@@ -29,6 +29,12 @@ async function elementConnected(element) {
 
 const elementRendered = async element => _attachFormValidationControls(element);
 
+function onKeyUp(element, event) {
+	const hostElement = password_box.getShadowRootByContainedElement(element).host;
+	hostElement.value = element.value;
+	if (hostElement.getAttribute("onkeyup")) eval(hostElement.getAttribute("onkeyup"));
+}
+
 function _attachFormValidationControls(element) {
 	const inputElement = password_box.getShadowRootByHostId(element.id).querySelector("input#pwinput");
 
@@ -41,5 +47,5 @@ function _attachFormValidationControls(element) {
 	element.getValidationMessage = _=> inputElement.validationMessage;
 }
 
-export const password_box = {trueWebComponentMode: true, elementConnected, elementRendered}
+export const password_box = {trueWebComponentMode: true, elementConnected, elementRendered, onKeyUp}
 monkshu_component.register("password-box", `${APP_CONSTANTS.COMPONENTS_PATH}/password-box/password-box.html`, password_box);
