@@ -42,6 +42,7 @@ export const i18n = {
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
 "PWCHANGEFAILED": "Password change failed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
+"PWCHANGED": "Password changed.",
 "ChangePassword": "Change password",
 "ChangePhome": "Change phone",
 "BadLogin" : "登陆无效",

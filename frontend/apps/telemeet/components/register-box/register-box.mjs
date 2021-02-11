@@ -49,9 +49,10 @@ async function registerOrUpdate(element) {
 	const orgSelector = shadowRoot.querySelector("input#org"); const org = orgSelector.value;
 	const totpCodeSelector = shadowRoot.querySelector("input#otp"); const totpCode = totpCodeSelector.value && totpCodeSelector.value != ""?totpCodeSelector.value:null;
 	const routeOnSuccess = register_box.getHostElement(element).getAttribute("routeOnSuccess");
+	const dataOnSuccess = JSON.parse(register_box.getHostElement(element).getAttribute("dataOnSuccess")||"{}");
 	
 	if (!await loginmanager.registerOrUpdate(id_old, name, id, pass, org, totpCode?memory.totpKey:null, totpCode)) shadowRoot.querySelector("span#error").style.display = "inline";
-	else router.loadPage(routeOnSuccess, {showDialog: {message: await i18n.get(id_old?"ResetSuccess":"RegisterSuccess")}});
+	else router.loadPage(routeOnSuccess, dataOnSuccess);
 }
 
 function _validateForm(shadowRoot) {

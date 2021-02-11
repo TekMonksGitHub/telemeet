@@ -41,6 +41,7 @@ export const i18n = {
 "PWNOTSAME": "Passwords are not the same.",
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
 "PWCHANGEFAILED": "Password change failed.",
+"PWCHANGED": "Password changed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
 "ChangePassword": "Change password",
 "ChangePhome": "Change phone",

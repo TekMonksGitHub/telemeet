@@ -46,6 +46,7 @@ export const i18n = {
 "ChangePassword": "Change password",
 "ChangePhome": "Change phone",
 "PWCHANGEFAILED": "Password change failed.",
+"PWCHANGED": "Password changed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
 "Register" : "Register",
 "Modify" : "Modify",
