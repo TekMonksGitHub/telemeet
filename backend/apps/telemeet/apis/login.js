@@ -13,11 +13,11 @@ exports.doService = async jsonReq => {
 	if (result.result) {	// perform second factor
 		result.result = totp.verifyTOTP(result.totpsec, jsonReq.otp);
 		if (!result.result) LOG.error(`Bad OTP given for: ${result.id}`);
-	} else LOG.error(`Bad PWPH, given: ${jsonReq.pwph}`);
+	} else LOG.error(`Bad PWPH, given: ${jsonReq.pwph}, for ID: ${jsonReq.id}`);
 
-	if (result.result) LOG.info(`User logged in: ${result.id}`); else LOG.error(`Bad login for pwph: ${jsonReq.pwph}`);
+	if (result.result) LOG.info(`User logged in: ${result.id}`); else LOG.error(`Bad login for ID: ${jsonReq.id}`);
 
 	return {result: result.result, name: result.name, id: result.id, org: result.org};
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.pwph && jsonReq.otp);
+const validateRequest = jsonReq => (jsonReq && jsonReq.pwph && jsonReq.otp && jsonReq.id);

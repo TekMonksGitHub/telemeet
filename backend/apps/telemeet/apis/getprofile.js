@@ -3,12 +3,14 @@
  */
 const crypt = require(`${CONSTANTS.LIBDIR}/crypt.js`);
 const userid = require(`${APP_CONSTANTS.LIB_DIR}/userid.js`);
+const conf = require(`${APP_CONSTANTS.CONF_DIR}/telemeet.json`);
+const EMAIL_RE = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
 
 exports.doService = async jsonReq => {
 	if (!validateRequest(jsonReq)) {LOG.error("Validation failure."); return CONSTANTS.FALSE_RESULT;}
-    const id = crypt.decrypt(jsonReq.id);
-    if (!id.match(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/)) {
-        LOG.error(`Validation failure for bad email: ${id}`); return CONSTANTS.FALSE_RESULT; }
+    const id = crypt.decrypt(jsonReq.id); const time = crypt.decrypt(jsonReq.time);
+	if (Date.now() - time > conf.reset_expiry_time) {LOG.error(`Reset link timed out for email: ${id}`); return CONSTANTS.FALSE_RESULT;}
+    if (!id.match(EMAIL_RE)) {LOG.error(`Validation failure for bad email: ${id}`); return CONSTANTS.FALSE_RESULT;}
 
 	LOG.info("Got get profile request for ID: " + id);
 
@@ -19,4 +21,4 @@ exports.doService = async jsonReq => {
 	return result;
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.id);
+const validateRequest = jsonReq => (jsonReq && jsonReq.id && jsonReq.time);

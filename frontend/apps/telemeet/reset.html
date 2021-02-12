@@ -116,7 +116,6 @@ img.logo {
 	import {loginmanager} from "./js/loginmanager.mjs"; loginmanager.checkResetSecurity();
 	import {register_box} from "./components/register-box/register-box.mjs"; 
 	import {language} from "./js/language.mjs"; window.language=language;
-	import {router} from "/framework/js/router.mjs"; window.router = router;
 	</script>
 </head>
 
@@ -132,7 +131,7 @@ img.logo {
 <div class="lgbox">
 	<span><br><br>{{i18n.ResetMsg}}<br><br></span>
 	<register-box id="reset" roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" type="reset" email="{{url.e}}" 
-		minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}" routeOnSuccess="./main.html" 
+		time="{{url.t}}" minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}" routeOnSuccess="./main.html" 
 		dataOnSuccess='{"showDialog":{"message": "{{i18n.ResetSuccess}}"}}'></register-box>
 </div>
 

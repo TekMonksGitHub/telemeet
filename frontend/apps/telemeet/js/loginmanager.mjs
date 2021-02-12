@@ -18,7 +18,7 @@ async function signin(id, pass, otp) {
     return new Promise(async (resolve, _reject) => {
         await $$.require(`${APP_CONSTANTS.APP_PATH}/3p/bcrypt.js`);
         dcodeIO.bcrypt.hash(pwph, APP_CONSTANTS.BCRYPT_SALT, async (_err, hash) => {
-            const resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", {pwph: hash, otp}, false, true);
+            const resp = await apiman.rest(APP_CONSTANTS.API_LOGIN, "POST", {pwph: hash, otp, id}, false, true);
             if (resp && resp.result) {
                 session.set(APP_CONSTANTS.USERID, resp.id); 
                 session.set(APP_CONSTANTS.USERNAME, resp.name);
@@ -82,8 +82,8 @@ async function logout(dueToTimeout) {
     else application.main(APP_CONSTANTS.LOGIN_HTML);
 }
 
-async function getProfileData(id) {
-    const resp = await apiman.rest(APP_CONSTANTS.API_GETPROFILE, "GET", {id}, false, true);
+async function getProfileData(id, time) {
+    const resp = await apiman.rest(APP_CONSTANTS.API_GETPROFILE, "GET", {id, time}, false, true);
     if (resp && resp.result) return resp; else return null;
 }
 

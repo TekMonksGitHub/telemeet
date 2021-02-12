@@ -22,8 +22,8 @@ async function elementConnected(element) {
 	data.PasswordAgain = await i18n.get(element.getAttribute("type") == "reset"?"NewPasswordAgain":"PasswordAgain");
 	data.Submit = await i18n.get(element.getAttribute("type") == "reset"?"Modify":"Register");
 	data.minlength = element.getAttribute("minlength");
-	if (element.getAttribute("email") && element.getAttribute("type") == "reset") 
-		await _checkAndFillAccountProfile(data, element.getAttribute("email"));
+	if (element.getAttribute("email") && element.getAttribute("time") && element.getAttribute("type") == "reset") 
+		await _checkAndFillAccountProfile(data, element.getAttribute("email"), element.getAttribute("time"));
 
 	if (element.id) {
 		if (!register_box.datas) register_box.datas = {}; register_box.datas[element.id] = data;
@@ -89,9 +89,9 @@ async function _getTOTPQRCode(key) {
 		`otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
-async function _checkAndFillAccountProfile(data, email, shadowRoot) {
-	const profileData = await loginmanager.getProfileData(email);
-	if (!profileData || !profileData.id) router.router.doIndexNavigation();	// bad profile or hack attempt
+async function _checkAndFillAccountProfile(data, email, time) {
+	const profileData = await loginmanager.getProfileData(email, time);
+	if (!profileData || !profileData.id) router.doIndexNavigation();	// bad profile or hack attempt
 	else Object.assign(data, profileData);
 }
 
