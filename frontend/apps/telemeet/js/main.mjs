@@ -31,10 +31,11 @@ async function changePassword(_element) {
 }
 
 async function showOTPQRCode(_element) {
-    const id = session.get(APP_CONSTANTS.USERID).toString(); const title = await i18n.get("Title");
-    const qrcode = await apiman.rest(APP_CONSTANTS.API_GETQRCODE, "GET", {id, provider: title}, true, false); if (!qrcode || !qrcode.result) return;
-    dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/changephone.html`, true, true, {img:qrcode.img}, "dialog", ["otpcode"], async result => {
-        const otpValidates = await apiman.rest(APP_CONSTANTS.API_VALIDATE_TOTP, "GET", {totpsec: qrcode.totpsec, otp:result.otpcode, id}, true, false);
+    const id = session.get(APP_CONSTANTS.USERID).toString(); 
+    const totpSec = await apiman.rest(APP_CONSTANTS.API_GETTOTPSEC, "GET", {id}, true, false); if (!totpSec || !totpSec.result) return;
+    const qrcode = await _getTOTPQRCode(totpSec.totpsec);
+    dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/changephone.html`, true, true, {img:qrcode}, "dialog", ["otpcode"], async result => {
+        const otpValidates = await apiman.rest(APP_CONSTANTS.API_VALIDATE_TOTP, "GET", {totpsec: totpSec.totpsec, otp:result.otpcode, id}, true, false);
         if (!otpValidates||!otpValidates.result) dialog().error("dialog", await i18n.get("PHONECHANGEFAILED"));
         else dialog().hideDialog("dialog");
     });
@@ -43,6 +44,13 @@ async function showOTPQRCode(_element) {
 function showLoginMessages() {
     const data = router.getCurrentPageData();
     if (data.showDialog) { _showMessage(data.showDialog.message); delete data.showDialog; router.setCurrentPageData(data); }
+}
+
+async function _getTOTPQRCode(key) {
+	const title = await i18n.get("Title");
+	await $$.require("./js/3p/qrcode.min.js");
+	return new Promise(resolve => QRCode.toDataURL(
+		`otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages};

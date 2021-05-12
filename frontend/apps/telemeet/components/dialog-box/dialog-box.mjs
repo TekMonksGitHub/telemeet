@@ -18,7 +18,7 @@ function hideDialog(element) {
     const modalCurtain = shadowRoot.querySelector("div#modalcurtain");
     const dialog = shadowRoot.querySelector("div#dialog");
     dialog.classList.remove("visible"); modalCurtain.classList.remove("visible");
- }
+}
 
 function error(element, msg) {
     const shadowRoot = element instanceof Element ? dialog_box.getShadowRootByContainedElement(element): 

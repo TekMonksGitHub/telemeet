@@ -2,102 +2,39 @@
  * (C) 2015 TekMonks. All rights reserved.
  * See enclosed LICENSE file.
  */
-const bcrypt = require("bcryptjs");
-const sqlite3 = require("sqlite3");
-let usersDB;
+const util = require("util");
+const bcryptjs = require("bcryptjs");
+const db = require(`${APP_CONSTANTS.LIB_DIR}/db.js`);
+const getUserHash = async text => await (util.promisify(bcryptjs.hash))(text, 12);
 
-exports.getUserHash = data => {
-	return new Promise((resolve, reject) => bcrypt.hash(data, APP_CONSTANTS.SALT_PW, (err, hash) => {
-		if (err) reject("BCRYPT internal error."); else {
-			// URL encoding removes characters which are illegal for paths, like "\" or "/" etc.
-			let encoded_hash = encodeURIComponent(hash);
+exports.register = async (id, name, org, pwph, totpSecret, role, approved) => {
+	const existsID = await exports.existsID(id);
+	if (existsID.result) return({result:false}); 
+	const pwphHashed = await getUserHash(pwph);
 
-			// On Windows directory names can't end with the . character. So replace it with %2E
-			// which is its URL encoded notation, if that's the case.
-			if (encoded_hash.substr(-1) == '.')
-				encoded_hash = encoded_hash.substring(0, encoded_hash.length - 1) + '%2E';
-			
-			resolve(encoded_hash);		
-		}
-	}));
+	return {result: await db.runCmd("INSERT INTO users (id, name, org, pwph, totpsec, role, approved) VALUES (?,?,?,?,?,?,?)", 
+		[id, name, org, pwphHashed, totpSecret, role, approved?1:0])};
 }
 
-exports.register = async (id, name, org, pwph, totpSecret) => {
-	return new Promise(async resolve => {
-		const existsID = await exports.existsID(id);
-		if (existsID.result) {resolve({result:false}); return;}
-		pwph = await exports.getUserHash(pwph);
-		const exists = await exports.exists(pwph);
-		if (exists.result) {resolve({result:false}); return;}
-		usersDB.run("INSERT INTO users (id, name, org, pwph, totpsec) VALUES (?,?,?,?,?)", 
-			[id,name,org,pwph,totpSecret], err => err?resolve({result:false, err}):resolve({result:true}));
-	});
+exports.update = async (oldid, id, name, org, pwph, totpSecret, role, approved) => {
+	const pwphHashed = await getUserHash(pwph);
+	return {result: await db.runCmd("UPDATE users SET id=?, name=?, org=?, pwph=?, totpsec=?, role = ?, approved = ? WHERE id=?", 
+		[id, name, org, pwphHashed, totpSecret, role, approved?1:0, oldid])};
 }
 
-exports.update = async (oldid, id, name, org, pwph, totpSecret) => {
-	return new Promise(async resolve => {
-		pwph = await exports.getUserHash(pwph);
-		const exists = await exports.exists(pwph);
-		if (exists.result) {resolve({result:false}); return;}
-		if (totpSecret) usersDB.run("UPDATE users SET id=?, name=?, org=?, pwph=?, totpsec=? WHERE id=?", 
-			[id,name,org,pwph,totpSecret,oldid], err => err?resolve({result:false, err}):resolve({result:true}));
-		else usersDB.run("UPDATE users SET id=?, name=?, org=?, pwph=? WHERE id=?", 
-			[id,name,org,pwph,oldid], err => err?resolve({result:false, err}):resolve({result:true}));
-	});
+exports.login = async (id, pwph) => {
+	const idEntry = await exports.existsID(id); if (!idEntry.result) return {result: false}; else delete idEntry.result;
+	return {result: await (util.promisify(bcryptjs.compare))(pwph, idEntry.pwph), ...idEntry}; 
 }
 
-exports.exists = exports.login = pwph => {
-	return new Promise(resolve => {
-		initDB()
-		.then(_ => exports.getUserHash(pwph))
-		.then(pwph => {
-			usersDB.all("SELECT id, name, org, totpsec FROM users WHERE pwph = ? COLLATE NOCASE;", [pwph], (err, rows) => {
-				if (err || !rows.length) resolve({result: false, err});
-				else resolve({result: true, name: rows[0].name, org: rows[0].org, id: rows[0].id, totpsec: rows[0].totpsec});
-			})
-		})
-		.catch(_ => resolve({result: false}));
-	});
+exports.getTOTPSec = exports.existsID = async id => {
+	const rows = await db.getQuery("SELECT * FROM users WHERE id = ? COLLATE NOCASE", [id]);
+	if (rows && rows.length) return {result: true, ...(rows[0])}; else return {result: false};
 }
 
-exports.existsID = id => {
-	return new Promise(async resolve => {
-		await initDB();
-		usersDB.all("SELECT id, name, org, totpsec FROM users WHERE id = ? COLLATE NOCASE;", [id], (err, rows) => {
-			if (err || !rows.length) resolve({result: false, err});
-			else resolve({result: true, name: rows[0].name, org: rows[0].org, id: rows[0].id, totpsec: rows[0].totpsec});
-		});
-	});
+exports.changepwph = async (id, pwph) => {
+	const pwphHashed = await getUserHash(pwph);
+	return {result: await db.runCmd("UPDATE users SET pwph = ? WHERE id = ? COLLATE NOCASE", [pwphHashed, id])};
 }
 
-exports.changepwph = (id, pwph) => {
-	return new Promise((resolve, _) => {
-		initDB()
-		.then(_ => exports.getUserHash(pwph))
-		.then(pwph => {
-			usersDB.all("UPDATE users SET pwph = ? WHERE id = ?;", [pwph,id], err => {
-				if (err) resolve({result: false, err});
-				else resolve({result: true});
-			})
-		})
-		.catch(_ => resolve({result: false}));
-	});
-}
-
-exports.getTOTPSec = id => {
-	return new Promise(async resolve => {
-		await initDB();
-		usersDB.all("SELECT id, totpsec FROM users WHERE id = ? COLLATE NOCASE;", [id], (err, rows) => {
-			if (err || !rows.length) resolve({result: false, err});
-			else resolve({result: true, totpsec: rows[0].totpsec});
-		});
-	});
-}
-
-function initDB() {
-	return new Promise((resolve, reject) => {
-		if (!usersDB) usersDB = new sqlite3.Database(APP_CONSTANTS.APP_DB, sqlite3.OPEN_READWRITE, err => {
-			if (!err) resolve(); else reject(err);
-		}); else resolve();
-	});
-}
+exports.getUsersForOrg = org => db.getQuery("SELECT * FROM users WHERE org = ? COLLATE NOCASE", [org]);

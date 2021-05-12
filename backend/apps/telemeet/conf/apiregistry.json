@@ -10,6 +10,6 @@
     "/apps/telemeet/changepassword" : "/apis/changepassword.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/telemeet/fwcontrol" : "/apis/fwcontrol.js?key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/telemeet/validatetotp" : "/apis/validatetotp.js?get=true&key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
-    "/apps/telemeet/getqrcode" : "/apis/getqrcode.js?get=true&key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
+    "/apps/telemeet/gettotpsec" : "/apis/gettotpsec.js?get=true&key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/telemeet/getprofile" : "/apis/getprofile.js?get=true&key=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false&addsToken=sub:access"
 }

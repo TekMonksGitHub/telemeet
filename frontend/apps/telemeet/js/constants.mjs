@@ -37,7 +37,7 @@ export const APP_CONSTANTS = {
     API_DELETEROOM: API_PATH+"/deleteroom",
     API_FWCONTROL: API_PATH+"/fwcontrol",
     API_VALIDATE_TOTP: API_PATH+"/validatetotp",
-    API_GETQRCODE: API_PATH+"/getqrcode",
+    API_GETTOTPSEC: API_PATH+"/gettotpsec",
     API_GETPROFILE: API_PATH+"/getprofile",
     BCRYPT_SALT: "$2a$10$VFyiln/PpFyZc.ABoi4ppf",
     USERID: "userid",

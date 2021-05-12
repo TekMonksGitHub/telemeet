@@ -40,18 +40,19 @@ async function initialRender(element) {
 
 async function registerOrUpdate(element) {	
 	const shadowRoot = register_box.getShadowRootByContainedElement(element); if (!_validateForm(shadowRoot)) return;
-	const id_old = register_box.getHostElement(element).getAttribute("email");
 	const memory = register_box.getMemoryByContainedElement(element);
 
 	const nameSelector = shadowRoot.querySelector("input#name"); const name = nameSelector.value;
 	const idSelector = shadowRoot.querySelector("input#id"); const id = idSelector.value;
+	const id_old = register_box.getHostElement(element).getAttribute("email") ? shadowRoot.querySelector("input#oldid").value : undefined;
 	const passSelector = shadowRoot.querySelector("password-box#pass1"); const pass = passSelector.value;
 	const orgSelector = shadowRoot.querySelector("input#org"); const org = orgSelector.value;
 	const totpCodeSelector = shadowRoot.querySelector("input#otp"); const totpCode = totpCodeSelector.value && totpCodeSelector.value != ""?totpCodeSelector.value:null;
 	const routeOnSuccess = register_box.getHostElement(element).getAttribute("routeOnSuccess");
 	const dataOnSuccess = JSON.parse(register_box.getHostElement(element).getAttribute("dataOnSuccess")||"{}");
 	
-	if (!await loginmanager.registerOrUpdate(id_old, name, id, pass, org, totpCode?memory.totpKey:null, totpCode)) shadowRoot.querySelector("span#error").style.display = "inline";
+	if (!await loginmanager.registerOrUpdate(id_old, name, id, pass, org, totpCode?memory.totpKey:null, totpCode)) 
+		shadowRoot.querySelector("span#error").style.display = "inline"; 
 	else router.loadPage(routeOnSuccess, dataOnSuccess);
 }
 

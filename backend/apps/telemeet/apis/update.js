@@ -1,31 +1,30 @@
 /* 
  * (C) 2015 TekMonks. All rights reserved.
  */
-const crypt = require(`${CONSTANTS.LIBDIR}/crypt.js`);
 const totp = require(`${APP_CONSTANTS.LIB_DIR}/totp.js`);
 const userid = require(`${APP_CONSTANTS.LIB_DIR}/userid.js`);
 
 exports.doService = async jsonReq => {
 	if (!validateRequest(jsonReq)) {LOG.error("Validation failure."); return CONSTANTS.FALSE_RESULT;}
-	const old_id = crypt.decrypt(jsonReq.old_id);
-
-	LOG.debug("Got update request for ID: " + old_id);
+	LOG.debug("Got update request for ID: " + jsonReq.old_id);
 
 	if (jsonReq.totpSecret && !totp.verifyTOTP(jsonReq.totpSecret, jsonReq.totpCode)) {
-		LOG.error(`Unable to update: ${jsonReq.name}, ID: ${old_id}, wrong totp code`);
+		LOG.error(`Unable to update: ${jsonReq.name}, ID: ${jsonReq.old_id}, wrong totp code for the new secret.`);
 		return CONSTANTS.FALSE_RESULT;
 	}
 
-	if (old_id.toLowerCase() != jsonReq.id.toLowerCase()) {	// prevent account takeovers
+	if (jsonReq.old_id.toLowerCase() != jsonReq.id.toLowerCase()) {	// prevent account takeovers
 		const checkExists = await userid.existsID(jsonReq.id); if (checkExists && checkExists.result) {
-			LOG.error(`${jsonReq.name}, ID: ${old_id} tried to update their email to another registered user, blocked.`);
+			LOG.error(`${jsonReq.name}, ID: ${jsonReq.old_id} tried to update their email to another registered user, blocked.`);
 			return CONSTANTS.FALSE_RESULT;
-		} else LOG.info(`${jsonReq.name}, ID: ${old_id} is changing their ID to ${jsonReq.id}`);
+		} else LOG.info(`${jsonReq.name}, ID: ${jsonReq.old_id} is changing their ID to ${jsonReq.id}`);
 	}
 
-	const result = await userid.update(old_id, jsonReq.id, jsonReq.name, jsonReq.org, jsonReq.pwph, jsonReq.totpSecret);
+	const idEntry = await userid.existsID(jsonReq.old_id), result = await userid.update(jsonReq.old_id, jsonReq.id, jsonReq.name, 
+		jsonReq.org, jsonReq.pwph, jsonReq.totpSecret||idEntry.totpsec, jsonReq.role||idEntry.role, jsonReq.approved||idEntry.approved);
 
-	if (result.result) LOG.info(`User updated and logged in: ${jsonReq.name}, ID: ${old_id}`); else LOG.error(`Unable to update: ${jsonReq.name}, ID: ${old_id}, DB error`);
+	if (result.result) LOG.info(`User updated and logged in: ${jsonReq.name}, old ID: ${jsonReq.old_id}, new ID: ${jsonReq.id}`); 
+	else LOG.error(`Unable to update: ${jsonReq.name}, ID: ${jsonReq.old_id}, DB error`);
 
 	return {result: result.result};
 }

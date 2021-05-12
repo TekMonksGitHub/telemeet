@@ -101,6 +101,7 @@ span#otp > div#otp_help_and_input > input {
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
 <input type="text" id="id" placeholder="{{i18n.Email}}" value="{{id}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
+<input type="hidden" id="oldid" value="{{id}}">
 <input type="text" id="org" placeholder="{{i18n.Org}}" value="{{org}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
 <span id="password">
