@@ -1,4 +1,5 @@
-/* 
+/**
+ * Validates a request to enter a room given its password.
  * (C) 2020 TekMonks. All rights reserved.
  */
 

@@ -1,4 +1,5 @@
-/* 
+/** 
+ * Sets user's status in the backend DB and memory.
  * (C) 2020 TekMonks. All rights reserved.
  */
 

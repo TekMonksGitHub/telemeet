@@ -1,4 +1,5 @@
-/* 
+/**
+ * Creates a new conference room. 
  * (C) 2020 TekMonks. All rights reserved.
  */
 

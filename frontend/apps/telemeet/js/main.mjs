@@ -41,6 +41,16 @@ async function showOTPQRCode(_element) {
     });
 }
 
+async function changeProfile(_element) {
+    const sessionUser = loginmanager.getSessionUser();
+    dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/resetprofile.html`, true, true, sessionUser, "dialog", 
+            ["name", "id", "org"], async result => {
+        
+        if (await loginmanager.registerOrUpdate(sessionUser.id, result.name, result.id, null, result.org)) dialog().hideDialog("dialog");
+        else dialog().error("dialog", await i18n.get("PROFILECHANGEFAILED"));
+    });
+}
+
 function showLoginMessages() {
     const data = router.getCurrentPageData();
     if (data.showDialog) { _showMessage(data.showDialog.message); delete data.showDialog; router.setCurrentPageData(data); }
@@ -53,4 +63,4 @@ async function _getTOTPQRCode(key) {
 		`otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
-export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages};
+export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile};

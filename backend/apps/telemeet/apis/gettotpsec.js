@@ -1,4 +1,5 @@
-/* 
+/**
+ * Returns TOTP sec for a user given their ID. 
  * (C) 2020 TekMonks. All rights reserved.
  */
 const userid = require(`${APP_CONSTANTS.LIB_DIR}/userid.js`);

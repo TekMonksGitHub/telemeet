@@ -17,6 +17,7 @@ export const APP_CONSTANTS = {
     REGISTER_HTML: APP_PATH+"/register.html",
     LOGIN_ROOM_HTML: APP_PATH+"/loginroom.html",
     ERROR_HTML: APP_PATH+"/error.html",
+    MANAGE_HTML: APP_PATH+"/manage.html",
 
     DIALOGS_PATH: APP_PATH+"/dialogs",
 
@@ -48,7 +49,7 @@ export const APP_CONSTANTS = {
     USER_ROLE: "user",
     GUEST_ROLE: "guest",
     PERMISSIONS_MAP: {
-        user:[window.location.origin, APP_PATH+"/index.html", APP_PATH+"/error.html", APP_PATH+"/main.html", APP_PATH+"/reset.html", APP_PATH+"/register.html", APP_PATH+"/loginroom.html", APP_PATH+"/login.html", $$.MONKSHU_CONSTANTS.ERROR_HTML], 
+        user:[window.location.origin, APP_PATH+"/index.html", APP_PATH+"/error.html", APP_PATH+"/main.html", APP_PATH+"/reset.html", APP_PATH+"/register.html", APP_PATH+"/loginroom.html", APP_PATH+"/login.html", APP_PATH+"/manage.html", $$.MONKSHU_CONSTANTS.ERROR_HTML], 
         guest:[window.location.origin, APP_PATH+"/index.html", APP_PATH+"/error.html", APP_PATH+"/reset.html", APP_PATH+"/register.html", APP_PATH+"/login.html", APP_PATH+"/loginroom.html", $$.MONKSHU_CONSTANTS.ERROR_HTML]
     },
     API_KEYS: {"*":"fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389"},

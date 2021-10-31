@@ -42,9 +42,15 @@ export const i18n = {
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
 "PWCHANGEFAILED": "Password change failed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
+"PROFILECHANGEFAILED": "Profile update failed",
 "PWCHANGED": "Password changed.",
 "ChangePassword": "Change password",
-"ChangePhome": "Change phone",
+"ChangePhone": "Change phone",
+"ChangeProfile": "Change profile",
+"ManageUsers": "Manage users",
+"Working": "Working",
+"OnBreak": "On break",
+"Offline": "Offline",
 "BadLogin" : "登陆无效",
 "Register" : "登陆",
 "Modify" : "Modify",
@@ -68,5 +74,9 @@ export const i18n = {
 "Rename": "重新命名...",
 "File": "档案",
 "Directory": "文件夹",
-"InternalError": "Internal error"
+"InternalError": "Internal error",
+"Edit": "Edit",
+"Delete": "Delete",
+"Approve": "Approved",
+"DeleteError": "Can't delete the user {{id}}, backend returned false."
 }

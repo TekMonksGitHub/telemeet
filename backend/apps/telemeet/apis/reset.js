@@ -1,4 +1,5 @@
 /**
+ * Resets a user ID. Emails them the reset link.
  * (C) 2021 TekMonks. All rights reserved.
  */
 const mustache = require('mustache');

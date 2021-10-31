@@ -16,6 +16,13 @@ exports.register = async (id, name, org, pwph, totpSecret, role, approved) => {
 		[id, name, org, pwphHashed, totpSecret, role, approved?1:0])};
 }
 
+exports.delete = async id => {
+	const existsID = await exports.existsID(id);
+	if (!existsID.result) return({result:false}); 
+
+	return {result: await db.runCmd("DELETE FROM users where id = ?", [id])};
+}
+
 exports.update = async (oldid, id, name, org, pwph, totpSecret, role, approved) => {
 	const pwphHashed = await getUserHash(pwph);
 	return {result: await db.runCmd("UPDATE users SET id=?, name=?, org=?, pwph=?, totpsec=?, role = ?, approved = ? WHERE id=?", 
@@ -37,4 +44,7 @@ exports.changepwph = async (id, pwph) => {
 	return {result: await db.runCmd("UPDATE users SET pwph = ? WHERE id = ? COLLATE NOCASE", [pwphHashed, id])};
 }
 
-exports.getUsersForOrg = org => db.getQuery("SELECT * FROM users WHERE org = ? COLLATE NOCASE", [org]);
+exports.getUsersForOrg = async org => {
+	const users = await db.getQuery("SELECT id, name, org, role, approved FROM users WHERE org = ? COLLATE NOCASE", [org]);
+	if (users && users.length) return {result: true, users}; else return {result: false};
+}

@@ -44,10 +44,16 @@ export const i18n = {
 "PWNOTSAME": "Passwords are not the same.",
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
 "ChangePassword": "Change password",
-"ChangePhome": "Change phone",
+"ChangePhone": "Change phone",
+"ChangeProfile": "Change profile",
+"ManageUsers": "Manage users",
+"Working": "Working",
+"OnBreak": "On break",
+"Offline": "Offline",
 "PWCHANGEFAILED": "Password change failed.",
 "PWCHANGED": "Password changed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
+"PROFILECHANGEFAILED": "Profile update failed",
 "Register" : "Register",
 "Modify" : "Modify",
 "LoginTaken" : "Login ID taken",
@@ -70,5 +76,9 @@ export const i18n = {
 "Rename": "Rename...",
 "File": "File",
 "Directory": "Directory",
-"InternalError": "Internal error"
+"InternalError": "Internal error",
+"Edit": "Edit",
+"Delete": "Delete",
+"Approve": "Approved",
+"DeleteError": "Can't delete the user {{id}}, backend returned false."
 }

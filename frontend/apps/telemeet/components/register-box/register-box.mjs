@@ -1,6 +1,6 @@
 /** 
  * (C) 2018 TekMonks. All rights reserved.
- * License: See enclosed license.txt file.
+ * License: See enclosed license file.
  * 
  * Helps with profile registration as well as resets
  */

@@ -1,4 +1,5 @@
-/* 
+/**
+ * Changes the user's password. 
  * (C) 2020 TekMonks. All rights reserved.
  */
 const userid = require(`${APP_CONSTANTS.LIB_DIR}/userid.js`);

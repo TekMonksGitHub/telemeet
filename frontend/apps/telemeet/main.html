@@ -96,12 +96,12 @@ div#maincontent {
 	<link href="./img/favicon.ico" rel="icon" type="image/x-icon">
 
 	<script type="module">
-	import {main} from "./js/main.mjs"; window.main = main; main.showLoginMessages();
+	import {main} from "./js/main.mjs"; monkshu_env.apps.telemeet.main = main; main.showLoginMessages();
 	import {dialog_box} from "./components/dialog-box/dialog-box.mjs";
 	import {telemeet_join} from "./components/telemeet-join/telemeet-join.mjs";
 	import {span_with_menu} from "./components/span-with-menu/span-with-menu.mjs";
-	import {page_generator} from "./components/page-generator/page-generator.mjs";
-	import {loginmanager} from "./js/loginmanager.mjs"; window.loginmanager = loginmanager;
+	import {page_generator} from "/framework/components/page-generator/page-generator.mjs";
+	import {loginmanager} from "./js/loginmanager.mjs"; monkshu_env.apps.telemeet.loginmanager = loginmanager;
 	</script>
 		
 	<title>{{i18n.Title}}</title>
@@ -113,15 +113,17 @@ div#maincontent {
 	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
 	<span id="img"><img src="./img/person.png"></span>
 	<span-with-menu id="status" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}">{{i18n.MyStatus}}&nbsp;&nbsp;▼
-		<menu-item onclick="main.changeStatus('Working')">Working</menu-item>
-		<menu-item onclick="main.changeStatus('Break')">On Break</menu-item>
-		<menu-item onclick="main.changeStatus('Offline')">Offline</menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Working')">{{i18n.Working}}</menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Break')">{{i18n.OnBreak}}</menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Offline')">{{i18n.Offline}}</menu-item>
 	</span-with-menu>
 	<span-with-menu id="gear" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}"><img src="./img/settings.svg" style="height: 30px;width: 30px;vertical-align: middle;">
-		<menu-item onclick="main.changePassword(this)">Change Password</menu-item>
-		<menu-item onclick="main.showOTPQRCode(this)">Change Phone</menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)">{{i18n.ChangePassword}}</menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)">{{i18n.ChangePhone}}</menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeProfile(this)">{{i18n.ChangeProfile}}</menu-item>
+		<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)">{{i18n.ManageUsers}}</menu-item>
 	</span-with-menu>
-	<span id="signoff"><img src="./img/poweroff.svg" onclick="loginmanager.logout()"></span>
+	<span id="signoff"><img src="./img/poweroff.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()"></span>
 </span>
 
 <div id="maincontent">

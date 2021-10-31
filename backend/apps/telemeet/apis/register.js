@@ -1,4 +1,5 @@
-/* 
+/**
+ * Registers a new user. 
  * (C) 2015 TekMonks. All rights reserved.
  */
 const totp = require(`${APP_CONSTANTS.LIB_DIR}/totp.js`);

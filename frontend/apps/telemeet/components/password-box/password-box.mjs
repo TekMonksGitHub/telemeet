@@ -3,7 +3,7 @@
  * Primarily a UI component.
  *  
  * (C) 2021 TekMonks. All rights reserved.
- * License: MIT - see enclosed license.txt file.
+ * License: See enclosed license file.
  */
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
@@ -29,7 +29,7 @@ async function elementConnected(element) {
 
 const elementRendered = async element => _attachFormValidationControls(element);
 
-function onKeyUp(element, event) {
+function onKeyUp(element, _event) {
 	const hostElement = password_box.getShadowRootByContainedElement(element).host;
 	hostElement.value = element.value;
 	if (hostElement.getAttribute("onkeyup")) eval(hostElement.getAttribute("onkeyup"));

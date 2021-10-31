@@ -1,6 +1,6 @@
 /* 
  * (C) 2018 TekMonks. All rights reserved.
- * License: MIT - see enclosed license.txt file.
+ * License: See enclosed license file.
  */
 import {router} from "/framework/js/router.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";

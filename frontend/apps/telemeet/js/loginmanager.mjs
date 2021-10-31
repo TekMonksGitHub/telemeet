@@ -20,6 +20,7 @@ async function signin(id, pass, otp) {
         session.set(APP_CONSTANTS.USERID, resp.id); 
         session.set(APP_CONSTANTS.USERNAME, resp.name);
         session.set(APP_CONSTANTS.USERORG, resp.org);
+        session.set("__org_telemeet_cuser_pass", pass);
         securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
         router.addOnLoadPage("*", startAutoLogoutTimer); 
         return true;
@@ -29,14 +30,15 @@ async function signin(id, pass, otp) {
 const reset = id => apiman.rest(APP_CONSTANTS.API_RESET, "POST", {id, lang: session.get($$.MONKSHU_CONSTANTS.LANG_ID)});
 
 async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCode, role, approved) {
-    const pwph = `${id} ${pass}`;
+    const pwph = `${id} ${pass||session.get("__org_telemeet_cuser_pass")}`;
 
-    const req = {name, id, pwph, org, totpSecret, totpCode, role, approved}; if (old_id) req.old_id = old_id;
+    const req = {old_id, name, id, pwph, org, totpSecret, totpCode, role, approved}; 
     const resp = await apiman.rest(old_id?APP_CONSTANTS.API_UPDATE:APP_CONSTANTS.API_REGISTER, "POST", req, old_id?true:false, true);
     if (resp && resp.result) {
         session.set(APP_CONSTANTS.USERID, id); 
         session.set(APP_CONSTANTS.USERNAME, name);
         session.set(APP_CONSTANTS.USERORG, org);
+        session.set("__org_telemeet_cuser_pass", pass);
         securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
         router.addOnLoadPage("*", startAutoLogoutTimer); 
         return true;
@@ -71,6 +73,9 @@ async function checkResetSecurity() {
     if (!pageData.url.e || pageData.url.e == "" || !pageData.url.t || pageData.url.e == "") router.doIndexNavigation();
 }
 
+const getSessionUser = _ => { return {id: session.get(APP_CONSTANTS.USERID), name: session.get(APP_CONSTANTS.USERNAME),
+    org: session.get(APP_CONSTANTS.USERORG)} }
+
 async function getProfileData(id, time) {
     const resp = await apiman.rest(APP_CONSTANTS.API_GETPROFILE, "GET", {id, time}, false, true);
     if (resp && resp.result) return resp; else return null;
@@ -94,9 +99,8 @@ function startAutoLogoutTimer() {
     resetTimer();   // start the timing
 }
 
-function _stopAutoLogoutTimer() {
-    if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;}
-}
+const _stopAutoLogoutTimer = _ => { if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;} }
 
 export const loginmanager = {signin, reset, registerOrUpdate, logout, changepassword, startAutoLogoutTimer, 
-    addLogoutListener, getProfileData, checkResetSecurity, approveProfile, getAllUsersFromCurrentOrg, getAllUsersFromCurrentTeam}
+    addLogoutListener, getProfileData, checkResetSecurity, approveProfile, getAllUsersFromCurrentOrg, getAllUsersFromCurrentTeam,
+    getSessionUser}

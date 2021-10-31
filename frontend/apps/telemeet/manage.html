@@ -1,0 +1,132 @@
+<!-- 
+(C) 2020 TekMonks. All rights reserved.
+-->
+<style>
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Raleway';
+}
+
+body::after {
+	content: "";
+	background: url(./img/logob.png);
+	background-size: auto 100%;
+	width: 100%;
+	height: 120%;
+	top: -20%;
+	left: -10%;
+	background-repeat: no-repeat;
+	opacity: 0.05;
+	position: absolute;
+	z-index: -1;
+	bottom: 0;
+}
+
+img#textlogo {
+	top: 30px;
+	left: 20px;
+	position: absolute;
+	height: 16px;
+	width: 100px;
+}
+
+span#middleheader {
+	top: 0px;
+	left: 140px;
+	background-color: #41cf70;
+	position: absolute;
+	width: calc(100% - 140px - 90px);
+	border-radius: 0px 0px 20px 20px;
+	box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.25);
+	text-align: center;
+	color: #FFFFFF;
+	padding: 25px 0px 25px 0px;
+	font-size: larger;
+    cursor: default;
+    user-select: none;
+	display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+span#middleheader > span#title {
+	flex-grow: 1;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+span#middleheader > span#close {
+	right: 20px;
+	font-size: x-large;
+	cursor: default;
+	padding-right: 1em;
+}
+
+span#rightheader {
+	top: 20px;
+	right: 20px;
+	position: absolute;
+	color: #41cf70;
+	font-size: 0.85em;
+	font-weight: 500;
+	font-family: "Raleway";
+}
+
+span#rightheader > span#signoff {
+	padding-right: 20px;
+	vertical-align: middle;
+}
+
+span#rightheader > span#signoff > img {
+	height: 30px;
+	width: 30px;
+	vertical-align: middle;
+}
+
+div#maincontent {
+	position: absolute;
+	top: 78px;
+	height: calc(100% - 80px);
+	width: 100%;
+	margin: 0;
+	padding: 0 4em;
+    box-sizing: border-box;
+}
+
+</style>
+
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="expires" content="-1">
+
+	<link href="./img/favicon.ico" rel="icon" type="image/x-icon">
+
+	<script type="module">
+	import {user_manager} from "./components/user-manager/user-manager.mjs";
+	import {loginmanager} from "./js/loginmanager.mjs"; window.loginmanager = loginmanager;
+	</script>
+		
+	<title>{{i18n.Title}}</title>
+</head>
+
+<body style="margin: 0%">
+<img id="textlogo" src="./img/textlogo.png">
+<span id="middleheader"><span id="title">Manage Users</span><span id="close" onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MAIN_HTML)">X</span></span>
+<span id="rightheader">
+	<span id="signoff"><img src="./img/poweroff.svg" onclick="loginmanager.logout()"></span>
+</span>
+
+<div id="maincontent">
+	<user-manager backendurl="{{APP_CONSTANTS.BACKEND}}/apps/{{APP_CONSTANTS.APP_NAME}}" 
+		org="{{#_org_monkshu_session}}{{APP_CONSTANTS.USERORG}}{{/_org_monkshu_session}}"></user-manager>
+</div>
+
+</body>
+</html>

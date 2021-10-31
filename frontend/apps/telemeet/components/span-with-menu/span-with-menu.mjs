@@ -1,6 +1,6 @@
 /* 
  * (C) 2018 TekMonks. All rights reserved.
- * License: MIT - see enclosed license.txt file.
+ * License: See enclosed license file.
  */
 import {util} from "/framework/js/util.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";

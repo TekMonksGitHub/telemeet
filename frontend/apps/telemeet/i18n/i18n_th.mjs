@@ -42,9 +42,15 @@ export const i18n = {
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
 "PWCHANGEFAILED": "Password change failed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
+"PROFILECHANGEFAILED": "Profile update failed",
 "PWCHANGED": "Password changed.",
 "ChangePassword": "Change password",
-"ChangePhome": "Change phone",
+"ChangePhone": "Change phone",
+"ChangeProfile": "Change profile",
+"ManageUsers": "Manage users",
+"Working": "Working",
+"OnBreak": "On break",
+"Offline": "Offline",
 "BadLogin" : "ลงชื่อเข้าใช้ผิด",
 "Register" : "สมัครสมาชิก",
 "Modify" : "Modify",
@@ -68,5 +74,9 @@ export const i18n = {
 "Rename": "เปลี่ยนชื่อ...",
 "File": "ไฟล์",
 "Directory": "ไดเรกทอรี",
-"InternalError": "Internal error"
+"InternalError": "Internal error",
+"Edit": "Edit",
+"Delete": "Delete",
+"Approve": "Approved",
+"DeleteError": "Can't delete the user {{id}}, backend returned false."
 }

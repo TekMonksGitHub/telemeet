@@ -43,8 +43,14 @@ export const i18n = {
 "PWCHANGEFAILED": "Password change failed.",
 "PWCHANGED": "Password changed.",
 "PHONECHANGEFAILED": "Code was not correct, failed.",
+"PROFILECHANGEFAILED": "Profile update failed",
 "ChangePassword": "Change password",
-"ChangePhome": "Change phone",
+"ChangePhone": "Change phone",
+"ChangeProfile": "Change profile",
+"ManageUsers": "Manage users",
+"Working": "Working",
+"OnBreak": "On break",
+"Offline": "Offline",
 "BadLogin" : "不正なログイン",
 "Register" : "登録",
 "Modify" : "Modify",
@@ -68,5 +74,9 @@ export const i18n = {
 "Rename": "リネーム...",
 "File": "ファイル",
 "Directory": "フォルダー",
-"InternalError": "Internal error"
+"InternalError": "Internal error",
+"Edit": "Edit",
+"Delete": "Delete",
+"Approve": "Approved",
+"DeleteError": "Can't delete the user {{id}}, backend returned false."
 }
