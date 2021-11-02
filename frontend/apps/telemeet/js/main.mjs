@@ -1,6 +1,6 @@
 /** 
  * (C) 2020 TekMonks. All rights reserved.
- * License: MIT - see enclosed license.txt file.
+ * License: See enclosed license.txt file.
  */
 import {i18n} from "/framework/js/i18n.mjs";
 import {router} from "/framework/js/router.mjs";

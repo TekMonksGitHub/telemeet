@@ -1,6 +1,6 @@
 /* 
  * (C) 2018 TekMonks. All rights reserved.
- * License: MIT - see enclosed license.txt file.
+ * License: See enclosed license.txt file.
  */
 import {i18n} from "/framework/js/i18n.mjs";
 import {application} from "./application.mjs";

@@ -1,6 +1,6 @@
 /* 
  * (C) 2015 TekMonks. All rights reserved.
- * License: MIT - see enclosed license.txt file.
+ * License: See enclosed license.txt file.
  */
 const FRONTEND = "http://localhost:8080";
 const BACKEND = "http://localhost:9090";
