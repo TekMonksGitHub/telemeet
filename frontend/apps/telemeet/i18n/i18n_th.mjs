@@ -37,6 +37,9 @@ export const i18n = {
 "PasswordAgain" : "รหัสผ่านอีกครั้ง",
 "SignIn" : "เข้าสู่ระบบ",
 "Join": "Join",
+"BadLogin" : "ลงชื่อเข้าใช้ผิด",
+"LoginReset" : "Click here to reset login",
+"LoginWasReset": "Reset instructions have been emailed to you",
 "FillField": "กรุณากรอกข้อมูลในช่องนี้",
 "PWNOTSAME": "Passwords are not the same.",
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
@@ -51,7 +54,6 @@ export const i18n = {
 "Working": "Working",
 "OnBreak": "On break",
 "Offline": "Offline",
-"BadLogin" : "ลงชื่อเข้าใช้ผิด",
 "Register" : "สมัครสมาชิก",
 "Modify" : "Modify",
 "LoginTaken" : "ใช้รหัสเข้าสู่ระบบ",
@@ -77,6 +79,13 @@ export const i18n = {
 "InternalError": "Internal error",
 "Edit": "Edit",
 "Delete": "Delete",
-"Approve": "Approved",
-"DeleteError": "Can't delete the user {{id}}, backend returned false."
+"Approve": "Approve",
+"DeleteError": "Can't delete the user {{name}} with email {{id}}, backend returned with an error.",
+"ApproveError": "Can't approve the user {{name}} with email {{id}}, backend returned with an error.",
+"EditError": "Failed due to a backend error, please contact your support team.",
+"Approved": "User {{name}} with email {{id}} approved.",
+"ConfirmUserDelete": "Please confirm you want to delete {{name}} with email {{id}}?",
+"Role": "Role",
+"user": "User",
+"admin": "Administrator"
 }

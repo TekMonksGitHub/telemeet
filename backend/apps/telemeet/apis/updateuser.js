@@ -18,11 +18,13 @@ exports.doService = async jsonReq => {
 		const checkExists = await userid.existsID(jsonReq.id); if (checkExists && checkExists.result) {
 			LOG.error(`${jsonReq.name}, ID: ${jsonReq.old_id} tried to update their email to another registered user, blocked.`);
 			return CONSTANTS.FALSE_RESULT;
-		} else LOG.info(`${jsonReq.name}, ID: ${jsonReq.old_id} is changing their ID to ${jsonReq.id}`);
+		} else LOG.info(`${jsonReq.name}, ID: ${jsonReq.old_id} is changing their ID to ${jsonReq.id}.`);
 	}
 
-	const idEntry = await userid.existsID(jsonReq.old_id), result = await userid.update(jsonReq.old_id, jsonReq.id, jsonReq.name, 
-		jsonReq.org, jsonReq.pwph, jsonReq.totpSecret||idEntry.totpsec, jsonReq.role||idEntry.role, jsonReq.approved||idEntry.approved);
+	const idEntry = await userid.existsID(jsonReq.old_id); if (jsonReq.approved==undefined) jsonReq.approved = idEntry.approved;
+	const result = await userid.update(jsonReq.old_id, jsonReq.id, 
+		jsonReq.name||idEntry.name, jsonReq.org||idEntry.org, jsonReq.pwph||idEntry.pwph, jsonReq.totpSecret||idEntry.totpsec, 
+		jsonReq.role||idEntry.role, (jsonReq.approved==true||jsonReq.approved==1)?1:0);
 
 	if (result.result) LOG.info(`User updated and logged in: ${jsonReq.name}, old ID: ${jsonReq.old_id}, new ID: ${jsonReq.id}`); 
 	else LOG.error(`Unable to update: ${jsonReq.name}, ID: ${jsonReq.old_id}, DB error`);
@@ -30,4 +32,4 @@ exports.doService = async jsonReq => {
 	return {result: result.result};
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.old_id && jsonReq.pwph && jsonReq.id && jsonReq.name && jsonReq.org);
+const validateRequest = jsonReq => (jsonReq && jsonReq.old_id);

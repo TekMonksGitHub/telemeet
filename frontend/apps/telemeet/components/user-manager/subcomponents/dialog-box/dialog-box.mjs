@@ -7,7 +7,8 @@ import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 async function showDialog(templatePath, showOK, showCancel, data, hostID, retValIDs, callback) {
     const templateHTML = await router.loadHTML(templatePath, data, false);
-    _showDialogInternal(templateHTML, showOK, showCancel, hostID, retValIDs, callback);
+    if (callback) _showDialogInternal(templateHTML, showOK, showCancel, hostID, retValIDs, callback);
+    else return new Promise(resolve => _showDialogInternal(templateHTML, showOK, showCancel, hostID, retValIDs, ret=>resolve(ret)));
 }
 
 function hideDialog(element) {

@@ -22,7 +22,6 @@ async function signin(id, pass, otp) {
         session.set(APP_CONSTANTS.USERORG, resp.org);
         session.set("__org_telemeet_cuser_pass", pass);
         securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
-        router.addOnLoadPage("*", startAutoLogoutTimer); 
         return true;
     } else {LOG.error(`Login failed for ${id}`); return false;}
 }
@@ -40,7 +39,6 @@ async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCod
         session.set(APP_CONSTANTS.USERORG, org);
         session.set("__org_telemeet_cuser_pass", pass);
         securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
-        router.addOnLoadPage("*", startAutoLogoutTimer); 
         return true;
     } else {LOG.error(`${old_id?"Update":"Registration"} failed for ${id}`); return false;}
 }
@@ -81,17 +79,8 @@ async function getProfileData(id, time) {
     if (resp && resp.result) return resp; else return null;
 }
 
-const approveProfile = async id => await apiman.rest(APP_CONSTANTS.API_APPROVEPROFILE, "POST", 
-    {id, approver: session.get(APP_CONSTANTS.USERID)}, false, true);
-
-const getAllUsersFromCurrentOrg = async _ => await apiman.rest(APP_CONSTANTS.API_GETORGUSERS, "GET", 
-    {org: session.get(APP_CONSTANTS.USERORG)}, false, true);
-
-const getAllUsersFromCurrentTeam = async _ => await apiman.rest(APP_CONSTANTS.API_GETTEAMUSERS, "GET", 
-    {org: session.get(APP_CONSTANTS.USERORG), id: session.get(APP_CONSTANTS.USERID)}, false, true);
-
 function startAutoLogoutTimer() {
-    if (!session.get(APP_CONSTANTS.USERID)) return; // not logged in
+    if (!session.get(APP_CONSTANTS.USERID)) return; // no one is logged in
     
     const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
     const resetTimer = _=> {_stopAutoLogoutTimer(); currTimeout = setTimeout(_=>logout(true), APP_CONSTANTS.TIMEOUT);}
@@ -99,8 +88,9 @@ function startAutoLogoutTimer() {
     resetTimer();   // start the timing
 }
 
+const interceptPageLoad = _ => router.addOnLoadPage("*", startAutoLogoutTimer); 
+
 const _stopAutoLogoutTimer = _ => { if (currTimeout) {clearTimeout(currTimeout); currTimeout = null;} }
 
 export const loginmanager = {signin, reset, registerOrUpdate, logout, changepassword, startAutoLogoutTimer, 
-    addLogoutListener, getProfileData, checkResetSecurity, approveProfile, getAllUsersFromCurrentOrg, getAllUsersFromCurrentTeam,
-    getSessionUser}
+    addLogoutListener, getProfileData, checkResetSecurity, getSessionUser, interceptPageLoad}

@@ -29,7 +29,7 @@ exports.update = async (oldid, id, name, org, pwph, totpSecret, role, approved) 
 		[id, name, org, pwphHashed, totpSecret, role, approved?1:0, oldid])};
 }
 
-exports.login = async (id, pwph) => {
+exports.checkPWPH = async (id, pwph) => {
 	const idEntry = await exports.existsID(id); if (!idEntry.result) return {result: false}; else delete idEntry.result;
 	return {result: await (util.promisify(bcryptjs.compare))(pwph, idEntry.pwph), ...idEntry}; 
 }
@@ -47,4 +47,8 @@ exports.changepwph = async (id, pwph) => {
 exports.getUsersForOrg = async org => {
 	const users = await db.getQuery("SELECT id, name, org, role, approved FROM users WHERE org = ? COLLATE NOCASE", [org]);
 	if (users && users.length) return {result: true, users}; else return {result: false};
+}
+
+exports.approve = async id => {
+	return {result: await db.runCmd("UPDATE users SET approved=1 WHERE id=?", [id])};
 }

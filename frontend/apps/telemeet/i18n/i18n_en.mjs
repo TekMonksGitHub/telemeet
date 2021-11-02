@@ -37,7 +37,7 @@ export const i18n = {
 "PasswordAgain" : "Password again",
 "SignIn" : "Login",
 "Join": "Join",
-"BadLogin" : "Incorrect Login. ",
+"BadLogin" : "Incorrect Login.",
 "LoginReset" : "Click here to reset login",
 "LoginWasReset": "Reset instructions have been emailed to you",
 "FillField": "Please fill out this field.",
@@ -79,6 +79,13 @@ export const i18n = {
 "InternalError": "Internal error",
 "Edit": "Edit",
 "Delete": "Delete",
-"Approve": "Approved",
-"DeleteError": "Can't delete the user {{id}}, backend returned false."
+"Approve": "Approve",
+"DeleteError": "Can't delete the user {{name}} with email {{id}}, backend returned with an error.",
+"ApproveError": "Can't approve the user {{name}} with email {{id}}, backend returned with an error.",
+"EditError": "Failed due to a backend error, please contact your support team.",
+"Approved": "User {{name}} with email {{id}} approved.",
+"ConfirmUserDelete": "Please confirm you want to delete {{name}} with email {{id}}?",
+"Role": "Role",
+"user": "User",
+"admin": "Administrator"
 }

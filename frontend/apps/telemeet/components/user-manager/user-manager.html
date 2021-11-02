@@ -126,7 +126,9 @@ div.user > img {
     </span>
     <div id="userlist">
         {{#users}}
-        <div id="{{id}}" class="user" title="{{name}}&#10;{{id}}" oncontextmenu='event.stopPropagation(); monkshu_env.components["user-manager"].userMenuClicked(event, this, "{{id}}"); return false;'>
+        <div id="{{id}}" class="user" title="{{name}}&#10;{{id}}" 
+                oncontextmenu='event.stopPropagation(); monkshu_env.components["user-manager"].userMenuClicked(
+                    event, this, "{{name}}", "{{id}}", "{{org}}", "{{role}}", "{{approved}}"); return false;'>
             <img src="{{componenturl}}/img/user.svg">
             <span>{{name}}</span>
             <span>{{id}}</span>

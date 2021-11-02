@@ -30,7 +30,7 @@ export const APP_CONSTANTS = {
     API_LOGIN: API_PATH+"/login",
     API_RESET: API_PATH+"/reset",
     API_REGISTER: API_PATH+"/register",
-    API_UPDATE: API_PATH+"/update",
+    API_UPDATE: API_PATH+"/updateuser",
     API_ENTERROOM: API_PATH+"/enterroom",
     API_STATUS: API_PATH+"/setstatus",
     API_CHANGEPW: API_PATH+"/changepassword",

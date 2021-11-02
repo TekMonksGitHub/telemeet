@@ -37,6 +37,9 @@ export const i18n = {
 "PasswordAgain" : "もう一度パスワード",
 "SignIn" : "ログイン",
 "Join": "Join",
+"BadLogin" : "不正なログイン",
+"LoginReset" : "Click here to reset login",
+"LoginWasReset": "Reset instructions have been emailed to you",
 "FillField": "このフィールドを記入してください。",
 "PWNOTSAME": "Passwords are not the same.",
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
@@ -51,7 +54,6 @@ export const i18n = {
 "Working": "Working",
 "OnBreak": "On break",
 "Offline": "Offline",
-"BadLogin" : "不正なログイン",
 "Register" : "登録",
 "Modify" : "Modify",
 "LoginTaken" : "ログイントークン",
@@ -77,6 +79,13 @@ export const i18n = {
 "InternalError": "Internal error",
 "Edit": "Edit",
 "Delete": "Delete",
-"Approve": "Approved",
-"DeleteError": "Can't delete the user {{id}}, backend returned false."
+"Approve": "Approve",
+"DeleteError": "Can't delete the user {{name}} with email {{id}}, backend returned with an error.",
+"ApproveError": "Can't approve the user {{name}} with email {{id}}, backend returned with an error.",
+"EditError": "Failed due to a backend error, please contact your support team.",
+"Approved": "User {{name}} with email {{id}} approved.",
+"ConfirmUserDelete": "Please confirm you want to delete {{name}} with email {{id}}?",
+"Role": "Role",
+"user": "User",
+"admin": "Administrator"
 }

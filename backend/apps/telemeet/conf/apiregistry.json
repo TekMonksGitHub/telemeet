@@ -3,7 +3,7 @@
     "/apps/{{app}}/reset" : "/apis/reset.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false",
     "/apps/{{app}}/register" : "/apis/register.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false&addsToken=sub:access",
     "/apps/{{app}}/deleteuser" : "/apis/deleteuser.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
-    "/apps/{{app}}/update" : "/apis/update.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true&addsToken=sub:access",
+    "/apps/{{app}}/updateuser" : "/apis/updateuser.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true&addsToken=sub:access",
     "/apps/{{app}}/createroom" : "/apis/createroom.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/deleteroom" : "/apis/deleteroom.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/enterroom" : "/apis/enterroom.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false&addsToken=sub:access",
@@ -13,5 +13,6 @@
     "/apps/{{app}}/validatetotp" : "/apis/validatetotp.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/gettotpsec" : "/apis/gettotpsec.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/getprofile" : "/apis/getprofile.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false&addsToken=sub:access",
-    "/apps/{{app}}/getorgusers" : "/apis/getorgusers.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true"
+    "/apps/{{app}}/getorgusers" : "/apis/getorgusers.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
+    "/apps/{{app}}/approveuser" : "/apis/approveuser.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true"
 }

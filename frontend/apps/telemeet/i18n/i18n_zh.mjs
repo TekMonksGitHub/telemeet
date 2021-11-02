@@ -37,6 +37,9 @@ export const i18n = {
 "PasswordAgain" : "再次输入密码",
 "SignIn" : "登陆",
 "Join": "Join",
+"BadLogin" : "登陆无效",
+"LoginReset" : "Click here to reset login",
+"LoginWasReset": "Reset instructions have been emailed to you",
 "FillField": "请填写此字段。",
 "PWNOTSAME": "Passwords are not the same.",
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
@@ -51,7 +54,6 @@ export const i18n = {
 "Working": "Working",
 "OnBreak": "On break",
 "Offline": "Offline",
-"BadLogin" : "登陆无效",
 "Register" : "登陆",
 "Modify" : "Modify",
 "LoginTaken" : "ID登陆令牌",
@@ -77,6 +79,13 @@ export const i18n = {
 "InternalError": "Internal error",
 "Edit": "Edit",
 "Delete": "Delete",
-"Approve": "Approved",
-"DeleteError": "Can't delete the user {{id}}, backend returned false."
+"Approve": "Approve",
+"DeleteError": "Can't delete the user {{name}} with email {{id}}, backend returned with an error.",
+"ApproveError": "Can't approve the user {{name}} with email {{id}}, backend returned with an error.",
+"EditError": "Failed due to a backend error, please contact your support team.",
+"Approved": "User {{name}} with email {{id}} approved.",
+"ConfirmUserDelete": "Please confirm you want to delete {{name}} with email {{id}}?",
+"Role": "Role",
+"user": "User",
+"admin": "Administrator"
 }

@@ -10,15 +10,18 @@ exports.doService = async jsonReq => {
 	
 	LOG.debug(`Got login request for ID ${jsonReq.id}`);
 
-	const result = await userid.login(jsonReq.id, jsonReq.pwph);
-	if (result.result) {	// perform second factor
+	const result = await userid.checkPWPH(jsonReq.id, jsonReq.pwph); 
+
+	if (result.result && result.approved) {	// perform second factor
 		result.result = true;//totp.verifyTOTP(result.totpsec, jsonReq.otp);
-		if (!result.result) LOG.error(`Bad OTP given for: ${result.id}`);
-	} else LOG.error(`Bad PWPH, given for ID: ${jsonReq.id}`);
+		if (!result.result) LOG.error(`Bad OTP given for: ${result.id}.`);
+	} else if (result.result && (!result.approved)) {LOG.info(`User not approved, ${result.id}.`); result.result = false;}
+	else LOG.error(`Bad PWPH, given for ID: ${jsonReq.id}.`);
 
-	if (result.result) LOG.info(`User logged in: ${result.id}`); else LOG.error(`Bad login for ID: ${jsonReq.id}`);
+	if (result.result) LOG.info(`User logged in: ${result.id}.`); else LOG.error(`Bad login for ID: ${jsonReq.id}.`);
 
-	return {result: result.result, name: result.name, id: result.id, org: result.org};
+	if (result.result) return {result: result.result, name: result.name, id: result.id, org: result.org};
+	else return CONSTANTS.FALSE_RESULT;
 }
 
 const validateRequest = jsonReq => (jsonReq && jsonReq.pwph && jsonReq.otp && jsonReq.id);

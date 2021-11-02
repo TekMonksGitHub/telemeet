@@ -37,6 +37,9 @@ export const i18n = {
 "PasswordAgain" : "पासवर्ड दुबारा भरें",
 "SignIn" : "लॉग इन करें",
 "Join": "Join",
+"BadLogin" : "गलत लॉग इन",
+"LoginReset" : "Click here to reset login",
+"LoginWasReset": "Reset instructions have been emailed to you",
 "FillField": "कृपया इस क्षेत्र को भरें।",
 "PWNOTSAME": "Passwords are not the same.",
 "PWMUSTBE": "Passwords must be minimum 10 characters.",
@@ -51,7 +54,6 @@ export const i18n = {
 "Working": "Working",
 "OnBreak": "On break",
 "Offline": "Offline",
-"BadLogin" : "गलत लॉग इन",
 "Register" : "रजिस्टर करें",
 "Modify" : "Modify",
 "LoginTaken" : "आईडी उपलब्ध नहीं,कुछ और चुनें",
@@ -77,6 +79,13 @@ export const i18n = {
 "InternalError": "Internal error",
 "Edit": "Edit",
 "Delete": "Delete",
-"Approve": "Approved",
-"DeleteError": "Can't delete the user {{id}}, backend returned false."
+"Approve": "Approve",
+"DeleteError": "Can't delete the user {{name}} with email {{id}}, backend returned with an error.",
+"ApproveError": "Can't approve the user {{name}} with email {{id}}, backend returned with an error.",
+"EditError": "Failed due to a backend error, please contact your support team.",
+"Approved": "User {{name}} with email {{id}} approved.",
+"ConfirmUserDelete": "Please confirm you want to delete {{name}} with email {{id}}?",
+"Role": "Role",
+"user": "User",
+"admin": "Administrator"
 }
