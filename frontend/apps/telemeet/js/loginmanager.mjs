@@ -21,7 +21,7 @@ async function signin(id, pass, otp) {
         session.set(APP_CONSTANTS.USERNAME, resp.name);
         session.set(APP_CONSTANTS.USERORG, resp.org);
         session.set("__org_telemeet_cuser_pass", pass);
-        securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
+        securityguard.setCurrentRole(resp.role);
         return true;
     } else {LOG.error(`Login failed for ${id}`); return false;}
 }
@@ -38,7 +38,7 @@ async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCod
         session.set(APP_CONSTANTS.USERNAME, name);
         session.set(APP_CONSTANTS.USERORG, org);
         session.set("__org_telemeet_cuser_pass", pass);
-        securityguard.setCurrentRole(APP_CONSTANTS.USER_ROLE);
+        securityguard.setCurrentRole(resp.role);
         return true;
     } else {LOG.error(`${old_id?"Update":"Registration"} failed for ${id}`); return false;}
 }

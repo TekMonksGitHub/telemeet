@@ -6,6 +6,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {router} from "/framework/js/router.mjs";
 import {loginmanager} from "./loginmanager.mjs";
 import {session} from "/framework/js/session.mjs";
+import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
 const dialog = _ => monkshu_env.components['dialog-box'];
@@ -56,6 +57,9 @@ function showLoginMessages() {
     if (data.showDialog) { _showMessage(data.showDialog.message); delete data.showDialog; router.setCurrentPageData(data); }
 }
 
+const interceptPageLoadData = _ => router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, data => {
+    if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; });
+
 async function _getTOTPQRCode(key) {
 	const title = await i18n.get("Title");
 	await $$.require("./js/3p/qrcode.min.js");
@@ -63,4 +67,4 @@ async function _getTOTPQRCode(key) {
 		`otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
-export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile};
+export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, interceptPageLoadData};

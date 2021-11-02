@@ -20,7 +20,7 @@ exports.doService = async jsonReq => {
 
 	if (result.result) LOG.info(`User logged in: ${result.id}.`); else LOG.error(`Bad login for ID: ${jsonReq.id}.`);
 
-	if (result.result) return {result: result.result, name: result.name, id: result.id, org: result.org};
+	if (result.result) return {result: result.result, name: result.name, id: result.id, org: result.org, role: result.role};
 	else return CONSTANTS.FALSE_RESULT;
 }
 

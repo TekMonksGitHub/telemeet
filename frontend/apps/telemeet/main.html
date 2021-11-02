@@ -121,7 +121,7 @@ div#maincontent {
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)">{{i18n.ChangePassword}}</menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)">{{i18n.ChangePhone}}</menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeProfile(this)">{{i18n.ChangeProfile}}</menu-item>
-		<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)">{{i18n.ManageUsers}}</menu-item>
+		{{#admin}}<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)">{{i18n.ManageUsers}}</menu-item>{{/admin}}
 	</span-with-menu>
 	<span id="signoff"><img src="./img/poweroff.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()"></span>
 </span>
