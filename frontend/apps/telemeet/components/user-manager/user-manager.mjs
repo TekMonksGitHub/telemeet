@@ -20,15 +20,33 @@ let conf;
 
 async function elementConnected(element) {
 	conf = await $$.requireJSON(`${MODULE_PATH}/conf/usermanager.json`);
-	let data = {componenturl: MODULE_PATH, CONTEXT_MENU_ID};
 
-	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
 	const usersResult = await apiman.rest(`${element.getAttribute("backendurl")}/${API_GETORGUSERS}`, "GET", 
 		{org: element.getAttribute("org")}, true);
 	if (!usersResult.result) {LOG.error("Can't fetch the list of users for the org, API returned false.");}
-	else data.users = usersResult.users;
-	
+
+	const users = usersResult?.users||[], data = _createData(element, users);
 	user_manager.setDataByHost(element, data);
+
+	user_manager.getMemory(element.id).users = users;
+}
+
+async function elementRendered(host, initialRender) {
+	const memory = user_manager.getMemory(host.id);
+	if (!initialRender && memory.filter) user_manager.getShadowRootByHost(host).querySelector("input#searchbox").value = memory.filter;
+}
+
+async function searchModified(element) {
+	const filter = element.value.trim(), memory = user_manager.getMemoryByContainedElement(element), 
+		users = memory.users, filteredUsers = [];
+
+	if (filter != "") {
+		for (const user of users) if (user.name.toLowerCase().includes(filter.toLowerCase()) || 
+			user.id.toLowerCase().includes(filter.toLowerCase())) filteredUsers.push(user);
+	} else filteredUsers.push(...users);
+
+	const data = _createData(user_manager.getHostElement(element), filteredUsers); memory.filter = filter;
+	await user_manager.bindData(data, user_manager.getHostElementID(element));
 }
 
 async function userMenuClicked(event, element, name, id, _org, role, approved) {
@@ -110,6 +128,15 @@ async function _approveUser(name, id, element) {
 	}
 }
 
+function _createData(host, users) {
+	const data = {componenturl: MODULE_PATH, CONTEXT_MENU_ID};
+
+	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
+	if (users) data.users = users;
+
+	return data;
+}
+
 const _showError = async error => { await monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/error.html`, 
 	true, false, {error}, "dialog", []); monkshu_env.components['dialog-box'].hideDialog("dialog"); }
 const _showMessage = async message => { await monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/message.html`, 
@@ -117,5 +144,5 @@ const _showMessage = async message => { await monkshu_env.components['dialog-box
 const _execOnConfirm = (message, cb) => monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/message.html`, 
 	true, true, {message}, "dialog", [], _=>{monkshu_env.components['dialog-box'].hideDialog("dialog"); cb();});
 
-export const user_manager = {trueWebComponentMode: true, elementConnected, userMenuClicked, addUser}
+export const user_manager = {trueWebComponentMode: true, elementConnected, userMenuClicked, addUser, searchModified, elementRendered}
 monkshu_component.register("user-manager", `${APP_CONSTANTS.APP_PATH}/components/user-manager/user-manager.html`, user_manager);
