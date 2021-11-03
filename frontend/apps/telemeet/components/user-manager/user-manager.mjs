@@ -31,7 +31,7 @@ async function elementConnected(element) {
 	user_manager.getMemory(element.id).users = users;
 }
 
-async function elementRendered(host, initialRender) {
+async function elementRendered(host, initialRender) {	// for some weird reason we need to set value via JS only
 	const memory = user_manager.getMemory(host.id);
 	if (!initialRender && memory.filter) user_manager.getShadowRootByHost(host).querySelector("input#searchbox").value = memory.filter;
 }
