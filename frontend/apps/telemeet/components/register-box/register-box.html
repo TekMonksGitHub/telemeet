@@ -100,10 +100,10 @@ span#otp > div#otp_help_and_input > input {
 <input type="text" id="name" placeholder="{{i18n.Name}}" value="{{name}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
 <input type="text" id="id" placeholder="{{i18n.Email}}" value="{{id}}" required 
-    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
+    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')" {{#reset}}readonly{{/reset}} {{#initial}}readonly{{/initial}}>
 <input type="hidden" id="oldid" value="{{id}}">
 <input type="text" id="org" placeholder="{{i18n.Org}}" value="{{org}}" required 
-    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')">
+    oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')" {{#reset}}readonly{{/reset}} {{#initial}}readonly{{/initial}}>
 <span id="password">
     <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass1" placeholder="{{Password}}" 
         required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
@@ -114,8 +114,8 @@ span#otp > div#otp_help_and_input > input {
     <img src="{{totpQRCodeData}}">
     <div id="otp_help_and_input">
         <p>{{AuthenticatorMsg}}</p>
-        <input type="number" id="otp" placeholder="{{i18n.Otp}}" required minlength="6"
-            oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')"
+        <input type="number" id="otp" placeholder="{{i18n.Otp}}" required minlength="6" {{^reset}}required="true"{{/reset}} 
+            oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')" 
             onkeyup="if (event.keyCode == 13) monkshu_env.components['register-box'].getShadowRootByContainedElement(this).querySelector('#submit').click();">
     </div>
 </span>

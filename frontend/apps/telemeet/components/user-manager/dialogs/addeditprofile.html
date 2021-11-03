@@ -101,7 +101,7 @@ select {
 </select>
 <span id="toggler">
     <span>{{i18n.Approve}}?</span>
-    <input class="tgl tgl-ios" id="approved" type="checkbox" onclick='approvedToggle(this)' {{#approved}}checked{{/approved}}>
+    <input class="tgl tgl-ios" id="approved" type="checkbox" onclick='approvedToggle(this)' {{#approved}}checked{{/approved}} value='{{#approved}}true{{/approved}}{{^approved}}false{{/approved}}'>
     <label class="tgl-btn" for="approved">
 </span>
 

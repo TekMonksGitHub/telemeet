@@ -15,14 +15,15 @@ async function elementConnected(element) {
 
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
 
-	const memory = register_box.getMemory(element.id);
-	memory.totpKey = _getTOTPRandomKey(); data.totpQRCodeData = await _getTOTPQRCode(memory.totpKey);
-	data.AuthenticatorMsg = await i18n.get(element.getAttribute("type") == "reset"?"ResetAuthenticatorMsg":"DownloadAuthenticatorMsg");
-	data.Password = await i18n.get(element.getAttribute("type") == "reset"?"NewPassword":"Password");
-	data.PasswordAgain = await i18n.get(element.getAttribute("type") == "reset"?"NewPasswordAgain":"PasswordAgain");
-	data.Submit = await i18n.get(element.getAttribute("type") == "reset"?"Modify":"Register");
-	data.minlength = element.getAttribute("minlength");
-	if (element.getAttribute("email") && element.getAttribute("time") && element.getAttribute("type") == "reset") 
+	const memory = register_box.getMemory(element.id), type = element.getAttribute("type");
+	memory.totpKey = _getTOTPRandomKey(); data.totpQRCodeData = await _getTOTPQRCode(memory.totpKey); memory.type = type;
+	data.AuthenticatorMsg = await i18n.get(type == "reset"?"ResetAuthenticatorMsg":"DownloadAuthenticatorMsg");
+	data.Password = await i18n.get(type == "reset"?"NewPassword":"Password");
+	data.PasswordAgain = await i18n.get(type == "reset"?"NewPasswordAgain":"PasswordAgain");
+	data.Submit = await i18n.get(type == "reset"?"Modify" : type=="initial" ? "SignIn" : "Register");
+	data.minlength = element.getAttribute("minlength"); data.initial = type == "initial"?true:undefined;
+	data.reset = type == "reset"?true:undefined;
+	if (element.getAttribute("email") && element.getAttribute("time") && (type == "reset" || type == "initial")) 
 		await _checkAndFillAccountProfile(data, element.getAttribute("email"), element.getAttribute("time"));
 
 	if (element.id) {
@@ -50,7 +51,7 @@ async function registerOrUpdate(element) {
 	const totpCodeSelector = shadowRoot.querySelector("input#otp"); const totpCode = totpCodeSelector.value && totpCodeSelector.value != ""?totpCodeSelector.value:null;
 	const routeOnSuccess = register_box.getHostElement(element).getAttribute("routeOnSuccess");
 	const dataOnSuccess = JSON.parse(register_box.getHostElement(element).getAttribute("dataOnSuccess")||"{}");
-	
+
 	if (!await loginmanager.registerOrUpdate(id_old, name, id, pass, org, totpCode?memory.totpKey:null, totpCode)) 
 		shadowRoot.querySelector("span#error").style.display = "inline"; 
 	else router.loadPage(routeOnSuccess, dataOnSuccess);

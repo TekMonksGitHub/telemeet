@@ -1,3 +1,5 @@
 {
-    "roles":["user", "admin"]
+    "roles":["user", "admin"],
+    "userorg_session_variable": "userorg",
+    "user_role": "user"
 }

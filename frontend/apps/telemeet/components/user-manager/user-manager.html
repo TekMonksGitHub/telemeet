@@ -121,8 +121,8 @@ div.user > img {
 <div id="container">
     <span id="header">
         <img src="{{componenturl}}/img/search.svg">
-        <input id="searchbox" type="text" placeholder="Search">
-        <button id="add" title="Add user">Add user</button>
+        <input id="searchbox" type="text" placeholder="{{i18n.Search}}">
+        <button id="add" title="Add user" onclick='monkshu_env.components["user-manager"].addUser(this)'>{{i18n.AddUser}}</button>
     </span>
     <div id="userlist">
         {{#users}}

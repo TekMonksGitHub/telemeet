@@ -26,7 +26,7 @@ async function signin(id, pass, otp) {
     } else {LOG.error(`Login failed for ${id}`); return false;}
 }
 
-const reset = id => apiman.rest(APP_CONSTANTS.API_RESET, "POST", {id, lang: session.get($$.MONKSHU_CONSTANTS.LANG_ID)});
+const reset = id => apiman.rest(APP_CONSTANTS.API_RESET, "GET", {id, lang: i18n.getSessionLang()});
 
 async function registerOrUpdate(old_id, name, id, pass, org, totpSecret, totpCode, role, approved) {
     const pwph = `${id} ${pass||session.get("__org_telemeet_cuser_pass")}`;
