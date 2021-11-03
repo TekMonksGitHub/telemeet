@@ -53,8 +53,8 @@ async function addUser(element) {
 			const err = router.getMustache().render(await i18n.get("AddError"), {name: ret.name, id: ret.id}); 
 			LOG.error(err); monkshu_env.components['dialog-box'].hideDialog("dialog"); _showMessage("dialog", err);
 		} else if (!addResult.emailresult) {	// account created but login email send failed
-			const err = router.getMustache().render(await i18n.get("AddEmailError"), {name: ret.name, id: ret.id, loginurl: ret.loginurl}); 
-			LOG.error(err); monkshu_env.components['dialog-box'].hideDialog("dialog"); _showMessage("dialog", err);
+			const err = router.getMustache().render(await i18n.get("AddEmailError"), {name: ret.name, id: ret.id, loginurl: addResult.loginurl}); 
+			LOG.error(err); monkshu_env.components['dialog-box'].hideDialog("dialog"); _showError(err);
 		} else monkshu_env.components['dialog-box'].hideDialog("dialog");
 
 		user_manager.reload(user_manager.getHostElementID(element));
