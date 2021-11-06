@@ -13,7 +13,7 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const CONTEXT_MENU_ID = "usermanagerContextMenu", API_GETORGUSERS = "getorgusers", API_DELETEUSER = "deleteuser",
-	API_APPROVEUSER = "approveuser", API_EDITUSER = "updateuser", API_RESETUSER = "resetuser", 
+	API_APPROVEUSER = "approveuser", API_EDITUSER = "updateuserbyadmin", API_RESETUSER = "resetuser", 
 	API_ADDUSER = "adduserbyadmin", MODULE_PATH = util.getModulePath(import.meta);
 
 let conf;
@@ -79,7 +79,7 @@ async function addUser(element) {
 	});
 }
 
-async function _editUser(name, id, role, approved, element) {
+async function editUser(name, id, role, approved, element) {
 	const roles = []; for (const thisrole of conf.roles) roles.push({label:await i18n.get(thisrole), value: thisrole, selected: thisrole==role?true:undefined});
 	monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/addeditprofile.html`, true, true, 
 			{name, id, role, approved:approved==1?true:undefined, roles}, "dialog", 
@@ -144,5 +144,6 @@ const _showMessage = async message => { await monkshu_env.components['dialog-box
 const _execOnConfirm = (message, cb) => monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/message.html`, 
 	true, true, {message}, "dialog", [], _=>{monkshu_env.components['dialog-box'].hideDialog("dialog"); cb();});
 
-export const user_manager = {trueWebComponentMode: true, elementConnected, userMenuClicked, addUser, searchModified, elementRendered}
+export const user_manager = {trueWebComponentMode: true, elementConnected, userMenuClicked, addUser, editUser, 
+	searchModified, elementRendered}
 monkshu_component.register("user-manager", `${APP_CONSTANTS.APP_PATH}/components/user-manager/user-manager.html`, user_manager);
