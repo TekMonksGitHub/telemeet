@@ -101,15 +101,10 @@ select {
 </select>
 <span id="toggler">
     <span>{{i18n.Approve}}?</span>
-    <input class="tgl tgl-ios" id="approved" type="checkbox" onclick='approvedToggle(this)' {{#approved}}checked{{/approved}} value='{{#approved}}true{{/approved}}{{^approved}}false{{/approved}}'>
+    <input class="tgl tgl-ios" id="approved" type="checkbox" onclick='this.value=this.checked' {{#approved}}checked{{/approved}} value='{{#approved}}true{{/approved}}{{^approved}}false{{/approved}}'>
     <label class="tgl-btn" for="approved">
 </span>
 
 <script>
-function approvedToggle(element) {
-    const shadowRoot = monkshu_env.components["dialog-box"].getShadowRootByContainedElement(element);
-    shadowRoot.querySelector("input#approved").value = shadowRoot.querySelector("input#approved").checked;
-}
-
 function onOK(element) {monkshu_env.components["dialog-box"].submit(element);}
 </script>

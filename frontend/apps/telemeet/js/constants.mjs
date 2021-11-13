@@ -34,6 +34,7 @@ export const APP_CONSTANTS = {
     API_ENTERROOM: API_PATH+"/enterroom",
     API_STATUS: API_PATH+"/setstatus",
     API_CHANGEPW: API_PATH+"/changepassword",
+    API_GETROOMS: API_PATH+"/getrooms",
     API_CREATEROOM: API_PATH+"/createroom",
     API_DELETEROOM: API_PATH+"/deleteroom",
     API_FWCONTROL: API_PATH+"/fwcontrol",

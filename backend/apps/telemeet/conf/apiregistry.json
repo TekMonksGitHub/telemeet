@@ -6,6 +6,7 @@
     "/apps/{{app}}/deleteuser" : "/apis/deleteuser.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=admin",
     "/apps/{{app}}/updateuser" : "/apis/updateuser.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true&addsToken=sub:{{{role}}},flag:{{{result}}},id:{{{id}}}&checkClaims=id",
     "/apps/{{app}}/updateuserbyadmin" : "/apis/updateuser.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=admin",
+    "/apps/{{app}}/getrooms" : "/apis/getrooms.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/createroom" : "/apis/createroom.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/deleteroom" : "/apis/deleteroom.js?keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=true",
     "/apps/{{app}}/enterroom" : "/apis/enterroom.js?get=true&keys=fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389&needsToken=false&addsToken=sub:access,flag:{{{result}}}",

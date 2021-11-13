@@ -1,0 +1,39 @@
+:host {
+    --border-color: #00C24E;
+    --text-color: #444444;
+    --text-background: white;
+}
+
+table {
+    font-size: smaller;
+    font-family: sans-serif;
+    border-radius: 5px 5px 0px 0px;
+    border: 0.5px solid var(--border-color);
+}
+
+td {
+    border: 0.5px solid var(--border-color);
+    background-color: var(--text-background);
+    color: var(--text-color);
+    padding: 0px;
+    overflow: hidden;
+}
+
+tr:first-child > td {
+    background-color: var(--border-color); 
+    color: var(--text-background);
+}
+
+tr:first-child > td:last-child,  tr:last-child > td:last-child, tr:last-child > td:first-child, input#search, img#search {
+    border-color: var(--border-color);
+}
+
+tr:first-child > td > textarea:focus {
+    background-color: var(--border-color); 
+    color: var(--text-background);
+}
+td > textarea:focus {
+    background-color: var(--text-background); 
+    color: var(--text-color);
+}
+td:focus-within {background-color: var(--text-background); color: var(--text-color);}

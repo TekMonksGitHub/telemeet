@@ -1,0 +1,107 @@
+<style>
+div::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 10px;
+    border-radius: 10px !important;
+}
+
+div::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+:host {
+    --border-color: #00C24E;
+    --text-color: #444444;
+    --text-background: white;
+    --inverse-text-color: white;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+}
+
+div#container {
+    height: calc(100% - 2px);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+div#maincontent {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 0em 2em;
+    justify-content: space-evenly;
+}
+
+span#title {
+    text-align: center;
+    background-color: var(--border-color);
+    padding: 0.5em;
+    box-sizing: border-box;
+    color: var(--inverse-text-color);
+}
+
+input {
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid #a0a0a0;
+    padding: 1.0em;
+    min-width: 2em;
+}
+
+input#password {
+    margin: 0em;
+    height: 100%;
+    width: calc(100% - 10em)
+}
+
+button {
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    color: var(--inverse-text-color);
+    background-color: var(--border-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 0em 1em;
+}
+
+span#bottomrow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+</style>
+
+<div id="container">
+    <span id="title">Create Meeting</span>
+
+    <div id="maincontent">
+        <input id="room" type="text" placeholder="{{i18n.RoomID}}">
+
+        <span id="bottomrow">
+        <input id="pass" type="password" placeholder="{{i18n.Password}}">
+        <button onclick='
+            monkshu_env.apps.telemeet.main.joinRoom(
+                monkshu_env.frameworklibs["util"].getChildByID(this.parentElement.parentElement,"room").value.trim(), 
+                monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
+                this)'>{{i18n.RoomLoginMsg}}</button>
+        </span>
+    </div>
+</div>

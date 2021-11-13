@@ -37,6 +37,8 @@ export const i18n = {
 "PasswordAgain" : "รหัสผ่านอีกครั้ง",
 "SignIn" : "เข้าสู่ระบบ",
 "Join": "Join",
+"NoRoom": "Missing room name.",
+"NoPass": "Missing room password",
 "BadLogin" : "ลงชื่อเข้าใช้ผิด",
 "LoginReset" : "Click here to reset login",
 "LoginWasReset": "Reset instructions have been emailed to you",
@@ -93,5 +95,6 @@ export const i18n = {
 "Role": "Role",
 "user": "User",
 "admin": "Administrator",
-"AddUser": "Add User"
+"AddUser": "Add User",
+"MeetingTableHeader": "Meeting Name,Organizer,Start Time,Action"
 }

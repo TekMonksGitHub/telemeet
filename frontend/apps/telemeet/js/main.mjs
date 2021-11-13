@@ -9,6 +9,7 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
+const TELEMEET_ID = "telemeet";
 const dialog = _ => monkshu_env.components['dialog-box'];
 const _showMessage = message => dialog().showMessage(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, {message}, "dialog");
 
@@ -52,19 +53,42 @@ async function changeProfile(_element) {
     });
 }
 
+async function joinRoom(room, pass) {
+    if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
+    if ((!pass) || pass.length==0) {_showMessage(await i18n.get("NoPass")); return;}
+    const telemeet = window.monkshu_env.components["telemeet-join"];
+    telemeet.joinRoom(telemeet.getHostElementByID(TELEMEET_ID), room, pass);
+}
+
 function showLoginMessages() {
     const data = router.getCurrentPageData();
     if (data.showDialog) { _showMessage(data.showDialog.message); delete data.showDialog; router.setCurrentPageData(data); }
 }
 
-const interceptPageLoadData = _ => router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, data => {
-    if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; });
+const interceptPageLoadData = _ => router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {
+    data.pageData = encodeURIComponent(JSON.stringify({sheetData: encodeURIComponent(await _getRoomsListAsCSV())}));
+    if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; 
+});
 
 async function _getTOTPQRCode(key) {
 	const title = await i18n.get("Title");
 	await $$.require("./js/3p/qrcode.min.js");
 	return new Promise(resolve => QRCode.toDataURL(
-		`otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
+	    `otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
-export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, interceptPageLoadData};
+async function _getRoomsListAsCSV() {
+    const _escCSV = v => v.indexOf(",") != -1 ? `"${v}"`:v;
+
+    let roomsCSV = `${await i18n.get("MeetingTableHeader")}\r\n`;
+    const roomsResult = await apiman.rest(APP_CONSTANTS.API_GETROOMS, "GET", {}, true);
+    if (roomsResult.result) for (const room of roomsResult.rooms) {
+        const csvLine = [_escCSV(room.name), _escCSV(room.moderator), 
+            _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), "Join"].join(",");
+        roomsCSV += csvLine + "\r\n";
+    } else LOG.error("Get rooms API failed.");
+    return roomsCSV;
+}
+
+export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
+    interceptPageLoadData, joinRoom};
