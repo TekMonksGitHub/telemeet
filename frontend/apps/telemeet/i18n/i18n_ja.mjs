@@ -96,5 +96,6 @@ export const i18n = {
 "user": "User",
 "admin": "Administrator",
 "AddUser": "Add User",
-"MeetingTableHeader": "Meeting Name,Organizer,Start Time,Action"
+"MeetingTableHeader": "Meeting Name,Organizer,Start Time,Action",
+"MeetLoadError": "Meet API failed to load, timedout."
 }

@@ -84,8 +84,7 @@ div#telemeet {
     z-index: 110;
     opacity: 1;
     overflow: hidden;
-    border-radius: 10px;
-    transition: all 1s linear;
+    border-radius: 0.5em;
     height: 100%;
     width: 100%;
     position: absolute;
@@ -111,6 +110,22 @@ div#telemeet > iframe {
     border-radius: 10px;
     background-color: black;
 }
+
+span#controls {
+    position: fixed;
+    bottom: 1vh;
+    width: 98vw;
+    overflow: hidden;
+    border-radius: 0 0.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+span#controls > img {
+    height: 50px; 
+    width: 50px;
+    margin-bottom: 1em;
+}
 </style>
 
 {{{styleBody}}}
@@ -119,7 +134,7 @@ div#telemeet > iframe {
 <video id="video" autoplay></video>
 <span id="camcontrol">
     <img id="camicon" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this)">
-    <img id="mikeicon" src="{{componentpath}}/img/microphone.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this)">
+    <img id="mikeicon" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this)">
 </span>
 
 {{#show-joiner-dialog}}
@@ -133,4 +148,12 @@ div#telemeet > iframe {
 </div>
 
 <div id="telemeet">
+    <span id="controls">
+    <img id="camcontrol" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this, true)">
+    <img id="mikecontrol" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this, true)">
+    <img id="screensharecontrol" src="{{componentpath}}/img/screenshare.svg" onclick="monkshu_env.components['telemeet-join'].toggleScreenshare(this)">
+    <img id="raisehandcontrol" src="{{componentpath}}/img/raisehand.svg" onclick="monkshu_env.components['telemeet-join'].toggleRaisehand(this)">
+    <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this)">
+    <img id="exitcontrol" src="{{componentpath}}/img/exit.svg" onclick="monkshu_env.components['telemeet-join'].exitMeeting(this)">
+    </span>
 </div>

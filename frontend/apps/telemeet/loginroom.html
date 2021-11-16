@@ -97,6 +97,7 @@ img.logo {
 	height: 25px;
 	position: absolute;
 	user-select: none;
+	cursor: pointer;
 }
 
 span#signin {
@@ -139,7 +140,7 @@ span#signin > span > a {
 </head>
 
 <body>
-<img class="logo" src="./img/logo.png"></img>
+<img class="logo" src="./img/logo.png" onclick="window.open('http://teleworkr.com', '_blank')"></img>
 
 <span id="signin">
 	<span><a href="{{#_org_monkshu_makeLink}}./loginroom.html{{/_org_monkshu_makeLink}}">{{i18n.RoomLoginMsg}}</a></span>

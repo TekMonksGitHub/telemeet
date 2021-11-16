@@ -66,6 +66,7 @@ img.logo {
 	width: 148px;
 	height: 25px;
 	position: absolute;
+	cursor: pointer;
 }
 
 span#signin {
@@ -131,7 +132,7 @@ button:hover {
 </head>
 
 <body>
-<img class="logo" src="./img/logo.png"></img>
+<img class="logo" src="./img/logo.png" onclick='window.monkshu_env.frameworklibs["router"].doIndexNavigation()'></img>
 
 <span id="signin">
 	<span><a href="{{#_org_monkshu_makeLink}}./loginroom.html{{/_org_monkshu_makeLink}}">{{i18n.RoomLoginMsg}}</a></span>
