@@ -57,11 +57,9 @@ async function toggleMike(element, isFromMeet) {
 }
 
 const exitMeeting = element => _executeMeetCommand(element, "exitMeeting");
-
-function toggleScreenshare(element) {
-	_executeMeetCommand(element, "toggleShareScreen");
-	_toggleIcon(element, [`${COMPONENT_PATH}/img/screenshare.svg`, `${COMPONENT_PATH}/img/noscreenshare.svg`]); 
-}
+const toggleScreenshare = element => _executeMeetCommand(element, "toggleShareScreen");
+const toggleRaisehand = element => _executeMeetCommand(element, "toggleRaiseHand");
+const changeBackground = element => _executeMeetCommand(element, "changeBackground");
 
 async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 	const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector("div#telemeet"),
@@ -94,25 +92,23 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall
 			if (memory.videoOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
 		}; 
+
 		loginmanager.addLogoutListener(_=>exitListener(!result.isModerator, result.isModerator, roomName, roomPass, true));
 		webrtc.addRoomExitListener(exitListener, memory); 
-
 		webrtc.addRoomEntryListener(_=>{	
 			const videoState = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); memory.videoOn = videoState;
 			divTelemeet.classList.add("visible");
 		}, memory);
-
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);
+		webrtc.addRaiseHandListener(handUp => shadowRoot.querySelector("img#raisehandcontrol").src = 
+			`${COMPONENT_PATH}/img/${handUp?"":"no"}raisehand.svg`, memory);
 
 		webrtc.openTelemeet(result.url, roomPass, enterOnly, result.isModerator, 
 			session.get(APP_CONSTANTS.USERNAME), session.get(APP_CONSTANTS.USERID), memory.videoOn, 
 			memory.mikeOn, divTelemeet, memory);
 	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 }
-
-const _executeMeetCommand = (containedElement, command, params) => webrtc[command](
-	telemeet_join.getMemoryByContainedElement(containedElement), params);
 
 async function _startVideo(shadowRoot, containedElement) {
 	if (_getMemoryVariable("videoOn", containedElement)) return;
@@ -138,11 +134,13 @@ function _showError(error) {
 		{error}, "dialog", [], _=> monkshu_env.components['dialog-box'].hideDialog("dialog"));
 }
 
+const _executeMeetCommand = (containedElement, command, params) => webrtc[command](
+	telemeet_join.getMemoryByContainedElement(containedElement), params);
 const _getMemoryVariable = (varName, element) => telemeet_join.getMemoryByContainedElement(element)[varName];
 const _setMemoryVariable = (varName, element, value) => telemeet_join.getMemoryByContainedElement(element)[varName] = value;
 const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.src = icons[1]; else element.src = icons[0]; }
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, joinRoom, exitMeeting};
+	toggleScreenshare, toggleRaisehand, joinRoom, exitMeeting, changeBackground};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);

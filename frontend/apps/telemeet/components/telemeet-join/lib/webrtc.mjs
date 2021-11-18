@@ -15,7 +15,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		configOverwrite: { 
 			startWithVideoMuted: !videoOn, 
 			startWithAudioMuted: !mikeOn, 
-			remoteVideoMenu: {disableKick: true} 
+			remoteVideoMenu: {disableKick: true, disableGrantModerator: true} 
 		},
 		interfaceConfigOverwrite: { 
 			AUTHENTICATION_ENABLE: false,
@@ -30,15 +30,19 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 			SHOW_POWERED_BY: false,
 			SUPPORT_URL: "http://teleworkr.com"
 		},
-        userInfo: { email: userEmail, displayName: userName}
+		remoteVideoMenu: {},
+        userInfo: {email: userEmail, displayName: userName}
 	});
 	const _roomExited = _ => {
 		parentNode.removeChild(util.getChildrenByTagName(parentNode, "iframe")[0]);	// remove the iframe
-		meetAPI.dispose(); 
+		meetAPI.dispose(); delete memory.meetAPI;
         for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(isGuest, isModerator, roomName, roomPass);
 	}; meetAPI.addEventListener("videoConferenceLeft", _roomExited);
 	meetAPI.addEventListener("screenSharingStatusChanged", status => {
         for (const screenShareListener of memory.screenShareListeners||[]) screenShareListener(status.on);
+    }); 
+	meetAPI.addEventListener("raiseHandUpdated", status => {
+        for (const raiseHandListener of memory.raiseHandListeners||[]) raiseHandListener(status.handRaised?true:false, status.id);
     }); 
 
 	// show telemeet, and stop local video - as it hits performance otherwise
@@ -48,21 +52,24 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 
 const addRoomEntryListener = (listener, memory) => memory.roomEntryListeners ?
     memory.roomEntryListeners.push(listener) : memory.roomEntryListeners=[listener];
-
 const addRoomExitListener = (listener, memory) => memory.roomExitListeners ?
     memory.roomExitListeners.push(listener) : memory.roomExitListeners=[listener];
-
 const addScreenShareListener = (listener, memory) => memory.screenShareListeners ?
     memory.screenShareListeners.push(listener) : memory.screenShareListeners=[listener];
+const addRaiseHandListener = (listener, memory) => memory.raiseHandListeners ?
+	memory.raiseHandListeners.push(listener) : memory.raiseHandListeners=[listener];
 
 const toggleAudio = memory => _executeMeetCommand(memory, "toggleAudio");
 const toggleVideo = memory => _executeMeetCommand(memory, "toggleVideo");
 const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScreen");
+const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
+const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
+
 const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete memory.meetAPI;}
 
 function _executeMeetCommand(memory, command, params) {
     if (memory.meetAPI) memory.meetAPI.executeCommand(command, ...(params||[]));
 }
 
-export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, addScreenShareListener, 
-    toggleAudio, toggleVideo, toggleShareScreen, exitMeeting};
+export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, addScreenShareListener, addRaiseHandListener,
+    toggleAudio, toggleVideo, toggleShareScreen, toggleRaiseHand, exitMeeting, changeBackground};
