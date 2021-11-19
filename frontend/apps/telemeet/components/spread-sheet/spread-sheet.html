@@ -31,6 +31,11 @@ body {
     overflow: auto;
 }
 
+div#tableBorderDiv {
+    border-radius: 5px 5px 0px 0px;
+    background-color: #00C24E;
+}
+
 table {
     table-layout: fixed;
     width: 100%;
@@ -38,12 +43,13 @@ table {
     border-radius: 5px;
     border: 0.5px solid #444444;
     height: 100%;
+    border-collapse: collapse;
 }
 
 tr {min-height: 1.2em;}
 
 td {
-    border: 1px solid #444444;
+    border: 0.5px solid #444444;
     border-radius: 0px;
     background-color: white;
     padding: 0px;
@@ -147,7 +153,7 @@ img#search {
     left: 0px; 
     height: 2em; 
     top: 0px;
-    border: 1px solid #444444;
+    border: 0.5px solid #444444;
     border-top: none;
     border-right: none;
     border-radius: 0px 0px 0px 4px;
@@ -157,7 +163,7 @@ img#search {
 input#search {
     width: 100%;
     outline: none;
-    border: 1px solid #444444;
+    border: 0.5px solid #444444;
     border-top: none;
     border-left: none;
     min-height: 2em;
@@ -187,6 +193,7 @@ input#search {
 </span>
 {{/showToolbar}}
 
+<div id="tableBorderDiv">
 <table id="spreadsheet">
     {{#rows}}
     <tr>
@@ -199,6 +206,8 @@ input#search {
     </tr>
     {{/rows}}
 </table>
+</div>
+
 {{#showSearch}}
 <span id="search">
     <img id="search" src="{{{componentPath}}}/img/search.svg">

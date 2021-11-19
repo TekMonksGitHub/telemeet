@@ -1,0 +1,129 @@
+<style>
+    div#dialog {z-index: 200; background-color: #293548;}
+    div#modalcurtain{z-index: 199;}
+    div#dialog > span#close{display:none;}
+    div#dialog > div#error{display:none;}
+    div#dialogcontent {margin: 0;}
+    div#modalcurtain {display: none !important;}
+
+    div#maincontainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 70vw;
+    }
+
+    div#maincontrols {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 3em;
+    }
+
+    div#lefttextcolum, div#middleselectors, div#righttestcolumn {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    div#lefttextcolum{ width: 15%; color: D3D3D3; } 
+    div#middleselectors{ width: 50%; } 
+    div#righttestcolumn{ width: 25%; }
+
+    select {
+        padding: 0.5em;
+        border-radius: 0.5em;
+        background-color: #C4C4C4;
+        margin-bottom: 2em;
+    }
+    select:last-child {margin-bottom: 0em;}
+
+    span#testbuttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 1em;
+    }
+
+    span#lowerbuttonbar {
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+    }
+
+    video {
+        width: 100%;
+        height: 25vh;
+        background-color: #000000;
+        border-radius: 0.5em;
+    }
+
+    span.button {
+        border-radius: 0.5em;
+        width: 6em;
+        text-align: center;
+        padding: 0.5em;
+        margin-right: 4em;
+        background-color: #C4C4C4;
+        font-size: smaller;
+        cursor: default;
+    }
+    span.button:last-child {margin-right: 0em;}
+
+    span.testbutton {
+        border-radius: 0.5em;
+        text-align: center;
+        padding: 0.5em 1em;
+        background-color: #C4C4C4;
+        font-size: smaller;
+        cursor: default;
+    }
+    span.button:last-child {margin-right: 0em;}
+</style>
+
+<script type="module">
+import "{{{componentpath}}}/../../dialogs/setupav.mjs";
+</script>
+
+<div id="maincontainer">
+
+<div id="maincontrols">
+    <div id="lefttextcolum">
+        <span>Speakers</span>
+        <span>Microphone</span>
+        <span>Video&nbsp;Camera</span>
+    </div>
+
+    <div id="middleselectors">
+        <select id="speaker">
+            {{#speakers}}
+            <option value="{{deviceId}}">{{label}}</option>
+            {{/speakers}}
+        </select>
+        <select id="microphone">
+            {{#microphones}}
+            <option value="{{deviceId}}">{{label}}</option>
+            {{/microphones}}
+        </select>
+        <select id="camera">
+            {{#cameras}}
+            <option value="{{deviceId}}">{{label}}</option>
+            {{/cameras}}
+        </select>
+    </div>
+
+    <div id="righttestcolumn">
+        <video id="testvideo"></video>
+        <span id="testbuttons">
+            <span id="recordvideo" class="testbutton">⬤</span>
+            <span id="testspeakers" class="testbutton">Test Speakers</span>
+        </span>
+    </div>
+</div>
+
+<span id="lowerbuttonbar">
+    <span id="helpbutton" class="button">Help</span>
+    <span id="cancelbutton" class="button" onclick='monkshu_env.components["dialog-box"].hideDialog(this)'>Cancel</span>
+    <span id="okbutton" class="button" onclick='monkshu_env.components["dialog-box"].submit(this)'>OK</span>
+</span> 
+
+</div>

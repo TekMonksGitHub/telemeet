@@ -12,7 +12,7 @@ import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const COMPONENT_PATH = util.getModulePath(import.meta);
+const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'];
 
 async function elementConnected(host) {
 	const data = {}; 
@@ -63,7 +63,7 @@ const changeBackground = element => _executeMeetCommand(element, "changeBackgrou
 
 async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 	const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector("div#telemeet"),
-		memory = telemeet_join.getMemoryByContainedElement(divTelemeet);
+		memory = telemeet_join.getMemoryByContainedElement(divTelemeet), spanControls = shadowRoot.querySelector("span#controls");
 
 	if (enterOnly) session.set(APP_CONSTANTS.USERNAME, name);	// guest entry, set user name
 	
@@ -97,7 +97,7 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
 			const videoState = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); memory.videoOn = videoState;
-			divTelemeet.classList.add("visible");
+			divTelemeet.classList.add("visible"); spanControls.classList.add("animate");
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);
@@ -110,16 +110,28 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 }
 
+async function meetSettings(element, fromMeet) {
+	const data = await webrtc.getMediaDevices(); 
+	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; data.componentpath = COMPONENT_PATH;
+
+	const exitListener = _ => {DIALOG.hideDialog("telemeetdialog"); webrtc.removeRoomExitListener(exitListener, memory);}, 
+		memory = telemeet_join.getMemoryByContainedElement(element);
+	webrtc.addRoomExitListener(exitListener, memory);
+	const retVals = await DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/setupav.html`, 
+		false, false, data, "telemeetdialog", ["speaker", "microphone", "camera"]);
+	webrtc.removeRoomExitListener(exitListener, memory);
+
+	DIALOG.hideDialog("dialog");
+	LOG.info(JSON.stringify(retVals));
+}
+
 async function _startVideo(shadowRoot, containedElement) {
 	if (_getMemoryVariable("videoOn", containedElement)) return;
 	const video = shadowRoot.querySelector("video#video"); 
 	try {
 		const stream = await navigator.mediaDevices.getUserMedia({video: true});
 		video.srcObject = stream; _setMemoryVariable("videoOn", containedElement, true);
-	} catch (err) {
-		_showError(await i18n.get("NoCamera", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
-		LOG.error(`Unable to access the camera: ${err}`);
-	}
+	} catch (err) { _showError(await i18n.get("NoCamera")); LOG.error(`Unable to access the camera: ${err}`); }
 }
 
 function _stopVideo(shadowRoot, containedElement) {
@@ -129,10 +141,8 @@ function _stopVideo(shadowRoot, containedElement) {
 	delete video.srcObject; _setMemoryVariable("videoOn", containedElement, false);
 }
 
-function _showError(error) {
-	monkshu_env.components['dialog-box'].showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/error.html`, true, false,
-		{error}, "dialog", [], _=> monkshu_env.components['dialog-box'].hideDialog("dialog"));
-}
+const _showError = error => DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/error.html`, true, false, {error}, 
+	"dialog", [], _=> DIALOG.hideDialog("dialog"));
 
 const _executeMeetCommand = (containedElement, command, params) => webrtc[command](
 	telemeet_join.getMemoryByContainedElement(containedElement), params);
@@ -142,5 +152,5 @@ const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.s
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, joinRoom, exitMeeting, changeBackground};
+	toggleScreenshare, toggleRaisehand, joinRoom, meetSettings, exitMeeting, changeBackground};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);

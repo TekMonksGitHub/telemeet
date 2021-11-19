@@ -50,10 +50,25 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
     for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 }
 
+async function getMediaDevices() {
+	try {
+		const retObj = {speakers:[], cameras: [], microphones: []};
+		const deviceInfos = await navigator.mediaDevices.enumerateDevices();
+		for (const deviceInfo of deviceInfos) 
+			if (deviceInfo.kind == "videoinput") retObj.cameras.push(deviceInfo);
+			else if (deviceInfo.kind == "audioinput") retObj.microphones.push(deviceInfo);
+			else if (deviceInfo.kind == "audiooutput") retObj.speakers.push(deviceInfo);
+			else LOG.error(`Unknown AV device encountered ${JSON.stringify(deviceInfo)}`);
+		return retObj;
+	} catch (err) { LOG.error("Error getting AV device list "+err); return null; }
+}
+
 const addRoomEntryListener = (listener, memory) => memory.roomEntryListeners ?
     memory.roomEntryListeners.push(listener) : memory.roomEntryListeners=[listener];
 const addRoomExitListener = (listener, memory) => memory.roomExitListeners ?
     memory.roomExitListeners.push(listener) : memory.roomExitListeners=[listener];
+const removeRoomExitListener = (listener, memory) => { if (memory.roomExitListeners && memory.roomExitListeners.indexOf(listener) != -1)
+	memory.roomExitListeners.splice(memory.roomExitListeners.indexOf(listener),1); }
 const addScreenShareListener = (listener, memory) => memory.screenShareListeners ?
     memory.screenShareListeners.push(listener) : memory.screenShareListeners=[listener];
 const addRaiseHandListener = (listener, memory) => memory.raiseHandListeners ?
@@ -64,12 +79,12 @@ const toggleVideo = memory => _executeMeetCommand(memory, "toggleVideo");
 const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScreen");
 const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
 const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
-
 const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete memory.meetAPI;}
 
 function _executeMeetCommand(memory, command, params) {
     if (memory.meetAPI) memory.meetAPI.executeCommand(command, ...(params||[]));
 }
 
-export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, addScreenShareListener, addRaiseHandListener,
-    toggleAudio, toggleVideo, toggleShareScreen, toggleRaiseHand, exitMeeting, changeBackground};
+export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
+	addScreenShareListener, addRaiseHandListener, toggleAudio, toggleVideo, toggleShareScreen, toggleRaiseHand, 
+	exitMeeting, changeBackground, getMediaDevices};

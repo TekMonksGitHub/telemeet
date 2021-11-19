@@ -1,7 +1,7 @@
 SCHEMA
 ======
 {
-    "meetinglist": {"html":"spread-sheet", "rows":10, "columns":4, "onlyText": "true", "barstyle": "0px solid #4788C7",
+    "meetinglist": {"html":"spread-sheet", "rows":9, "columns":4, "onlyText": "true", "barstyle": "0px solid #4788C7",
         "styleBody":"url(./pages/meetinglist.styleBody.css)", "showToolbar": false, "readOnlySheet": true, 
         "showSearch": true, "hasHeaders": true, "value": "{{{sheetData}}}"},
     "telemeet": {"html":"telemeet-join", "id":"telemeet"},
