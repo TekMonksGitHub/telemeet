@@ -112,14 +112,14 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 
 async function meetSettings(element, fromMeet) {
 	const data = await webrtc.getMediaDevices(); 
-	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; data.componentpath = COMPONENT_PATH;
+	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog";
 
 	const exitListener = _ => {DIALOG.hideDialog("telemeetdialog"); webrtc.removeRoomExitListener(exitListener, memory);}, 
 		memory = telemeet_join.getMemoryByContainedElement(element);
 	webrtc.addRoomExitListener(exitListener, memory);
 	const retVals = await DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/setupav.html`, 
 		false, false, data, "telemeetdialog", ["speaker", "microphone", "camera"]);
-	webrtc.removeRoomExitListener(exitListener, memory);
+	webrtc.removeRoomExitListener(exitListener, memory); 
 
 	DIALOG.hideDialog("dialog");
 	LOG.info(JSON.stringify(retVals));
