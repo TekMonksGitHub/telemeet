@@ -23,6 +23,7 @@ div::-webkit-scrollbar-thumb {
     --text-color: #444444;
     --text-background: white;
     --inverse-text-color: white;
+    --border-radius: 0.5em;
 }
 
 body {
@@ -35,7 +36,7 @@ div#container {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     overflow: hidden;
 }
 
@@ -57,7 +58,7 @@ span#title {
 }
 
 input {
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     outline: none;
     border: 1px solid #a0a0a0;
     padding: 1.0em;
@@ -70,7 +71,7 @@ input#pass {
 }
 
 button {
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     color: var(--inverse-text-color);
     background-color: var(--border-color);
