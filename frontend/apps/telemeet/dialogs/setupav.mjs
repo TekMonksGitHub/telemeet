@@ -7,9 +7,12 @@
 const DIALOG = monkshu_env.components["dialog-box"], SELECTOR_SPEAKER = "select#speaker", MAX_RECORD_TIME = 60000,
     SELECTOR_MIKE = "select#microphone", SELECTOR_CAM = "select#camera", VIDEO_INOUT = "video#testvideo", 
     RECORD_BUTTON = "span#recordvideo", STOP_RECORD_BUTTON = "span#stoprecording", PLAY_BUTTON = "span#playrecording",
-    STOP_PLAY_BUTTON = "span#stopplayrecording", VIDEO_HELP = "span#testvideohelp";
+    STOP_PLAY_BUTTON = "span#stopplayrecording", VIDEO_HELP = "span#testvideohelp", AUDIO_OUT = "audio#testaudio",
+    AUDIO_PLAY_BUTTON = "span#playspeakers", AUDIO_STOP_BUTTON = "span#stopplayspeakers";
 
-async function init(_hostID) {}
+async function init(_hostID) {
+    navigator.mediaDevices.getUserMedia({ audio: true });
+}
 
 async function startrecording(containedElement) {
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement), env = _getEnv(containedElement)
@@ -85,9 +88,26 @@ async function restartAVTracks(containedElement) {
     } catch (err) { LOG.error(err); return null; }
 }
 
+async function playspeakers(containedElement) {
+    const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
+    const audioOut = shadowRoot.querySelector(AUDIO_OUT);
+    const playButton = shadowRoot.querySelector(AUDIO_PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(AUDIO_STOP_BUTTON);
+    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await audioOut.setSinkId(selectedAudioOut.value);
+    playButton.style.display = "none"; audioOut.currentTime = 0; audioOut.volume = 0.5; audioOut.play(); stopPlayButton.style.display = "inline";
+    audioOut.addEventListener("ended", _=> stopplayspeakers(containedElement)); 
+}
+
+function stopplayspeakers(containedElement) {
+    const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
+    const audioOut = shadowRoot.querySelector(AUDIO_OUT);
+    const playButton = shadowRoot.querySelector(AUDIO_PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(AUDIO_STOP_BUTTON);
+    playButton.style.display = "inline"; audioOut.pause(); audioOut.currentTime = 0; stopPlayButton.style.display = "none";
+}
+
 const _getEnv = containedElement => {
     if (DIALOG.getMemoryByContainedElement(containedElement).setupavEnv) DIALOG.getMemoryByContainedElement(containedElement).setupavEnv;
     else DIALOG.getMemoryByContainedElement(containedElement).setupavEnv = {}; return DIALOG.getMemoryByContainedElement(containedElement).setupavEnv;
 }
 
-export const setupav = {init, startrecording, stoprecording, playrecording, stopplayrecording, stopAVTracks};
+export const setupav = {init, startrecording, stoprecording, playrecording, stopplayrecording, stopAVTracks, playspeakers,
+    stopplayspeakers};

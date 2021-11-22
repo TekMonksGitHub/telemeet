@@ -94,7 +94,7 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 		}; 
 
 		loginmanager.addLogoutListener(_=>exitListener(!result.isModerator, result.isModerator, roomName, roomPass, true));
-		webrtc.addRoomExitListener(_=>exitListener(!result.isModerator, result.isModerator, roomName, roomPass, false), memory); 
+		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
 			const videoState = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); memory.videoOn = videoState;
 			divTelemeet.classList.add("visible"); spanControls.classList.add("animate");

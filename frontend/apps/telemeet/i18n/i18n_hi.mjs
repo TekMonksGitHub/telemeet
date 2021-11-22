@@ -98,5 +98,6 @@ export const i18n = {
 "AddUser": "Add User",
 "MeetingTableHeader": "Meeting Name,Organizer,Start Time,Action",
 "MeetLoadError": "Meet API failed to load, timedout.",
-"MediaDevicesFailed": "Failed to find any audio video devices."
+"MediaDevicesFailed": "Failed to find any audio video devices.",
+"SettingsHelp": "Press the record button below to record a test video and play it back to check if your devices are working properly. To test the speakers, press the audio button."
 }

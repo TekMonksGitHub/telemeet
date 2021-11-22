@@ -9,7 +9,7 @@ const MODULE_PATH = util.getModulePath(import.meta);
 
 async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userEmail, videoOn, mikeOn, parentNode, memory) {
     const hostURL = new URL(url), roomName = hostURL.pathname.replace(/^\/+/,"");
-	/*await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
+	await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
 	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
 		roomName, width: "100%", height: "100%", parentNode, noSSL: false,
 		configOverwrite: { 
@@ -46,12 +46,13 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
     }); 
 
 	// show telemeet, and stop local video - as it hits performance otherwise
-	memory.meetAPI = meetAPI; */
+	memory.meetAPI = meetAPI; 
     for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 }
 
 async function getMediaDevices() {
 	try {
+		_closeStream(await navigator.mediaDevices.getUserMedia({ audio: true, video: true }));	// get permissions
 		const retObj = {speakers:[], cameras: [], microphones: []};
 		const deviceInfos = await navigator.mediaDevices.enumerateDevices();
 		for (const deviceInfo of deviceInfos) 
@@ -83,8 +84,9 @@ const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete mem
 
 function _executeMeetCommand(memory, command, params) {
     if (memory.meetAPI) memory.meetAPI.executeCommand(command, ...(params||[]));
-	else if (command == "hangup") for (const roomExitListener of memory.roomExitListeners) roomExitListener();
 }
+
+function _closeStream(stream) { for (const track of stream.getTracks()) {track.stop(); stream.removeTrack(track);} }
 
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
 	addScreenShareListener, addRaiseHandListener, toggleAudio, toggleVideo, toggleShareScreen, toggleRaiseHand, 

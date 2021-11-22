@@ -1,104 +1,130 @@
 <style>
-    :host {
-        --border-radius: 0.5em;
-        --text-color: #D3D3D3;
-        --button-color: #C4C4C4;
-        --dialog-background: #293548;
-    }
+:host {
+    --border-radius: 0.5em;
+    --text-color: #D3D3D3;
+    --button-color: #C4C4C4;
+    --dialog-background: #293548;
+}
 
-    div#dialog {z-index: 200; background-color: var(--dialog-background); border-radius: var(--border-radius);}
-    div#modalcurtain{z-index: 199;}
-    div#dialog > span#close{display:none;}
-    div#dialog > div#error{display:none;}
-    div#dialogcontent {margin: 0;}
-    div#modalcurtain {display: none !important;}
+::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
 
-    div#maincontainer {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 70vw;
-    }
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
 
-    div#maincontrols {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin-bottom: 3em;
-    }
+::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
 
-    div#lefttextcolum, div#middleselectors, div#righttestcolumn {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    div#lefttextcolum{ width: 15%; color: var(--text-color); } 
-    div#middleselectors{ width: 50%; } 
-    div#righttestcolumn{ width: 25%; }
+div#dialog {z-index: 200; background-color: var(--dialog-background); border-radius: var(--border-radius);}
+div#modalcurtain{z-index: 199;}
+div#dialog > span#close{display:none;}
+div#dialog > div#error{display:none;}
+div#dialogcontent {margin: 0;}
+div#modalcurtain {display: none !important;}
 
-    select {
-        padding: 0.5em;
-        border-radius: var(--border-radius);
-        background-color: var(--button-color);
-        margin-bottom: 2em;
-    }
-    select:last-child {margin-bottom: 0em;}
+div#maincontainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 70vw;
+}
 
-    span#testbuttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin-top: 1em;
-    }
+div#maincontrols {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 3em;
+}
 
-    span#lowerbuttonbar {
-        display: flex;
-        flex-direction: row;
-        justify-content: right;
-    }
+div#lefttextcolum, div#middleselectors, div#righttestcolumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+div#lefttextcolum{ width: 15%; color: var(--text-color); } 
+div#middleselectors{ width: 50%; } 
+div#righttestcolumn{ width: 25%; }
 
-    video#testvideo, span#testvideohelp {
-        width: 100%;
-        height: 25vh;
-        background-color: #000000;
-        border-radius: var(--border-radius);
-        color: var(--text-color);
-        font-size: smaller;
-        overflow: hidden;
-    }
-    video#testvideo {
-        transform: rotateY(180deg);
-        display: none;
-    }
-    span#testvideohelp {
-        display: flex;
-        flex-flow: column;
-        justify-content: space-around;
-    }
-    span#testvideohelp > span {text-align: center; padding: 1em;}
+select {
+    padding: 0.5em;
+    border-radius: var(--border-radius);
+    background-color: var(--button-color);
+    margin-bottom: 2em;
+}
+select:last-child {margin-bottom: 0em;}
 
-    span.button {
-        border-radius: var(--border-radius);
-        width: 6em;
-        text-align: center;
-        padding: 0.5em;
-        margin-right: 4em;
-        background-color: var(--button-color);
-        font-size: smaller;
-        cursor: default;
-    }
-    span.button:last-child {margin-right: 0em;}
-    span#stoprecording, span#stopplayrecording {display: none;}
+span#testbuttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1em;
+}
 
-    span.testbutton {
-        border-radius: var(--border-radius);
-        text-align: center;
-        padding: 0.5em 1em;
-        background-color: var(--button-color);
-        font-size: smaller;
-        cursor: default;
-    }
-    span.button:last-child {margin-right: 0em;}
+span#lowerbuttonbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+video#testvideo, span#testvideohelp {
+    width: 100%;
+    height: 25vh;
+    background-color: #000000;
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-size: smaller;
+    overflow: hidden;
+}
+video#testvideo {
+    transform: rotateY(180deg);
+    display: none;
+}
+span#testvideohelp {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    user-select: none;
+}
+span#testvideohelp > span {
+    text-align: center; 
+    padding: 1em; 
+    overflow-y: auto; 
+    overflow-x: hidden;
+}
+
+span.button {
+    border-radius: var(--border-radius);
+    width: 6em;
+    text-align: center;
+    padding: 0.5em;
+    margin-right: 4em;
+    background-color: var(--button-color);
+    font-size: smaller;
+    cursor: default;
+}
+span.button:last-child {margin-right: 0em;}
+span#stoprecording, span#stopplayrecording, span#stopplayspeakers {display: none;}
+
+span.testbutton {
+    border-radius: var(--border-radius);
+    text-align: center;
+    padding: 0.5em 1em;
+    background-color: var(--button-color);
+    font-size: smaller;
+    cursor: default;
+    width: 1em;
+}
+span.button:last-child {margin-right: 0em;}
 </style>
 
 <script type="module">
@@ -135,19 +161,20 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
 
     <div id="righttestcolumn">
         <video id="testvideo"></video>
-        <span id="testvideohelp"><span>Press the record button below to record a test video and play it back to check if your devices are working properly. To replay a recording press the play button.</span></span>
+        <span id="testvideohelp"><span>{{i18n.SettingsHelp}}</span></span>
+        <audio id="testaudio" src="{{{componentpath}}}/img/testaudio.mp3"></audio>
         <span id="testbuttons">
             <span id="recordvideo" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.startrecording(this)">⬤</span>
             <span id="stoprecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stoprecording(this)">◼️</span>
             <span id="playrecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.playrecording(this)">▶</span>
             <span id="stopplayrecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stopplayrecording(this)">◼️</span>
-            <span id="testspeakers" class="testbutton">🔈</span>
+            <span id="playspeakers" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.playspeakers(this)">🔈</span>
+            <span id="stopplayspeakers" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stopplayspeakers(this)">◼️</span>
         </span>
     </div>
 </div>
 
 <span id="lowerbuttonbar">
-    <span id="helpbutton" class="button">Help</span>
     <span id="cancelbutton" class="button" onclick='monkshu_env.apps.telemeet.setupav.stopAVTracks(this); monkshu_env.components["dialog-box"].hideDialog(this);'>Cancel</span>
     <span id="okbutton" class="button" onclick='monkshu_env.apps.telemeet.setupav.stopAVTracks(this); monkshu_env.components["dialog-box"].submit(this); monkshu_env.components["dialog-box"].hideDialog(this);'>OK</span>
 </span> 
