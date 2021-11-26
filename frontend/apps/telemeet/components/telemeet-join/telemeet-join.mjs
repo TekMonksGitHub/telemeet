@@ -86,10 +86,10 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 		const exitListener = (isGuest, isModerator, room, pass, callFromLogout) => {	// delete the room, close FW on moderator exit
 			if (roomClosed) return;	else roomClosed = true; // return if already closed, else close it
 			divTelemeet.classList.remove("visible");	// stop showing the telemeet div
-			LOG.info(`Deleting room ${room} due to ${callFromLogout?"moderator logout":"moderator left."}`);
+			/*LOG.info(`Deleting room ${room} due to ${callFromLogout?"moderator logout":"moderator left."}`);
 			if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST",	// tell backend room is gone 
 				{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
-			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall
+			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
 			if (memory.videoOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
 		}; 
 

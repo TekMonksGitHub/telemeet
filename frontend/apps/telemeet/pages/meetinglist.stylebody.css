@@ -6,20 +6,24 @@
     --search-background: #E5E5E5;
 }
 
+div#tableBorderDiv {border: 0.5px solid #00C24E;}
+
 table {
     font-size: smaller;
     font-family: sans-serif;
-    border-radius: var(--border-radius) var(--border-radius) 0px 0px;
-    border: 0.5px solid var(--border-color);
+    background: #00C24E;
+    border: 0.5px solid #00C24E;
 }
 
 td {
     border: 0.5px solid var(--border-color);
     background-color: var(--text-background);
     color: var(--text-color);
-    padding: 0px;
-    overflow: hidden;
 }
+tr > td:nth-child(1) {min-width: 25em}
+tr > td:nth-child(2) {min-width: 25em}
+tr > td:nth-child(3) {width: 8em}
+tr > td:nth-child(4) {width: 6em}
 
 tr:first-child > td {
     background-color: var(--border-color); 

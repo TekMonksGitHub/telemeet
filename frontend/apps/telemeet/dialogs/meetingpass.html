@@ -1,0 +1,67 @@
+<style>
+:host {
+    --border-color: #00C24E;
+    --text-color: #444444;
+    --text-background: white;
+    --inverse-text-color: white;
+    --border-radius: 0.5em;
+}
+
+body {
+    font-family: inherit;
+    width: min(18em, 80vw);
+}
+
+div#error, div#buttonbar {display: none;}
+div#dialogcontent {margin: 0;}
+
+div#maincontent {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+span#joiner {
+    display: inline-flex;
+    flex-flow: row;
+    justify-content: space-between;
+    margin-bottom: 2em;
+}
+
+input#pass {
+    border-radius: var(--border-radius);
+    outline: none;
+    border: 1px solid #a0a0a0;
+    padding: 1.0em;
+    min-width: 2em;
+    color: var(--text-color);
+    flex-grow: 1;
+    margin-right: 2em;
+}
+
+.button {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    color: var(--inverse-text-color);
+    background-color: var(--border-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 1em;
+}
+button#join {width: 5em;}
+</style>
+
+<div id="maincontent">
+    <input id="knock" type="hidden" value="noknock">
+    <span id="joiner">
+        <input id="pass"  type="password" placeholder="{{i18n.Password}}">
+        <button class="button" id="join" onclick='monkshu_env.components["dialog-box"].submit(this);
+            monkshu_env.components["dialog-box"].hideDialog(this);'>{{i18n.Join}}</button>
+    </span>
+    <button class="button" id="knock" onclick='document.querySelector("input#knock").value="knock";
+        monkshu_env.components["dialog-box"].submit(this);
+        monkshu_env.components["dialog-box"].hideDialog(this);'>{{i18n.KnockToEnter}}</button>
+</div>

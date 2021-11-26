@@ -2,6 +2,9 @@
  * Spread sheet component. This component is dependent
  * on two other components - context-menu and dialog-box.
  * 
+ * If the sheet has only one tab then context-menu is not needed.
+ * If the sheet doesn't allow editing, then dialog-box is not needed.
+ * 
  * Data format in JSON for value (get and set). For single tab data simple
  * CSV format can be used.
  * [
@@ -48,23 +51,20 @@ async function elementConnected(element) {
 	spread_sheet.setDataByHost(element, data);
 }
 
-async function elementRendered(element, initialRender) {
-	if (element.getAttribute("value") && initialRender) await _setValue(util.safeURIDecode(element.getAttribute("value")), element);
+async function elementRendered(host, initialRender) {
+	if (host.getAttribute("value") && initialRender) await _setValue(util.safeURIDecode(host.getAttribute("value")), host);
 
 	// make table resizable and all elements to auto-resize when the columns are resized
-	const _getAllTextAreasForThisColumn = td => {
+	const _getAllContentElementsForThisColumn = td => {
 		const columnNumberThisTD = Array.prototype.slice.call(td.parentElement.querySelectorAll("td")).indexOf(td);
 		const allTRs = td.parentElement.parentElement.querySelectorAll("tr");
-		const retList = []; for (const tr of allTRs) for (const [index, textarea] of Array.prototype.slice.call(tr.querySelectorAll("textarea")).entries())
-			if (index == columnNumberThisTD) retList.push(textarea);
+		const retList = []; for (const tr of allTRs) for (const [index, contentelement] of Array.prototype.slice.call(tr.querySelectorAll(_getContentElementName(tr))).entries())
+			if (index == columnNumberThisTD) retList.push(contentelement);
 		return retList;
 	}
-	const shadowRoot = spread_sheet.getShadowRootByHost(element);
-	resizable.makeResizableTable(shadowRoot.querySelector("table#spreadsheet"), element.getAttribute("barstyle"), 
-		{ onresize: td => {for (const textarea of _getAllTextAreasForThisColumn(td)) resizeRowInputsForLargestScroll(textarea)} });
-
-	// update the text for search box if it is there, due to a bug which doesn't set text correctly even if value is correct
-	const elementSearch = shadowRoot.querySelector("input#search"); if (elementSearch) elementSearch.value = elementSearch.getAttribute("data-value");
+	const shadowRoot = spread_sheet.getShadowRootByHost(host), readOnlySheet = host.getAttribute("readOnlySheet")?.toString().toLowerCase() == "true" ? true : undefined;
+	resizable.makeResizableTable(shadowRoot.querySelector("table#spreadsheet"), host.getAttribute("barstyle"), 
+		{ onresize: td => {if (!readOnlySheet) for (const contentelement of _getAllContentElementsForThisColumn(td)) resizeRowInputsForLargestScroll(contentelement)} });
 }
 
 function cellpastedon(element, event) {
@@ -114,7 +114,7 @@ function resizeRowInputsForLargestScroll(element) {
 	} return largest; }
 	if (!element.parentElement.parentElement) LOG.info("Resize skipped as no grandparents found.");
 
-	const rowElements = element.parentElement.parentElement.querySelectorAll("textarea"), largestScrollHeight = parseInt(_getLargestScrollHeight(rowElements));
+	const rowElements = element.parentElement.parentElement.querySelectorAll(_getContentElementName(element)), largestScrollHeight = parseInt(_getLargestScrollHeight(rowElements));
 	if (parseInt(element.style.height, 10) == largestScrollHeight) return;	// no change needed
 	else for (const element of rowElements) element.style.height = largestScrollHeight+"px"; 
 }
@@ -151,11 +151,19 @@ async function tabMenuClicked(event, element, sheetID) {
 
 function searchModified(element) {
 	const filter = element.value, hasHeaders = spread_sheet.getHostElement(element).getAttribute("hasHeaders")?.toLowerCase() == "true";
-	const currentData = _getSpreadSheetAsCSV(spread_sheet.getHostElementID(element), true);
-	const filteredData = [];
-	for (const [i, line] of currentData.split("\r\n").entries()) if ((hasHeaders && i == 0) ||
-		line.toLowerCase().indexOf(filter.toLowerCase())) filteredData.push(line);
-	_setSpreadSheetFromCSV(filteredData.join("\r\n"), spread_sheet.getHostElementID(element));
+	const memory = spread_sheet.getMemoryByContainedElement(element);
+	const currentData = memory.allCSVData || _getSpreadSheetAsCSV(spread_sheet.getHostElementID(element), true), filteredData = [];
+	const currentDataAsText = memory.allCSVDataText || _getSpreadSheetAsCSV(spread_sheet.getHostElementID(element), true, true);
+	if (filter.trim() != "") {	// search specified, so filter the data
+		if (!memory.allCSVData) {memory.allCSVData = currentData; memory.allCSVDataText = currentDataAsText;}
+		const htmlLines = currentData.split("\r\n");
+		for (const [i, line] of currentDataAsText.split("\r\n").entries()) if ((hasHeaders && i == 0) ||
+			(line.toLowerCase().indexOf(filter.toLowerCase()) != -1)) filteredData.push(htmlLines[i]);
+		_setSpreadSheetFromCSV(filteredData.join("\r\n"), spread_sheet.getHostElementID(element));
+	} else if (memory.allCSVData) {	// no search specified, restore full sheet
+		_setSpreadSheetFromCSV(memory.allCSVData, spread_sheet.getHostElementID(element)); 
+		delete memory.allCSVData; delete memory.allCSVDataText;
+	}
 }
 
 const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
@@ -190,11 +198,12 @@ async function _setValue(value, host) {
 	} else await _setSpreadSheetFromCSV(value, host.id);
 }
 
-function _getSpreadSheetAsCSV(hostID, dontTrim) {
+function _getSpreadSheetAsCSV(hostID, dontTrim, asText) {
 	const _isEmptyArray = array => {for (const cell of array) if (cell.trim() != '') return false; return true;}
 	const shadowRoot = spread_sheet.getShadowRootByHostId(hostID), rows = shadowRoot.querySelectorAll("tr");
 	const csvObject = []; for (const row of rows) {
-		const rowData = Array.prototype.slice.call(row.getElementsByTagName("textarea")).map(e => e.value);
+		const contentElementName = _getContentElementName(row);
+		const rowData = Array.prototype.slice.call(row.getElementsByTagName(contentElementName)).map(e => asText?e.innerText:contentElementName=="textarea"?e.value:e.innerHTML);
 		if (_isEmptyArray(rowData) && !dontTrim) continue;	// skip totally empty rows, unless don't trim was specified.
 		else csvObject.push(rowData);
 	}
@@ -223,28 +232,32 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 	const host = spread_sheet.getHostElementByID(hostID), data = await _createElementData(host, 
 		numOfRowsInCSV>_getActiveTabObject(host)[ROW_PROP]?numOfRowsInCSV:_getActiveTabObject(host)[ROW_PROP], 
 		numOfColumnsInCSV>_getActiveTabObject(host)[COLUMN_PROP]?numOfColumnsInCSV:_getActiveTabObject(host)[COLUMN_PROP]);
+	const shadowRoot = spread_sheet.getShadowRootByHost(host);
 	
-	await spread_sheet.bindData(data, host.id);	// adjust the sheet size to match the data, this will call elementRendered
+	// create a new table to match the size of rows and columns and replace current table with this
+	const newHTML = router.getMustache().render(spread_sheet.getTemplateHTML(host), data), newDOM = new DOMParser().parseFromString(newHTML, "text/html"),
+		newTable = newDOM.querySelector("table#spreadsheet"), parentOfTable = shadowRoot.querySelector("table#spreadsheet").parentElement;
+	parentOfTable.replaceChild(newTable, shadowRoot.querySelector("table#spreadsheet"));
 
 	// fill in the data
-	const shadowRoot = spread_sheet.getShadowRootByHost(host), rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
+	const rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
 	for (let [rowNumber, row] of rows.entries()) {
 		const column = Array.prototype.slice.call(row.children);
 		for (const [colNumber, tdElement] of column.entries()) if (csvArrayOfArrays[rowNumber] && csvArrayOfArrays[rowNumber][colNumber]) {
-			const textarea = tdElement.getElementsByTagName("textarea")[0];
-			textarea.value = csvArrayOfArrays[rowNumber][colNumber]; textarea.onchange();
+			const contentElementName = _getContentElementName(row), contentElement = tdElement.getElementsByTagName(contentElementName)[0];
+			if (contentElementName == "textarea") {contentElement.value = csvArrayOfArrays[rowNumber][colNumber]; contentElement.onchange();}
+			else contentElement.innerHTML = csvArrayOfArrays[rowNumber][colNumber];
 		}
 	}
 	return true;
 }
 
 async function _createElementData(host, rows=host.getAttribute("rows")||6, columns=host.getAttribute("columns")||2) {
-	const shadowRoot = spread_sheet.getShadowRootByHost(host), data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID, 
+	const data = {componentPath: COMPONENT_PATH, i18n: {}, CONTEXT_MENU_ID, 
 		showSearch: host.getAttribute("showSearch")?.toString().toLowerCase() == "true" ? true : undefined,
 		readOnlySheet: host.getAttribute("readOnlySheet")?.toString().toLowerCase() == "true" ? true : undefined,
 		showToolbar: host.getAttribute("showToolbar")?.toString().toLowerCase() == "false" ? undefined : true,
-		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined,
-		searchText: shadowRoot?shadowRoot.querySelector("input#search").value:""};
+		toolbarPluginHTML: host.getAttribute("toolbarPluginHTML")?decodeURIComponent(host.getAttribute("toolbarPluginHTML")):undefined};
 	for (const i18nKey in i18n) data.i18n[i18nKey] = i18n[i18nKey][i18nFramework.getSessionLang()];
 
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
@@ -281,6 +294,8 @@ function _setHTMLElementValue(element, value) {
 	} else if (element.tagName.toLowerCase() == "textarea") element.innerHTML = value;
 	else element.setAttribute("value", value);
 }
+const _getContentElementName = containedElement => spread_sheet.getHostElement(containedElement).getAttribute(
+	"readOnlySheet")?.toString().toLowerCase() == "true" ? "span" : "textarea";
 
 // convert this all into a WebComponent so we can use it
 export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon, 

@@ -11,7 +11,6 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
 const TELEMEET_ID = "telemeet";
 const dialog = _ => monkshu_env.components['dialog-box'];
-const _showMessage = message => dialog().showMessage(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, {message}, "dialog");
 
 async function changeStatus(status) {
     const req = {id: session.get(APP_CONSTANTS.USERID), status};
@@ -55,14 +54,15 @@ async function changeProfile(_element) {
 
 async function joinRoom(room, pass) {
     if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
-    if ((!pass) || pass.length==0) {_showMessage(await i18n.get("NoPass")); return;}
+    if ((!pass) || pass.length==0) pass = (await dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/meetingpass.html`, true, 
+        true, {}, "dialog", ["knock","pass"])).pass;
     const telemeet = window.monkshu_env.components["telemeet-join"];
     telemeet.joinRoom(telemeet.getHostElementByID(TELEMEET_ID), room, pass);
 }
 
 function showLoginMessages() {
     const data = router.getCurrentPageData();
-    if (data.showDialog) { _showMessage(data.showDialog.message); delete data.showDialog; router.setCurrentPageData(data); }
+    if (data.showDialog) { _showMessage(data.showdialog().message); delete data.showDialog; router.setCurrentPageData(data); }
 }
 
 const interceptPageLoadData = _ => router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {
@@ -79,16 +79,20 @@ async function _getTOTPQRCode(key) {
 
 async function _getRoomsListAsCSV() {
     const _escCSV = v => v.indexOf(",") != -1 ? `"${v}"`:v;
+    const joinLinkHTML = await $$.requireText("./pages/joinlink.html");
 
     let roomsCSV = `${await i18n.get("MeetingTableHeader")}\r\n`;
     const roomsResult = await apiman.rest(APP_CONSTANTS.API_GETROOMS, "GET", {}, true);
     if (roomsResult.result) for (const room of roomsResult.rooms) {
-        const csvLine = [_escCSV(room.name), _escCSV(room.moderator), 
-            _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), "Join"].join(",");
+        const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, joinText: "Join"}));
+        const csvLine = [_escCSV(room.name), _escCSV(`${room.moderatorName} &lt;${room.moderator}&gt;`), 
+            _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), joinLink].join(",");
         roomsCSV += csvLine + "\r\n";
     } else LOG.error("Get rooms API failed.");
     return roomsCSV;
 }
+
+const _showMessage = message => dialog().showMessage(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, {message}, "dialog");
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
     interceptPageLoadData, joinRoom};

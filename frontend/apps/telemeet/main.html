@@ -4,10 +4,32 @@
 <style>
 @import url('https://fonts.googleapis.com/css?family=Red+Hat+Text');
 
+body::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
 body {
 	margin: 0;
 	padding: 0;
 	font-family: 'Red Hat Text', sans-serif;
+	overflow: auto;
+	min-width: 780px;
+	min-height: 640px;
 }
 
 body::after {
@@ -25,66 +47,74 @@ body::after {
 	bottom: 0;
 }
 
-img#textlogo {
-	top: 30px;
-	left: 20px;
-	position: absolute;
-	height: 16px;
-	width: 100px;
-	user-select: none;
-}
-
-span#rightheader {
-	top: 20px;
-	right: 20px;
-	position: absolute;
+span#header {
+	margin-top: 1em;
 	color: #41cf70;
 	font-size: 0.85em;
 	font-weight: 500;
 	user-select: none;
+    overflow: hidden;
+    white-space: nowrap;
+	height: 5em;
+    display: inline-flex;
+    align-items: center;
+	justify-content: space-between;
+    width: 100%;
 }
 
-span#rightheader > span#name {
-	padding-right: 40px;
+span#header > img#textlogo {
+	height: 1em;
+	user-select: none;
+	max-width: 20vw;
+	margin-left: 2em;
+}
+
+span#header > span#rightheader {
+	height: 100%;
+    display: inline-flex;
+    align-items: center;
+}
+
+span#header > span#rightheader > span#name {
+	padding-right: 4em;
 	font-family: "Red Hat Text";
 }
 
-span#rightheader > span-with-menu#status, span#rightheader > span-with-menu#gear {
-	padding-left: 40px;
+span#header > span#rightheader > span-with-menu#status, span#header > span#rightheader > span-with-menu#gear {
+	padding: 0em 2em 0em 4em;
 	display: inline-block;
+
 }
 
-span#rightheader > span#signoff {
-	padding-left: 65px;
-	padding-right: 20px;
+span#header > span#rightheader > span#signoff {
+	padding-left: 4em;
+	padding-right: 2em;
 	vertical-align: middle;
 }
 
-span#rightheader > span#signoff > img {
-	height: 30px;
-	width: 30px;
+span#header > span#rightheader > span#signoff > img {
+	height: 2em;
+	width: 2em;
 	vertical-align: middle;
 }
 
-span#rightheader > span#img {
+span#header > span#rightheader > span#img {
 	box-shadow: 1px 1px 20px -3px #41cf70;
 	border-radius: 50%;
 	display: inline-block;
 	vertical-align: middle;
 }
 
-span#rightheader > span#img > img {
-	height: 40px;
-	width: 40px;
+span#header > span#rightheader > span#img > img {
+	height: 3em;
+	width: 3em;
 	border-radius: 50%;
 }
 
 div#maincontent {
-	position: absolute;
 	background-color: transparent;
-	top: 2em;
-	height: calc(100% - 10em);
-	margin: 5em;
+	height: calc(100% - 9.6em);
+	margin: 1em 5em 3.5em 5em;
 }
 </style>
 
@@ -112,8 +142,9 @@ div#maincontent {
 </head>
 
 <body style="margin: 0%">
-<img id="textlogo" src="./img/textlogo.png">
-<span id="rightheader">
+<span id="header">
+	<img id="textlogo" src="./img/textlogo.png">
+	<span id="rightheader">
 	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
 	<span id="img"><img src="./img/person.png"></span>
 	<span-with-menu id="status" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}">{{i18n.MyStatus}}&nbsp;&nbsp;▼
@@ -121,13 +152,14 @@ div#maincontent {
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Break')">{{i18n.OnBreak}}</menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Offline')">{{i18n.Offline}}</menu-item>
 	</span-with-menu>
-	<span-with-menu id="gear" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}"><img src="./img/settings.svg" style="height: 30px;width: 30px;vertical-align: middle;">
+	<span-with-menu id="gear" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}"><img src="./img/settings.svg" style="height: 2em;width: 2em;vertical-align: middle;">
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)">{{i18n.ChangePassword}}</menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)">{{i18n.ChangePhone}}</menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeProfile(this)">{{i18n.ChangeProfile}}</menu-item>
 		{{#admin}}<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)">{{i18n.ManageUsers}}</menu-item>{{/admin}}
 	</span-with-menu>
 	<span id="signoff"><img src="./img/poweroff.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()"></span>
+	</span>
 </span>
 
 <div id="maincontent">

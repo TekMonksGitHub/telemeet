@@ -6,20 +6,20 @@
  -->
 <style>
 
-body::-webkit-scrollbar {
+*::-webkit-scrollbar {
     width: 0.5em !important;
     height: 0.5em !important;
     scroll-behavior: smooth !important;
 }
 
-body::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
     margin: 40px;
     border-radius: 10px !important;
 }
 
-body::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
     background-color: darkgrey !important;
     border-radius: 10px !important;
     background-clip: padding-box;
@@ -33,17 +33,18 @@ body {
 
 div#tableBorderDiv {
     border-radius: 5px 5px 0px 0px;
-    background-color: #00C24E;
+    border: 0.5px solid #444444;
+    overflow: auto;
 }
 
 table {
     table-layout: fixed;
     width: 100%;
     border-spacing: 0px;
-    border-radius: 5px;
     border: 0.5px solid #444444;
     height: 100%;
     border-collapse: collapse;
+    background: #444444;
 }
 
 tr {min-height: 1.2em;}
@@ -54,21 +55,23 @@ td {
     background-color: white;
     padding: 0px;
     overflow: hidden;
+    padding: 4px;
+    box-sizing: border-box;
 }
 
-td > textarea {
+td > textarea, td > span {
     background-color: transparent;
     border: 0px;
     outline: none;
     color: inherit;
     resize: none;
-    padding: 4px;
+    padding: 0.1px;
     width: 100%;
     overflow: hidden;
     font-family: inherit;
-    display: block;
-    box-sizing: border-box;
+    display: inline;
 }
+td > span {cursor: default;}
 
 tr:first-child > td {
     background-color: #444444; 
@@ -81,7 +84,10 @@ tr:last-child > td:last-child {border-color: #444444; border-bottom-right-radius
 tr:last-child > td:first-child {border-color: #444444; border-bottom-left-radius: 4px;}
 
 td:focus-within {background-color: yellow; color: #444444;}
-td > textarea:focus {background-color: yellow; color: #444444;}
+td > textarea:focus, td > span:focus {background-color: yellow; color: #444444;}
+
+td:first-child {border-left: none;}
+td:last-child {border-right: none;}
 
 span#toolbar {
     padding-bottom: 10px; 
@@ -144,7 +150,7 @@ img.button {width: 20px;}
 </style>
 {{#showSearch}}
 <style>
-table {border-radius: 5px 5px 0px 0px; height: calc(100% - 3em);}
+table {border-radius: 5px 5px 0px 0px; height: calc(100% - 3.5em);}
 tr:last-child > td:last-child {border-color: #444444; border-bottom-right-radius: 0px;}
 tr:last-child > td:first-child {border-color: #444444; border-bottom-left-radius: 0px;}
 span#search {display: inline-flex; flex-direction: row; width: 100%;}
@@ -153,7 +159,7 @@ img#search {
     left: 0px; 
     height: 2em; 
     top: 0px;
-    border: 0.5px solid #444444;
+    border: 1px solid #444444;
     border-top: none;
     border-right: none;
     border-radius: 0px 0px 0px 0.3em;
@@ -163,7 +169,7 @@ img#search {
 input#search {
     width: 100%;
     outline: none;
-    border: 0.5px solid #444444;
+    border: 1px solid #444444;
     border-top: none;
     border-left: none;
     min-height: 2em;
@@ -197,11 +203,17 @@ input#search {
 <table id="spreadsheet">
     {{#rows}}
     <tr>
-        {{#columns}}<td onclick='this.querySelector("textarea").focus()'><textarea rows="1" 
+        {{#columns}}<td {{^readOnlySheet}}onclick='this.querySelector("textarea").focus()'{{/readOnlySheet}}>
+            {{^readOnlySheet}}
+            <textarea rows="1" 
             onpaste='monkshu_env.components["spread-sheet"].cellpastedon(this, event)'
             oninput='monkshu_env.components["spread-sheet"].resizeRowInputsForLargestScroll(this)'
             onchange="this.oninput()" onfocus="this.oninput()" spellcheck="false"
-            onkeypress="if (event.keyCode == 13) event.preventDefault();" {{#readOnlySheet}}readonly{{/readOnlySheet}}></textarea>
+            onkeypress="if (event.keyCode == 13) event.preventDefault();" ></textarea>
+            {{/readOnlySheet}}
+            {{#readOnlySheet}}
+            <span></span>
+            {{/readOnlySheet}}
         </td>{{/columns}}
     </tr>
     {{/rows}}
