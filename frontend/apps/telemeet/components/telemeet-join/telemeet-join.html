@@ -157,10 +157,11 @@ span#controls > img {
 <span id="join" onclick="monkshu_env.components['telemeet-join'].joinRoom(this)">{{i18n.Join}}</span>
 </span>
 {{/show-joiner-dialog}}
+
+<dialog-box id="telemeetdialog"></dialog-box>
 </div>
 
 <div id="telemeet">
-    <dialog-box id="telemeetdialog"></dialog-box>
     <span id="controls">
     <img id="camcontrol" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this, true)">
     <img id="mikecontrol" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this, true)">

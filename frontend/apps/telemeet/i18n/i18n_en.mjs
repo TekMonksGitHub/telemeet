@@ -100,5 +100,6 @@ export const i18n = {
 "MeetLoadError": "Meet API failed to load, timedout.",
 "MediaDevicesFailed": "Failed to find any audio video devices.",
 "SettingsHelp": "Press the record button below to record a test video and play it back to check if your devices are working properly. To test the speakers, press the audio button.",
-"KnockToEnter": "Knock to enter without a password"
+"KnockToEnter": "Knock to enter without a password",
+"ConferenceLoading": "Conference loading..."
 }

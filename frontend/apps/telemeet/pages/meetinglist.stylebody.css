@@ -9,7 +9,7 @@
 div#tableBorderDiv {border: 0.5px solid #00C24E;}
 
 table {
-    font-size: smaller;
+    font-size: small;
     font-family: sans-serif;
     background: #00C24E;
     border: 0.5px solid #00C24E;

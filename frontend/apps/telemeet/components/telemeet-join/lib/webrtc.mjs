@@ -44,10 +44,11 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	meetAPI.addEventListener("raiseHandUpdated", status => {
         for (const raiseHandListener of memory.raiseHandListeners||[]) raiseHandListener(status.handRaised?true:false, status.id);
     }); 
+	meetAPI.addEventListener("videoConferenceJoined", _confInfo => {
+		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
+	});
 
-	// show telemeet, and stop local video - as it hits performance otherwise
 	memory.meetAPI = meetAPI; 
-    for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 }
 
 async function getMediaDevices() {

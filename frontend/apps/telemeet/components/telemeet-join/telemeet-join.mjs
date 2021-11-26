@@ -12,7 +12,7 @@ import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
-const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'];
+const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'], DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
 
 async function elementConnected(host) {
 	const data = {}; 
@@ -97,7 +97,7 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
 			const videoState = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); memory.videoOn = videoState;
-			divTelemeet.classList.add("visible"); spanControls.classList.add("animate");
+			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); spanControls.classList.add("animate"); spanControls.style.opacity = "1";
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);
@@ -107,6 +107,9 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 		webrtc.openTelemeet(result.url, roomPass, enterOnly, result.isModerator, 
 			session.get(APP_CONSTANTS.USERNAME), session.get(APP_CONSTANTS.USERID), memory.videoOn, 
 			memory.mikeOn, divTelemeet, memory);
+
+		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
+			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
 	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
 }
 
@@ -117,11 +120,11 @@ async function meetSettings(element, fromMeet) {
 	const exitListener = _ => {DIALOG.hideDialog("telemeetdialog"); webrtc.removeRoomExitListener(exitListener, memory);}, 
 		memory = telemeet_join.getMemoryByContainedElement(element);
 	webrtc.addRoomExitListener(exitListener, memory);
-	const retVals = await DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/setupav.html`, 
+	const retVals = await DIALOG.showDialog(`${DIALOGS_PATH}/setupav.html`, 
 		false, false, data, "telemeetdialog", ["speaker", "microphone", "camera"]);
 	webrtc.removeRoomExitListener(exitListener, memory); 
 
-	DIALOG.hideDialog("dialog");
+	DIALOG.hideDialog("telemeetdialog");
 	LOG.info(JSON.stringify(retVals));
 }
 
