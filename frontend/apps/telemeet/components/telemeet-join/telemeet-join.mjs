@@ -90,13 +90,13 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 			if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST",	// tell backend room is gone 
 				{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
-			if (memory.videoOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
+			if (memory.lastVideoStateOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
 		}; 
 
 		loginmanager.addLogoutListener(_=>exitListener(!result.isModerator, result.isModerator, roomName, roomPass, true));
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
-			const videoState = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); memory.videoOn = videoState;
+			memory.lastVideoStateOn = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); 
 			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); spanControls.classList.add("animate"); spanControls.style.opacity = "1";
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
@@ -115,7 +115,8 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 
 async function meetSettings(element, fromMeet) {
 	const data = await webrtc.getMediaDevices(); 
-	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog";
+	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
+	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
 
 	const exitListener = _ => {DIALOG.hideDialog("telemeetdialog"); webrtc.removeRoomExitListener(exitListener, memory);}, 
 		memory = telemeet_join.getMemoryByContainedElement(element);

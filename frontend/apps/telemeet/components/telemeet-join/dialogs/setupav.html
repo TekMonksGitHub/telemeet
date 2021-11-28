@@ -1,36 +1,10 @@
 <style>
-:host {
-    --border-radius: 0.5em;
-    --text-color: #D3D3D3;
-    --button-color: #C4C4C4;
-    --dialog-background: #293548;
-}
-
-::-webkit-scrollbar {
-    width: 0.5em !important;
-    height: 0.5em !important;
-    scroll-behavior: smooth !important;
-}
-
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    margin: 40px;
-    border-radius: 10px !important;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: darkgrey !important;
-    border-radius: 10px !important;
-    background-clip: padding-box;
-}
+@import url("{{{componentpath}}}/dialogs/setupav{{themename}}.css");
 
 div#dialog {z-index: 200; background-color: var(--dialog-background); border-radius: var(--border-radius);}
-div#modalcurtain{z-index: 199;}
 div#dialog > span#close{display:none;}
 div#dialog > div#error{display:none;}
 div#dialogcontent {margin: 0;}
-div#modalcurtain {display: none !important;}
 
 div#maincontainer {
     display: flex;
@@ -60,8 +34,15 @@ select {
     border-radius: var(--border-radius);
     background-color: var(--button-color);
     margin-bottom: 2em;
+    border: none;
+    color: var(--button-text-color);
+    outline: none;
 }
 select:last-child {margin-bottom: 0em;}
+select:focus > option:hover {
+    background-color: var(--button-text-color) !important;
+    color: var(--button-color) !important;
+}
 
 span#testbuttons {
     display: flex;
@@ -79,7 +60,7 @@ span#lowerbuttonbar {
 video#testvideo, span#testvideohelp {
     width: 100%;
     height: 25vh;
-    background-color: #000000;
+    background-color: var(--video-background);
     border-radius: var(--border-radius);
     color: var(--text-color);
     font-size: smaller;
@@ -111,6 +92,7 @@ span.button {
     background-color: var(--button-color);
     font-size: smaller;
     cursor: default;
+    color: var(--button-text-color);
 }
 span.button:last-child {margin-right: 0em;}
 span#stoprecording, span#stopplayrecording, span#stopplayspeakers {display: none;}
@@ -123,12 +105,13 @@ span.testbutton {
     font-size: smaller;
     cursor: default;
     width: 1em;
+    color: var(--button-text-color);
 }
 span.button:last-child {margin-right: 0em;}
 </style>
 
 <script type="module">
-import {setupav} from "{{{componentpath}}}/../../dialogs/setupav.mjs";
+import {setupav} from "{{{componentpath}}}/dialogs/setupav.mjs";
 setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
 </script>
 
@@ -165,11 +148,11 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
         <audio id="testaudio" src="{{{componentpath}}}/img/testaudio.mp3"></audio>
         <span id="testbuttons">
             <span id="recordvideo" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.startrecording(this)">⬤</span>
-            <span id="stoprecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stoprecording(this)">◼️</span>
+            <span id="stoprecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stoprecording(this)">◼</span>
             <span id="playrecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.playrecording(this)">▶</span>
-            <span id="stopplayrecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stopplayrecording(this)">◼️</span>
-            <span id="playspeakers" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.playspeakers(this)">🔈</span>
-            <span id="stopplayspeakers" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stopplayspeakers(this)">◼️</span>
+            <span id="stopplayrecording" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stopplayrecording(this)">◼</span>
+            <span id="playspeakers" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.playspeakers(this)">𝄢</span>
+            <span id="stopplayspeakers" class="testbutton" onclick="monkshu_env.apps.telemeet.setupav.stopplayspeakers(this)">◼</span>
         </span>
     </div>
 </div>

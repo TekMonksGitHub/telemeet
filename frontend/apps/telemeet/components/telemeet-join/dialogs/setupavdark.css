@@ -1,0 +1,29 @@
+:host {
+    --border-radius: 0.5em;
+    --text-color: #D3D3D3;
+    --button-color: #C4C4C4;
+    --dialog-background: #293548;
+    --button-text-color: #000000;
+    --video-background: #000000;
+}
+
+::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+div#modalcurtain {display: none !important;}

@@ -31,15 +31,18 @@ video#video {
     left: 0;
     transform: rotateY(180deg);
 }
-img#camicon, img#mikeicon {height: 2.5em;}
 span#camcontrol {
     bottom: 1.5em;
     position: absolute;
     left: 0;
     width: 100%;
+    display: none;
+}
+span#camcontrol.visible {
     display: inline-flex;
     justify-content: space-evenly;
 }
+span#camcontrol > img {height: 2.5em;}
 
 span#bottombar {
     margin-top: 20px;
@@ -143,10 +146,11 @@ span#controls > img {
 {{{styleBody}}}
 
 <div id="content">
-<video id="video" autoplay></video>
+<video id="video" autoplay onplay='this.parentElement.querySelector("span#camcontrol").classList.add("visible")'></video>
 <span id="camcontrol">
     <img id="camicon" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this)">
     <img id="mikeicon" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this)">
+    <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this)">
 </span>
 
 {{#show-joiner-dialog}}
