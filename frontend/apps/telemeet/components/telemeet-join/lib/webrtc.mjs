@@ -36,7 +36,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	const _roomExited = _ => {
 		parentNode.removeChild(util.getChildrenByTagName(parentNode, "iframe")[0]);	// remove the iframe
 		meetAPI.dispose(); delete memory.meetAPI;
-        for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(isGuest, isModerator, roomName, roomPass);
+        for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(roomName);
 	}; meetAPI.addEventListener("videoConferenceLeft", _roomExited);
 	meetAPI.addEventListener("screenSharingStatusChanged", status => {
         for (const screenShareListener of memory.screenShareListeners||[]) screenShareListener(status.on);

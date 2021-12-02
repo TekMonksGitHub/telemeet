@@ -96,10 +96,14 @@ export const i18n = {
 "user": "User",
 "admin": "Administrator",
 "AddUser": "Add User",
-"MeetingTableHeader": "Meeting Name,Organizer,Start Time,Action",
+"AllRoomsTableHeader": "Meeting Name,Organizer,Start Time,Action",
+"MyRoomsTableHeader": "Room Name,Date Created,Delete?,Action",
 "MeetLoadError": "Meet API failed to load, timedout.",
 "MediaDevicesFailed": "Failed to find any audio video devices.",
 "SettingsHelp": "Press the record button below to record a test video and play it back to check if your devices are working properly. To test the speakers, press the audio button.",
 "KnockToEnter": "Knock to enter without a password",
-"ConferenceLoading": "Conference loading..."
+"ConferenceLoading": "Conference loading...",
+"MyRooms": "My Rooms",
+"SureWantToDeleteRoom": "Are you sure you want to delete this room?",
+"RoomDeletionFailed": "Unable to delete the room."
 }

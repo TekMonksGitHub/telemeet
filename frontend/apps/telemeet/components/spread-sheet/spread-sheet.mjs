@@ -29,7 +29,7 @@ const COMPONENT_PATH = util.getModulePath(import.meta), ROW_PROP = "__org_monksh
 	DIALOG_HOST_ID = "org_monkshu_spreadsheet_component_dialog";
 
 async function elementConnected(element) {
-	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element)});
+	Object.defineProperty(element, "value", {get: _=>_getValue(element), set: value=>_setValue(value, element), configurable: true});
 	await $$.require(`${COMPONENT_PATH}/3p/papaparse.min.js`);	// we need this to export and import data as CSV
 
 	// first tab in the attribute is active, or default (hidden) tab is active if multiple tabs are not being used
@@ -52,7 +52,8 @@ async function elementConnected(element) {
 }
 
 async function elementRendered(host, initialRender) {
-	if (host.getAttribute("value") && initialRender) await _setValue(util.safeURIDecode(host.getAttribute("value")), host);
+	if ((host.getAttribute("value")||host.textContent.trim() != "") && initialRender) await _setValue(
+		host.getAttribute("value")?util.safeURIDecode(host.getAttribute("value")):host.textContent.trim(), host);
 
 	// make table resizable and all elements to auto-resize when the columns are resized
 	const _getAllContentElementsForThisColumn = td => {
@@ -262,7 +263,7 @@ async function _createElementData(host, rows=host.getAttribute("rows")||6, colum
 
 	data.rows = []; data.columns = []; for (let j = 0; j < columns; j++) data.columns.push(' ');
 	for (let i = 0; i < rows; i++) data.rows.push(' '); 
-	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
+	if (host.getAttribute("styleBody")) data.styleBody = `<style>${await spread_sheet.getAttrValue(host,"styleBody")}</style>`;
 
 	data.tabs = []; const allTabs = _getAllTabs(host); for (const tabID in allTabs) if (tabID != DEFAULT_TAB)
 		data.tabs.push( {name: allTabs[tabID].name, id: tabID, active: tabID == _getActiveTab(host)?"true":undefined} );

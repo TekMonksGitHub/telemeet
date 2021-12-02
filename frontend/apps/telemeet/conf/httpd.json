@@ -1,7 +1,7 @@
 {
     "extensions": ["redirect"],
-    "redirects": [{"^http://localhost:8080/index.html$":"http://localhost:8080/apps/telemeet/index.html"},
-        {"^http://localhost:8080/$":"http://localhost:8080/apps/telemeet/index.html"},
-        {"^http://localhost:8080$":"http://localhost:8080/apps/telemeet/index.html"}],
+    "redirects": [{"^http(.*)://([^/]+?)/index.html$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"},
+        {"^http(.*)://([^/]+?)/$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"},
+        {"^http(.*)://([^/]+?)$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"}],
     "httpdHeaders": {"Cache-Control": "no-cache"}
 }

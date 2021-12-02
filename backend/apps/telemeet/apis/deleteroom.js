@@ -9,7 +9,7 @@ exports.doService = async jsonReq => {
     const telemeetRooms = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.ROOMSKEY) || {};
 
     const roomID = jsonReq.room.toUpperCase();
-    if (telemeetRooms[roomID] && telemeetRooms[roomID].password == jsonReq.pass && telemeetRooms[roomID].moderator == jsonReq.id) {
+    if (telemeetRooms[roomID] && telemeetRooms[roomID].moderator == jsonReq.id) {
         delete telemeetRooms[roomID]; 
         DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);
         LOG.debug(`Room deleted, ${jsonReq.room}, by user ${jsonReq.id}`);
@@ -17,4 +17,4 @@ exports.doService = async jsonReq => {
     } else return CONSTANTS.FALSE_RESULT;
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.room && jsonReq.pass && jsonReq.id);
+const validateRequest = jsonReq => (jsonReq && jsonReq.room && jsonReq.id);

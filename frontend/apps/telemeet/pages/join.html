@@ -32,21 +32,24 @@ body {
 }
 
 div#container {
-    height: calc(100% - 2px);
+    height: 100%;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    overflow: hidden;
+    box-sizing: border-box;
+    overflow: overlay;
+    border-bottom: 0.5px solid var(--border-color);
 }
 
 div#maincontent {
-    height: 100%;
+    max-width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     overflow: auto;
-    padding: 0em 2em;
-    justify-content: space-evenly;
+    padding: 1em 1em;
+    justify-content: space-between;
+    min-height: 2em;
 }
 
 span#title {
@@ -61,13 +64,9 @@ input {
     border-radius: var(--border-radius);
     outline: none;
     border: 1px solid #a0a0a0;
-    padding: 1.0em;
-    min-width: 2em;
-}
-
-input#pass {
+    padding: 0.5em;
     margin-right: 1%;
-    flex-grow: 0.8;
+    width: 40%;
 }
 
 button {
@@ -82,26 +81,26 @@ button {
     padding: 0em 1em;
 }
 
-span#bottomrow {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+spread-sheet {
+    height: calc(100% - 2em);
 }
 </style>
 
 <div id="container">
-    <span id="title">Create Meeting</span>
+    <span id="title">{{i18n.MyRooms}}</span>
 
     <div id="maincontent">
-        <input id="room" type="text" placeholder="{{i18n.RoomID}}">
+    <input id="room" type="text" placeholder="{{i18n.RoomID}}">
 
-        <span id="bottomrow">
-        <input id="pass" type="password" placeholder="{{i18n.Password}}">
-        <button onclick='
-            monkshu_env.apps.telemeet.main.joinRoom(
-                monkshu_env.frameworklibs["util"].getChildByID(this.parentElement.parentElement,"room").value.trim(), 
-                monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
-                this)'>{{i18n.RoomLoginMsg}}</button>
-        </span>
+    <input id="pass" type="password" placeholder="{{i18n.Password}}">
+    
+    <button onclick='monkshu_env.apps.telemeet.main.joinRoom(
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value.trim(), 
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
+        this)'>{{i18n.Create}}</button>
     </div>
+
+    <spread-sheet rows="4" columns="4" onlyText="true" barstyle="0px solid #4788C7" 
+        styleBody="url(./pages/myroomlist.styleBody.css)" showToolbar="false" readOnlySheet="true"
+        hasHeaders="true" value="{{{myroomlist}}}"></spread-sheet>
 </div>

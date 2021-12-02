@@ -26,34 +26,36 @@ async function elementConnected(host) {
 
 	telemeet_join.setDataByHost(host, data);
 
-	const memory = telemeet_join.getMemoryByHost(host); 
-	memory.roomExitListeners = []; memory.mikeOn = true; memory.videoOn = false;
+	const memory = telemeet_join.getMemoryByHost(host), sessionMemory = telemeet_join.getSessionMemory(host.id); 
+	memory.roomExitListeners = []; if (sessionMemory.videoOn == undefined) sessionMemory.videoOn = true; 
+	if (sessionMemory.mikeOn == undefined) sessionMemory.mikeOn = true;
 }
 
 async function elementRendered(element) {  
 	const shadowRoot = telemeet_join.getShadowRootByHost(element), containedElement = shadowRoot.querySelector("div#telemeet");
-	_startVideo(shadowRoot, containedElement); 
+	if (_getSessionMemoryVariable("videoOn", containedElement)) _startVideo(shadowRoot, element);	// cam controls auto show when video starts
+	else {_stopVideo(shadowRoot, element); shadowRoot.querySelector("span#camcontrol").classList.add("visible");}	// show cam controls allow user to start cam etc. 
+	if (_getSessionMemoryVariable("mikeOn", containedElement)) _startMike(shadowRoot); else _stopMike(shadowRoot);
 }
 
 async function toggleVideo(element, isFromMeet) {
 	const iconToggleArray = [`${COMPONENT_PATH}/img/camera.svg`, `${COMPONENT_PATH}/img/nocamera.svg`];
 	if (isFromMeet) { _toggleIcon(element, iconToggleArray); _executeMeetCommand(element, "toggleVideo"); return; }
-	
-	// no meeting open, this is for our prejoin conditions now.
-	const shadowRoot = telemeet_join.getShadowRootByContainedElement(element);
-	if (_getMemoryVariable("videoOn", element)) _stopVideo(telemeet_join.getShadowRootByContainedElement(element), element); 
-	else await _startVideo(telemeet_join.getShadowRootByContainedElement(element), element); 
-	_toggleIcon(element, iconToggleArray); _toggleIcon(shadowRoot.querySelector("div#telemeet img#camcontrol"), iconToggleArray);
+	else {
+		const videoOn = !_getSessionMemoryVariable("videoOn", element), shadowRoot = telemeet_join.getShadowRootByContainedElement(element);	// toggle it
+		if (videoOn) _startVideo(shadowRoot, element); else _stopVideo(shadowRoot, element);
+		_setSessionMemoryVariable("videoOn", element, videoOn);
+	}
 }
 
 async function toggleMike(element, isFromMeet) {
 	const iconToggleArray = [`${COMPONENT_PATH}/img/mike.svg`, `${COMPONENT_PATH}/img/nomike.svg`];
 	if (isFromMeet) { _toggleIcon(element, iconToggleArray); _executeMeetCommand(element, "toggleAudio"); return; }
-	
-	// no meeting open, this is for our prejoin conditions now.
-	const shadowRoot = telemeet_join.getShadowRootByContainedElement(element);
-	_toggleIcon(element, iconToggleArray); _toggleIcon(shadowRoot.querySelector("div#telemeet img#mikecontrol"), iconToggleArray);
-	_setMemoryVariable("mikeOn", element, !_getMemoryVariable("mikeOn", element));
+	else {
+		const mikeOn = !_getSessionMemoryVariable("mikeOn", element), shadowRoot = telemeet_join.getShadowRootByContainedElement(element);	// toggle it
+		if (mikeOn) _startMike(shadowRoot); else _stopMike(shadowRoot);
+		_setSessionMemoryVariable("mikeOn", element, mikeOn);
+	}
 }
 
 const exitMeeting = element => _executeMeetCommand(element, "exitMeeting");
@@ -83,20 +85,17 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
 		let roomClosed = false;	// room is open now
 
-		const exitListener = (isGuest, isModerator, room, pass, callFromLogout) => {	// delete the room, close FW on moderator exit
+		const exitListener = (_roomName, callFromLogout) => {	// delete the room, close FW on moderator exit
 			if (roomClosed) return;	else roomClosed = true; // return if already closed, else close it
 			divTelemeet.classList.remove("visible");	// stop showing the telemeet div
-			/*LOG.info(`Deleting room ${room} due to ${callFromLogout?"moderator logout":"moderator left."}`);
-			if (!isGuest && isModerator) apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST",	// tell backend room is gone 
-				{room, pass, id: session.get(APP_CONSTANTS.USERID)}, true, false);
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
 			if (memory.lastVideoStateOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
 		}; 
 
-		loginmanager.addLogoutListener(_=>exitListener(!result.isModerator, result.isModerator, roomName, roomPass, true));
+		loginmanager.addLogoutListener(_=>exitListener(roomName, true));
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
-			memory.lastVideoStateOn = memory.videoOn; _stopVideo(shadowRoot, divTelemeet); 
+			memory.lastVideoStateOn = sessionMemory.videoOn; _stopVideo(shadowRoot, divTelemeet, true); 
 			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); spanControls.classList.add("animate"); spanControls.style.opacity = "1";
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
@@ -105,8 +104,8 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 			`${COMPONENT_PATH}/img/${handUp?"":"no"}raisehand.svg`, memory);
 
 		webrtc.openTelemeet(result.url, roomPass, enterOnly, result.isModerator, 
-			session.get(APP_CONSTANTS.USERNAME), session.get(APP_CONSTANTS.USERID), memory.videoOn, 
-			memory.mikeOn, divTelemeet, memory);
+			session.get(APP_CONSTANTS.USERNAME), session.get(APP_CONSTANTS.USERID), sessionMemory.videoOn, 
+			sessionMemory.mikeOn, divTelemeet, memory);
 
 		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
 			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
@@ -129,20 +128,39 @@ async function meetSettings(element, fromMeet) {
 	LOG.info(JSON.stringify(retVals));
 }
 
+function deleteRoom(room, id) {
+	LOG.info(`Deleting room ${room} due to moderator deletion request.`);
+	return apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", {room, id}, true, false);
+}
+
 async function _startVideo(shadowRoot, containedElement) {
-	if (_getMemoryVariable("videoOn", containedElement)) return;
+	shadowRoot.querySelector("img#camicon").src = `${COMPONENT_PATH}/img/camera.svg`;
+	shadowRoot.querySelector("img#camcontrol").src = `${COMPONENT_PATH}/img/camera.svg`; 
 	const video = shadowRoot.querySelector("video#video"); 
 	try {
 		const stream = await navigator.mediaDevices.getUserMedia({video: true});
-		video.srcObject = stream; _setMemoryVariable("videoOn", containedElement, true);
+		video.srcObject = stream; _setSessionMemoryVariable("videoOn", containedElement, true);
 	} catch (err) { _showError(await i18n.get("NoCamera")); LOG.error(`Unable to access the camera: ${err}`); }
 }
 
-function _stopVideo(shadowRoot, containedElement) {
-	if (!_getMemoryVariable("videoOn", containedElement)) return;
+function _stopVideo(shadowRoot, containedElement, dontSwitchIcons) {
+	if (!dontSwitchIcons) {
+		shadowRoot.querySelector("img#camicon").src = `${COMPONENT_PATH}/img/nocamera.svg`;
+		shadowRoot.querySelector("img#camcontrol").src = `${COMPONENT_PATH}/img/nocamera.svg`; 
+	}
 	const video = shadowRoot.querySelector("video#video");
 	if (video.srcObject) for (const track of video.srcObject.getTracks()) if (track.readyState == "live") track.stop();
-	delete video.srcObject; _setMemoryVariable("videoOn", containedElement, false);
+	delete video.srcObject; _setSessionMemoryVariable("videoOn", containedElement, false);
+}
+
+async function _startMike(shadowRoot) {
+	shadowRoot.querySelector("img#mikeicon").src = `${COMPONENT_PATH}/img/mike.svg`;
+	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/mike.svg`; 
+}
+
+function _stopMike(shadowRoot) {
+	shadowRoot.querySelector("img#mikeicon").src = `${COMPONENT_PATH}/img/nomike.svg`;
+	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/nomike.svg`;
 }
 
 const _showError = error => DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/error.html`, true, false, {error}, 
@@ -150,11 +168,11 @@ const _showError = error => DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/err
 
 const _executeMeetCommand = (containedElement, command, params) => webrtc[command](
 	telemeet_join.getMemoryByContainedElement(containedElement), params);
-const _getMemoryVariable = (varName, element) => telemeet_join.getMemoryByContainedElement(element)[varName];
-const _setMemoryVariable = (varName, element, value) => telemeet_join.getMemoryByContainedElement(element)[varName] = value;
+const _getSessionMemoryVariable = (varName, element) => telemeet_join.getSessionMemoryByContainedElement(element)[varName];
+const _setSessionMemoryVariable = (varName, element, value) => telemeet_join.getSessionMemoryByContainedElement(element)[varName] = value;
 const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.src = icons[1]; else element.src = icons[0]; }
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, joinRoom, meetSettings, exitMeeting, changeBackground};
+	toggleScreenshare, toggleRaisehand, joinRoom, meetSettings, exitMeeting, changeBackground, deleteRoom};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);
