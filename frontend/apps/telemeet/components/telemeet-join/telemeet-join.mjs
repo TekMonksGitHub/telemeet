@@ -13,6 +13,8 @@ import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'], DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
+const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_CONSTANTS.API_PATH+"/createroom", 
+	API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom";
 
 async function elementConnected(host) {
 	const data = {}; 
@@ -63,25 +65,35 @@ const toggleScreenshare = element => _executeMeetCommand(element, "toggleShareSc
 const toggleRaisehand = element => _executeMeetCommand(element, "toggleRaiseHand");
 const changeBackground = element => _executeMeetCommand(element, "changeBackground");
 
-async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
+async function createRoom(roomName, roomPass, id) {	
+	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
+	if (roomPass.trim() == "") {_showError(await i18n.get("NoPass")); return;}
+
+	const req = {room: roomName, pass: roomPass, id};
+	const result = await apiman.rest(API_CREATEROOM, "POST", req, true, false);
+
+	if (result && !result.result) {_showError(await i18n.get(
+		result.reason=="ROOMEXISTS"?"RoomExistsError":"RoomBadIDError")); return false; }// backend refused
+	else if (!result) {_showError(await i18n.get("GenericBackendError")); return false;}
+	return true;
+}
+
+async function joinRoom(hostElement, roomName, roomPass, id, name) {
 	const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector("div#telemeet"),
 		memory = telemeet_join.getMemoryByContainedElement(divTelemeet), spanControls = shadowRoot.querySelector("span#controls");
-
-	if (enterOnly) session.set(APP_CONSTANTS.USERNAME, name);	// guest entry, set user name
 	
 	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
 	if (roomPass.trim() == "") {_showError(await i18n.get("NoPass")); return;}
 
-	const req = {room: roomName, pass: roomPass, id: session.get(APP_CONSTANTS.USERID)};
-	const result = await apiman.rest(enterOnly?APP_CONSTANTS.API_ENTERROOM:APP_CONSTANTS.API_CREATEROOM, 
-		enterOnly?"GET":"POST", req, enterOnly?false:true, enterOnly?true:false);
+	const req = {room: roomName, pass: roomPass, id};
+	const result = await apiman.rest(API_ENTERROOM, "GET", req, false, true);
 
 	if (result && !result.result) {	// backend refused
-		_showError(await i18n.get(enterOnly?(result.failureReason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"):"RoomExistsPasswordError"));
+		_showError(await i18n.get(result.failureReason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"));
 		return;
 	}
 
-	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id), id = session.get(enterOnly?APP_CONSTANTS.USERNAME:APP_CONSTANTS.USERID)
+	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id);
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
 		let roomClosed = false;	// room is open now
 
@@ -103,9 +115,8 @@ async function joinRoom(hostElement, roomName, roomPass, enterOnly, name) {
 		webrtc.addRaiseHandListener(handUp => shadowRoot.querySelector("img#raisehandcontrol").src = 
 			`${COMPONENT_PATH}/img/${handUp?"":"no"}raisehand.svg`, memory);
 
-		webrtc.openTelemeet(result.url, roomPass, enterOnly, result.isModerator, 
-			session.get(APP_CONSTANTS.USERNAME), session.get(APP_CONSTANTS.USERID), sessionMemory.videoOn, 
-			sessionMemory.mikeOn, divTelemeet, memory);
+		webrtc.openTelemeet(result.url, roomPass, !result.isModerator, result.isModerator, 
+			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory);
 
 		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
 			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
@@ -130,7 +141,7 @@ async function meetSettings(element, fromMeet) {
 
 function deleteRoom(room, id) {
 	LOG.info(`Deleting room ${room} due to moderator deletion request.`);
-	return apiman.rest(APP_CONSTANTS.API_DELETEROOM, "POST", {room, id}, true, false);
+	return apiman.rest(API_DELETEROOM, "POST", {room, id}, true, false);
 }
 
 async function _startVideo(shadowRoot, containedElement) {
@@ -163,7 +174,7 @@ function _stopMike(shadowRoot) {
 	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/nomike.svg`;
 }
 
-const _showError = error => DIALOG.showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/error.html`, true, false, {error}, 
+const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error}, 
 	"dialog", [], _=> DIALOG.hideDialog("dialog"));
 
 const _executeMeetCommand = (containedElement, command, params) => webrtc[command](
@@ -174,5 +185,5 @@ const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.s
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, joinRoom, meetSettings, exitMeeting, changeBackground, deleteRoom};
+	toggleScreenshare, toggleRaisehand, createRoom, meetSettings, exitMeeting, changeBackground, deleteRoom, joinRoom};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);

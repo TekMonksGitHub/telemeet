@@ -9,7 +9,8 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-const TELEMEET_ID = "telemeet";
+const API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", TELEMEET_ID = "telemeet", ALL_ROOMS_LIST_ID = "allroomslist",
+    MY_ROOMS_LIST_ID = "myroomslist";
 const dialog = _ => monkshu_env.components['dialog-box'];
 
 async function changeStatus(status) {
@@ -52,20 +53,26 @@ async function changeProfile(_element) {
     });
 }
 
+async function createRoom(room, pass) {
+    if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
+    if ((!pass) || room.length==0) {_showMessage(await i18n.get("NoPass")); return;}
+    if (await window.monkshu_env.components["telemeet-join"].createRoom(room, pass, session.get(APP_CONSTANTS.USERID))) {
+        _reloadRoomLists(); return true; } else return false;
+}
+
 async function joinRoom(room, pass) {
     if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
     if ((!pass) || pass.length==0) pass = (await dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/meetingpass.html`, true, 
         true, {}, "dialog", ["knock","pass"])).pass;
-    const telemeet = window.monkshu_env.components["telemeet-join"];
-    telemeet.joinRoom(telemeet.getHostElementByID(TELEMEET_ID), room, pass);
+    const telemeet = window.monkshu_env.components["telemeet-join"]; telemeet.joinRoom(
+        telemeet.getHostElementByID(TELEMEET_ID), room, pass, session.get(APP_CONSTANTS.USERID), session.get(APP_CONSTANTS.USERNAME));
 }
 
 async function deleteRoom(room) {
     await _showConfirm(await i18n.get("SureWantToDeleteRoom"));
     const telemeet = window.monkshu_env.components["telemeet-join"];
-    if ((await telemeet.deleteRoom(room, session.get(APP_CONSTANTS.USERID))).result) {  // reload the room lists
-        router.reload();
-    } else _showMessage(await i18n.get("RoomDeletionFailed"));
+    if ((await telemeet.deleteRoom(room, session.get(APP_CONSTANTS.USERID))).result) _reloadRoomLists();
+    else _showMessage(await i18n.get("RoomDeletionFailed"));
 }
 
 function showLoginMessages() {
@@ -73,12 +80,29 @@ function showLoginMessages() {
     if (data.showDialog) { _showMessage(data.showdialog().message); delete data.showDialog; router.setCurrentPageData(data); }
 }
 
-const interceptPageLoadData = _ => router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {
+function interceptPageLoadAndData(){
+    router.addOnLoadPage(APP_CONSTANTS.MAIN_HTML, _ => {    // refresh list of rooms at regular intervals
+        const old_timer = session.get("__telemeet_pagelist_refresh_timer");
+        if (old_timer) clearTimeout(old_timer); const newTimer = setInterval(_reloadRoomLists, APP_CONSTANTS.ROOM_REFRESH_INTERVAL);
+        session.set("__telemeet_pagelist_refresh_timer", newTimer);
+    });
+
+    router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {   // set the list of rooms
+        const {allRoomsCSV, myRoomsCSV} = await _getRoomsListAsCSV();
+        data.pageData = encodeURIComponent(JSON.stringify({allRoomsList: encodeURIComponent(allRoomsCSV),
+            myRoomsList: encodeURIComponent(JSON.stringify({myroomlist: encodeURIComponent(myRoomsCSV)}))}));
+        if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; 
+    });
+}
+
+async function _reloadRoomLists() {
+    const sheetComponent = window.monkshu_env.components["spread-sheet"];
     const {allRoomsCSV, myRoomsCSV} = await _getRoomsListAsCSV();
-    data.pageData = encodeURIComponent(JSON.stringify({allRoomsList: encodeURIComponent(allRoomsCSV),
-        myRoomsList: encodeURIComponent(JSON.stringify({myroomlist: encodeURIComponent(myRoomsCSV)}))}));
-    if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; 
-});
+    const allroomsList = sheetComponent.getHostElementByID(ALL_ROOMS_LIST_ID);
+    const myroomslist = sheetComponent.getHostElementByID(MY_ROOMS_LIST_ID);
+
+    allroomsList.value = allRoomsCSV; myroomslist.value = myRoomsCSV;
+}
 
 async function _getTOTPQRCode(key) {
 	const title = await i18n.get("Title");
@@ -92,7 +116,7 @@ async function _getRoomsListAsCSV() {
     const joinLinkHTML = await $$.requireText("./pages/joinlink.html"), deleteLinkHTML = await $$.requireText("./pages/deletelink.html")
 
     let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
-    const roomsResult = await apiman.rest(APP_CONSTANTS.API_GETROOMS, "GET", {}, true);
+    const roomsResult = await apiman.rest(API_GETROOMS, "GET", {}, true);
     if (roomsResult.result) for (const room of roomsResult.rooms) {
         const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, joinText: await i18n.get("Join")}));
 
@@ -111,8 +135,10 @@ async function _getRoomsListAsCSV() {
 }
 
 const _showMessage = message => dialog().showMessage(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, {message}, "dialog");
-const _showConfirm = message => dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, true, true, {message}, 
-    "dialog", []);
+const _showConfirm = async message => {
+    await dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, true, true, {message}, 
+        "dialog", []); dialog().hideDialog("dialog");
+}
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
-    interceptPageLoadData, joinRoom, deleteRoom};
+    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom};

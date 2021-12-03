@@ -5,10 +5,12 @@
  */
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
+const API_FWCONTROL = APP_CONSTANTS.API_PATH+"/fwcontrol", FW_HEARTBEATINTERVAL = 1000;
+
 async function operateFirewall(operation, id, sessionMemory) {
 	if (operation == "disallow") _stopBackendHeartbeats(sessionMemory);	// this will auto close the firewall after heartbeat timeout, as we open it in heartbeat mode
 	const req = {id, operation, ip:await _getPublicIP(), mode:"heartbeat_mode"};
-	const result = await apiman.rest(APP_CONSTANTS.API_FWCONTROL, "POST", req, true, false);
+	const result = await apiman.rest(API_FWCONTROL, "POST", req, true, false);
 	if (result && result.result && operation == "allow") _startBackendHeartbeats(id, sessionMemory);
 	return result?result.result:false;
 }
@@ -19,7 +21,7 @@ function _stopBackendHeartbeats(sessionMemory) {
 
 function _startBackendHeartbeats(id, sessionMemory) {
 	_stopBackendHeartbeats(sessionMemory); sessionMemory.heartbeatTimer = sessionMemory.heartbeatTimer || [];
-	sessionMemory.heartbeatTimer.push(setInterval(operateFirewall, APP_CONSTANTS.FW_HEARTBEATINTERVAL, "keepopen", id, sessionMemory));
+	sessionMemory.heartbeatTimer.push(setInterval(operateFirewall, FW_HEARTBEATINTERVAL, "keepopen", id, sessionMemory));
 }
 
 async function _getPublicIP() {

@@ -9,8 +9,8 @@ const APP_PATH = `${FRONTEND}/apps/${APP_NAME}`;
 const API_PATH = `${BACKEND}/apps/${APP_NAME}`;
 const COMPONENTS_PATH = `${FRONTEND}/apps/${APP_NAME}/components`;
 
-export const APP_CONSTANTS = {
-    FRONTEND, BACKEND, APP_PATH, APP_NAME, COMPONENTS_PATH,
+export const APP_CONSTANTS = {  // application.mjs injects all the settings from conf/app.json into here as well
+    FRONTEND, BACKEND, APP_PATH, API_PATH, APP_NAME, COMPONENTS_PATH,
     INDEX_HTML: APP_PATH+"/index.html",
     MAIN_HTML: APP_PATH+"/main.html",
     LOGIN_HTML: APP_PATH+"/login.html",
@@ -23,21 +23,14 @@ export const APP_CONSTANTS = {
 
     SESSION_NOTE_ID: "com_monkshu_ts",
 
-    FW_HEARTBEATINTERVAL: 1000,
-
     // Login constants
     MIN_PASS_LENGTH: 8,
     API_LOGIN: API_PATH+"/login",
     API_RESET: API_PATH+"/resetuser",
     API_REGISTER: API_PATH+"/register",
     API_UPDATE: API_PATH+"/updateuser",
-    API_ENTERROOM: API_PATH+"/enterroom",
     API_STATUS: API_PATH+"/setstatus",
     API_CHANGEPW: API_PATH+"/changepassword",
-    API_GETROOMS: API_PATH+"/getrooms",
-    API_CREATEROOM: API_PATH+"/createroom",
-    API_DELETEROOM: API_PATH+"/deleteroom",
-    API_FWCONTROL: API_PATH+"/fwcontrol",
     API_VALIDATE_TOTP: API_PATH+"/validatetotp",
     API_GETTOTPSEC: API_PATH+"/gettotpsec",
     API_GETPROFILE: API_PATH+"/getprofile",
