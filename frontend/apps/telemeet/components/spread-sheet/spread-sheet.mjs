@@ -55,17 +55,7 @@ async function elementRendered(host, initialRender) {
 	if ((host.getAttribute("value")||host.textContent.trim() != "") && initialRender) await _setValue(
 		host.getAttribute("value")?util.safeURIDecode(host.getAttribute("value")):host.textContent.trim(), host);
 
-	// make table resizable and all elements to auto-resize when the columns are resized
-	const _getAllContentElementsForThisColumn = td => {
-		const columnNumberThisTD = Array.prototype.slice.call(td.parentElement.querySelectorAll("td")).indexOf(td);
-		const allTRs = td.parentElement.parentElement.querySelectorAll("tr");
-		const retList = []; for (const tr of allTRs) for (const [index, contentelement] of Array.prototype.slice.call(tr.querySelectorAll(_getContentElementName(tr))).entries())
-			if (index == columnNumberThisTD) retList.push(contentelement);
-		return retList;
-	}
-	const shadowRoot = spread_sheet.getShadowRootByHost(host), readOnlySheet = host.getAttribute("readOnlySheet")?.toString().toLowerCase() == "true" ? true : undefined;
-	resizable.makeResizableTable(shadowRoot.querySelector("table#spreadsheet"), host.getAttribute("barstyle"), 
-		{ onresize: td => {if (!readOnlySheet) for (const contentelement of _getAllContentElementsForThisColumn(td)) resizeRowInputsForLargestScroll(contentelement)} });
+	_makeTableResizable(host);	// make table resizable and all elements to auto-resize when the columns are resized
 }
 
 function cellpastedon(element, event) {
@@ -167,7 +157,7 @@ function searchModified(element) {
 	}
 }
 
-const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true)
+const reloadSheets = host => switchSheet(host.id, _getActiveTab(host), true);
 
 function _getValue(host) {
 	const activeSheetValue = _getSpreadSheetAsCSV(host.id);
@@ -238,7 +228,7 @@ async function _setSpreadSheetFromCSV(value, hostID) {	// will set data for the 
 	// create a new table to match the size of rows and columns and replace current table with this
 	const newHTML = router.getMustache().render(spread_sheet.getTemplateHTML(host), data), newDOM = new DOMParser().parseFromString(newHTML, "text/html"),
 		newTable = newDOM.querySelector("table#spreadsheet"), parentOfTable = shadowRoot.querySelector("table#spreadsheet").parentElement;
-	parentOfTable.replaceChild(newTable, shadowRoot.querySelector("table#spreadsheet"));
+	parentOfTable.replaceChild(newTable, shadowRoot.querySelector("table#spreadsheet")); _makeTableResizable(host);
 
 	// fill in the data
 	const rows = Array.prototype.slice.call(shadowRoot.querySelectorAll("tr"));
@@ -297,6 +287,19 @@ function _setHTMLElementValue(element, value) {
 }
 const _getContentElementName = containedElement => spread_sheet.getHostElement(containedElement).getAttribute(
 	"readOnlySheet")?.toString().toLowerCase() == "true" ? "span" : "textarea";
+
+function _makeTableResizable(host) {
+	const _getAllContentElementsForThisColumn = td => {
+		const columnNumberThisTD = Array.prototype.slice.call(td.parentElement.querySelectorAll("td")).indexOf(td);
+		const allTRs = td.parentElement.parentElement.querySelectorAll("tr");
+		const retList = []; for (const tr of allTRs) for (const [index, contentelement] of Array.prototype.slice.call(tr.querySelectorAll(_getContentElementName(tr))).entries())
+			if (index == columnNumberThisTD) retList.push(contentelement);
+		return retList;
+	}
+	const shadowRoot = spread_sheet.getShadowRootByHost(host), readOnlySheet = host.getAttribute("readOnlySheet")?.toString().toLowerCase() == "true" ? true : undefined;
+	resizable.makeResizableTable(shadowRoot.querySelector("table#spreadsheet"), host.getAttribute("barstyle"), 
+		{ onresize: td => {if (!readOnlySheet) for (const contentelement of _getAllContentElementsForThisColumn(td)) resizeRowInputsForLargestScroll(contentelement)} });
+}
 
 // convert this all into a WebComponent so we can use it
 export const spread_sheet = {trueWebComponentMode: true, elementConnected, elementRendered, cellpastedon, 

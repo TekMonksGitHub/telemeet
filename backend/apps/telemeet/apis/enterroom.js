@@ -1,5 +1,6 @@
 /**
- * Validates a request to enter a room given its password.
+ * Validates a request to enter a room given its password or if 
+ * the one entering is the moderator.
  * (C) 2020 TekMonks. All rights reserved.
  */
 
@@ -10,12 +11,13 @@ exports.doService = async jsonReq => {
 	
 	const telemeetRooms = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.ROOMSKEY)||{}; 
 	const roomID = jsonReq.room.toUpperCase();
-	const result = telemeetRooms[roomID] && telemeetRooms[roomID].password == jsonReq.pass;
-	const failureReason = result ? null : (telemeetRooms[roomID]?"BAD_PASSWORD":"NO_ROOM");
-	LOG.debug(`Result of request to enter room -> ${jsonReq.room} for id -> ${jsonReq.id} is -> ${result}, failure reason (if any) is: ${failureReason}`);
+	const result = telemeetRooms[roomID] && ((telemeetRooms[roomID].moderator == jsonReq.id) || 
+		(telemeetRooms[roomID].password == jsonReq.pass));
+	const reason = result ? null : (telemeetRooms[roomID]?"BAD_PASSWORD":"NO_ROOM");
+	LOG.debug(`Result of request to enter room -> ${jsonReq.room} for id -> ${jsonReq.id} is -> ${result}, failure reason (if any) is: ${reason}`);
 
-	return {result, failureReason, isModerator: telemeetRooms[roomID] ? 
+	return {result, reason, isModerator: telemeetRooms[roomID] ? 
 		jsonReq.id == telemeetRooms[roomID].moderator : false, url: `${telemeet.url}/${jsonReq.room}`}; 
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.room && jsonReq.pass);
+const validateRequest = jsonReq => (jsonReq && jsonReq.room && (jsonReq.id||jsonReq.pass));

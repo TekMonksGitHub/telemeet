@@ -12,31 +12,37 @@
     --border-radius: 0.5em;
 }
 
-body{ margin: 0; padding: 0; font-family: inherit; font-size: inherit; position: relative;}
+body{ margin: 0; padding: 0; font-family: inherit; font-size: inherit; position: relative; width: 100%; height: 100%;}
 
 div#content {
     width: 100%;
     height: 100%;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
+div#videodiv {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
 video#video {
     border-radius: var(--border-radius);
     background-color: black;
     width: 100%;
     height: 100%;
-    position: absolute;
     top: 0; 
     left: 0;
     transform: rotateY(180deg);
 }
 span#camcontrol {
-    bottom: 1.5em;
     position: absolute;
     left: 0;
     width: 100%;
     display: none;
+    bottom: 1em;
 }
 span#camcontrol.visible {
     display: inline-flex;
@@ -56,21 +62,17 @@ span#bottombar {
 }
 
 input#name, input#name:focus, input#room, input#room:focus, input#roompass, input#roompass:focus {
-    width: 250px;
-    padding: 10px;
-    border: 1px solid rgba(0,0,0,0.15);
+    padding: 1em;
+    border: none;
     border-radius: var(--border-radius);
     outline: none;
     position: relative;
     color: #444444;
-}
-
-input#name, input#name:focus {
-    display: none;
+    margin-right: 0.7em;
+    height: 100%;
 }
 
 span#join {
-    padding: 10px 30px 10px 30px;
     box-sizing: border-box;
     border-radius: var(--border-radius);
     border-style: none;
@@ -79,9 +81,13 @@ span#join {
     background-color: #00C24E;
     color: white;
     text-transform: uppercase;
-    width: 100px;
     user-select: none;
-    margin-left: 10px;
+    margin-left: 0.5em;
+    height: 3.2em;
+    width: 8em;
+    align-items: center;
+    display: inline-flex;
+    justify-content: space-around;
 }
 
 div#telemeet {
@@ -146,19 +152,21 @@ span#controls > img {
 {{{styleBody}}}
 
 <div id="content">
+<div id="videodiv">
 <video id="video" autoplay onplay='this.parentElement.querySelector("span#camcontrol").classList.add("visible")'></video>
 <span id="camcontrol">
     <img id="camicon" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this)">
     <img id="mikeicon" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this)">
     <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this)">
 </span>
+</div>
 
 {{#show-joiner-dialog}}
 <span id="bottombar">
-<input id="name" type="text" placeholder="{{i18n.Name}}" value="{{name}}">&nbsp;&nbsp;
-<input id="room" type="text" placeholder="{{i18n.RoomID}}" value="{{room}}">&nbsp;&nbsp;
+<input id="name" type="text" placeholder="{{i18n.Name}}" value="{{name}}">
+<input id="room" type="text" placeholder="{{i18n.RoomID}}" value="{{room}}">
 <input id="roompass" type="text" placeholder="{{i18n.Password}}" value="{{pass}}">
-<span id="join" onclick="monkshu_env.components['telemeet-join'].joinRoom(this)">{{i18n.Join}}</span>
+<span id="join" onclick="monkshu_env.components['telemeet-join'].joinRoomFromTelemeetInternal(this)">{{i18n.Join}}</span>
 </span>
 {{/show-joiner-dialog}}
 

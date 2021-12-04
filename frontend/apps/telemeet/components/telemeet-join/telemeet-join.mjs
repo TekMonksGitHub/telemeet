@@ -24,7 +24,7 @@ async function elementConnected(host) {
 	data.name = host.getAttribute("name")||"";
 	data.room = host.getAttribute("room")||"";
 	data.pass = host.getAttribute("pass")||"";
-	data["show-joiner-dialog"] = host.getAttribute("show-joiner-dialog") || undefined;
+	data["show-joiner-dialog"] = host.getAttribute("showJoinerDialog") || undefined;
 
 	telemeet_join.setDataByHost(host, data);
 
@@ -78,18 +78,24 @@ async function createRoom(roomName, roomPass, id) {
 	return true;
 }
 
+function joinRoomFromTelemeetInternal(element) {
+	const host = telemeet_join.getHostElement(element), shadowRoot = telemeet_join.getShadowRootByHost(host);
+	const name = shadowRoot.querySelector("input#name").value, roomPass = shadowRoot.querySelector("input#roompass").value;
+	const roomName = shadowRoot.querySelector("input#room").value, id = name;
+	joinRoom(host, roomName, roomPass, id, name);
+}
+
 async function joinRoom(hostElement, roomName, roomPass, id, name) {
 	const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector("div#telemeet"),
 		memory = telemeet_join.getMemoryByContainedElement(divTelemeet), spanControls = shadowRoot.querySelector("span#controls");
 	
 	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
-	if (roomPass.trim() == "") {_showError(await i18n.get("NoPass")); return;}
 
 	const req = {room: roomName, pass: roomPass, id};
 	const result = await apiman.rest(API_ENTERROOM, "GET", req, false, true);
 
 	if (result && !result.result) {	// backend refused
-		_showError(await i18n.get(result.failureReason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"));
+		_showError(await i18n.get(result.reason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"));
 		return;
 	}
 
@@ -185,5 +191,6 @@ const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.s
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, createRoom, meetSettings, exitMeeting, changeBackground, deleteRoom, joinRoom};
+	toggleScreenshare, toggleRaisehand, createRoom, meetSettings, exitMeeting, changeBackground, deleteRoom, joinRoom,
+	joinRoomFromTelemeetInternal};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);

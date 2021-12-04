@@ -60,12 +60,14 @@ async function createRoom(room, pass) {
         _reloadRoomLists(); return true; } else return false;
 }
 
-async function joinRoom(room, pass) {
+async function joinRoom(room, moderator) {
     if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
-    if ((!pass) || pass.length==0) pass = (await dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/meetingpass.html`, true, 
-        true, {}, "dialog", ["knock","pass"])).pass;
+    const userID = session.get(APP_CONSTANTS.USERID).toString(); let pass; 
+    if (userID.toLowerCase() != moderator.toLowerCase()) pass = (await dialog().showDialog(
+        `${APP_CONSTANTS.DIALOGS_PATH}/meetingpass.html`, true, true, {}, "dialog", ["knock","pass"])).pass;
+
     const telemeet = window.monkshu_env.components["telemeet-join"]; telemeet.joinRoom(
-        telemeet.getHostElementByID(TELEMEET_ID), room, pass, session.get(APP_CONSTANTS.USERID), session.get(APP_CONSTANTS.USERNAME));
+        telemeet.getHostElementByID(TELEMEET_ID), room, pass, userID, session.get(APP_CONSTANTS.USERNAME));
 }
 
 async function deleteRoom(room) {
@@ -118,7 +120,8 @@ async function _getRoomsListAsCSV() {
     let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
     const roomsResult = await apiman.rest(API_GETROOMS, "GET", {}, true);
     if (roomsResult.result) for (const room of roomsResult.rooms) {
-        const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, joinText: await i18n.get("Join")}));
+        const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, 
+            moderator: room.moderator, joinText: await i18n.get("Join")}));
 
         const allRoomsCSVLine = [_escCSV(room.name), _escCSV(`${room.moderatorName} &lt;${room.moderator}&gt;`), 
             _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), joinLink].join(",");

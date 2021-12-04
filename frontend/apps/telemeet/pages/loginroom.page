@@ -1,7 +1,9 @@
 SCHEMA
 ======
 {
-    "telemeet": {"html":"telemeet-join", "id":"telemeet", "name":"{{url.name}}", "room":"{{url.room}}", "pass":"{{url.pass}}", "enterOnly":"true", "camicon":"cameraw.svg", "nocamicon":"nocameraw.svg", "stylebody":"url(./pages/loginroom.stylebody.css)"}
+    "telemeet": {"html":"telemeet-join", "id":"telemeet", "name":"{{url.name}}", "room":"{{url.room}}", 
+        "pass":"{{url.pass}}", "enterOnly":"true", "camicon":"cameraw.svg", "nocamicon":"nocameraw.svg", 
+        "stylebody":"url(./pages/loginroom.stylebody.css)", "showJoinerDialog":true}
 }
 ======
 
@@ -12,7 +14,7 @@ LAYOUT
 | telemeet                  |
 -----------------------------
 =================
-Row Heights = minmax(600px, max-content)
+Row Heights = 100%
 Col Widths = 100%
 =================
 
@@ -28,4 +30,6 @@ PER ITEM CLASS = class
 CSS
 =======
 body {margin: 0%;}
+.grid-container-extension {width: 100%; height: 100%;}
+.item0 {overflow: visible;}
 =======

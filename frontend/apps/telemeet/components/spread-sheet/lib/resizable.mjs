@@ -6,13 +6,14 @@
  */
 
 function makeResizableTable(table, barStyle="1px solid #444444", callbacks) {
-  const row = table.getElementsByTagName("tr")[0],
-  cols = row ? row.children : undefined; if (!cols) return;
+  const row = table.getElementsByTagName("tr")[0], cols = row ? row.children : undefined; 
+  if (!cols) return;
   
   table.style.overflow = "hidden";
   
+  const barWidth = barStyle?barStyle.split(" ")[0]:undefined; 
   for (let i = 0; i < cols.length; i++) {
-    const div = _createDiv(table.offsetHeight);
+    const div = _createDiv(table.offsetHeight, barWidth);
     cols[i].appendChild(div); cols[i].style.position = "relative"; _setListeners(div, table, barStyle, callbacks);
   }
 }
@@ -48,9 +49,9 @@ function _setListeners(div, table, barStyle, callbacks) {
   });
 }
  
-function _createDiv(height) {
+function _createDiv(height, width) {
   const div = document.createElement("div");
-  div.style.top = 0; div.style.right = 0; div.style.width = "5px";
+  div.style.top = 0; div.style.right = 0; div.style.width = width||5+"px";
   div.style.position = "absolute"; div.style.cursor = "col-resize"; 
   div.style.userSelect = "none"; div.style.height = height + "px";
   return div;
