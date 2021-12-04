@@ -10,8 +10,8 @@ import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
 const API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", TELEMEET_ID = "telemeet", ALL_ROOMS_LIST_ID = "allroomslist",
-    MY_ROOMS_LIST_ID = "myroomslist";
-const dialog = _ => monkshu_env.components['dialog-box'];
+    MY_ROOMS_LIST_ID = "myroomslist", CONTEXT_MENU_ID = "maincontextmenu";
+const dialog = _ => monkshu_env.components['dialog-box'], contextmenu = _ => window.monkshu_env.components["context-menu"];
 
 async function changeStatus(status) {
     const req = {id: session.get(APP_CONSTANTS.USERID), status};
@@ -77,6 +77,15 @@ async function deleteRoom(room) {
     else _showMessage(await i18n.get("RoomDeletionFailed"));
 }
 
+async function shareRoom(room, password, event) {
+    const roomLink = `${APP_CONSTANTS.JOIN_HTML}?data=${btoa(`${room}:${password}`)}`; 
+    const emailBody = encodeURIComponent(await i18n.get("RoomLinkEmailBody") + roomLink);
+
+    const menus = {}; menus["Email"] = async _=> window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
+    menus["Copy Link"] = _ => navigator.clipboard.writeText(roomLink);
+	contextmenu().showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);
+}
+
 function showLoginMessages() {
     const data = router.getCurrentPageData();
     if (data.showDialog) { _showMessage(data.showdialog().message); delete data.showDialog; router.setCurrentPageData(data); }
@@ -115,10 +124,12 @@ async function _getTOTPQRCode(key) {
 
 async function _getRoomsListAsCSV() {
     const _escCSV = v => v.indexOf(",") != -1 ? `"${v}"`:v;
-    const joinLinkHTML = await $$.requireText("./pages/joinlink.html"), deleteLinkHTML = await $$.requireText("./pages/deletelink.html")
+    const joinLinkHTML = await $$.requireText("./pages/joinlink.html"), 
+        deleteLinkHTML = await $$.requireText("./pages/deletelink.html"),
+        shareLinkHTML = await $$.requireText("./pages/sharelink.html");
 
     let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
-    const roomsResult = await apiman.rest(API_GETROOMS, "GET", {}, true);
+    const roomsResult = await apiman.rest(API_GETROOMS, "GET", {id: session.get(APP_CONSTANTS.USERID).toString()}, true);
     if (roomsResult.result) for (const room of roomsResult.rooms) {
         const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join")}));
@@ -129,7 +140,8 @@ async function _getRoomsListAsCSV() {
 
         if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) {
             const deleteLink = _escCSV(router.getMustache().render(deleteLinkHTML, {room: room.name, deleteText: await i18n.get("Delete")}));
-            const myRoomsCSVLine = [_escCSV(room.name), _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), 
+            const shareLink = _escCSV(router.getMustache().render(shareLinkHTML, {room: room.name, password: room.password}));
+            const myRoomsCSVLine = [shareLink, _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), 
                 deleteLink, joinLink].join(",");
             myRoomsCSV += myRoomsCSVLine + "\r\n";
         }
@@ -144,4 +156,4 @@ const _showConfirm = async message => {
 }
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
-    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom};
+    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, shareRoom};

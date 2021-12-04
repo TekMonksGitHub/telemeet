@@ -7,10 +7,12 @@ License: MIT - see enclosed license.txt file.
 	
 <head>
 	<script>
-	const url = new URL(window.location.href); 
-	let redirect = `./index.html?join=${url.search?url.searchParams.get("room"):""}`;
-	if (url.search && url.searchParams.get("pass")) redirect+=`&pass=${url.searchParams.get("pass")}`;
-	if (url.search && url.searchParams.get("name")) redirect+=`&name=${url.searchParams.get("name")}`;
+	const url = new URL(window.location.href); const decoded = url.searchParams.get("data")?
+		atob(url.searchParams.get("data")).split(":"):undefined; 
+
+	let redirect = `./index.html?join=${decoded?decoded[0]:""}`;
+	if (decoded && decoded[1]) redirect+=`&pass=${decoded[1]}`;
+	if (decoded && decoded[2]) redirect+=`&name=${decoded[2]}`;
 	window.location = redirect;
 	</script>
 </head>

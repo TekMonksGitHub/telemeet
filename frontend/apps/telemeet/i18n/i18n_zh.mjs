@@ -107,5 +107,7 @@ export const i18n = {
 "ConferenceLoading": "Conference loading...",
 "MyRooms": "My Rooms",
 "SureWantToDeleteRoom": "Are you sure you want to delete this room?",
-"RoomDeletionFailed": "Unable to delete the room."
+"RoomDeletionFailed": "Unable to delete the room.",
+"RoomLinkEmailSubject": "Join my meeting",
+"RoomLinkEmailBody": "Please click the following link to join my meeting\n"
 }

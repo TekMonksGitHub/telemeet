@@ -130,6 +130,7 @@ div#maincontent {
 	<script type="module">
 	import {main} from "./js/main.mjs"; monkshu_env.apps.telemeet.main = main; main.showLoginMessages();
 	import "./components/dialog-box/dialog-box.mjs";
+	import "./components/context-menu/context-menu.mjs";
 	import "./components/telemeet-join/telemeet-join.mjs";
 	import "./components/span-with-menu/span-with-menu.mjs";
 	import "/framework/components/page-generator/page-generator.mjs";
@@ -167,6 +168,8 @@ div#maincontent {
 </div>
 
 <dialog-box id="dialog"></dialog-box>
+
+<context-menu id="maincontextmenu" styleBody="span.menubreak > hr{background-color: #bbbbbb;} span.menuitem > span.menuicon {display:none} div#menu {border:none; background: #FFFFFF;} span.menuitem > span.menutext {padding: 0.5em 2em 0.5em 1em; font-size: small;} span.menuitem > span.menutext:hover {background-color: #41cf70; color: #ffffff;}"></context-menu>
 
 </body>
 </html>

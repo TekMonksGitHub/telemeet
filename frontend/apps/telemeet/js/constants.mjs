@@ -18,6 +18,7 @@ export const APP_CONSTANTS = {  // application.mjs injects all the settings from
     LOGIN_ROOM_HTML: APP_PATH+"/loginroom.html",
     ERROR_HTML: APP_PATH+"/error.html",
     MANAGE_HTML: APP_PATH+"/manage.html",
+    JOIN_HTML: APP_PATH+"/join.html",
 
     DIALOGS_PATH: APP_PATH+"/dialogs",
 
