@@ -71,7 +71,7 @@ async function joinRoom(room, moderator) {
 }
 
 async function deleteRoom(room) {
-    await _showConfirm(await i18n.get("SureWantToDeleteRoom"));
+    await _getConfirmation(await i18n.get("SureWantToDeleteRoom"));
     const telemeet = window.monkshu_env.components["telemeet-join"];
     if ((await telemeet.deleteRoom(room, session.get(APP_CONSTANTS.USERID))).result) _reloadRoomLists();
     else _showMessage(await i18n.get("RoomDeletionFailed"));
@@ -81,9 +81,10 @@ async function shareRoom(room, password, event) {
     const roomLink = `${APP_CONSTANTS.JOIN_HTML}?data=${btoa(`${room}:${password}`)}`; 
     const emailBody = encodeURIComponent(await i18n.get("RoomLinkEmailBody") + roomLink);
 
-    const menus = {}; menus["Email"] = async _=> window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
-    menus["Copy Link"] = _ => navigator.clipboard.writeText(roomLink);
-	contextmenu().showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);
+    const menus = {}; menus[await i18n.get("ShareEmail")] = async _=> 
+        window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
+    menus[await i18n.get("ShareLink")] = _ => navigator.clipboard.writeText(roomLink);
+	contextmenu().showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2, null, true);
 }
 
 function showLoginMessages() {
@@ -150,7 +151,7 @@ async function _getRoomsListAsCSV() {
 }
 
 const _showMessage = message => dialog().showMessage(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, {message}, "dialog");
-const _showConfirm = async message => {
+const _getConfirmation = async message => {
     await dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, true, true, {message}, 
         "dialog", []); dialog().hideDialog("dialog");
 }

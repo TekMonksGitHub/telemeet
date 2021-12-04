@@ -109,5 +109,7 @@ export const i18n = {
 "SureWantToDeleteRoom": "Are you sure you want to delete this room?",
 "RoomDeletionFailed": "Unable to delete the room.",
 "RoomLinkEmailSubject": "Join my meeting",
-"RoomLinkEmailBody": "Please click the following link to join my meeting\n"
+"RoomLinkEmailBody": "Please click the following link to join my meeting\n",
+"ShareEmail": "✉ Email",
+"ShareLink": "⧉ Copy link"
 }

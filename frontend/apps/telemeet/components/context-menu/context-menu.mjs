@@ -32,7 +32,7 @@ async function elementRendered(element) {
  * @param adjustY Any adjustment to make for the menu Y coordinates (e.g. shift top by 5px or -5px)
  * @param data Any additional data to pass to the HTML renderer
  */
-async function showMenu(hostID, contentOrMenuItems, x, y, adjustX, adjustY, data) {
+async function showMenu(hostID, contentOrMenuItems, x, y, adjustX, adjustY, data, dontShowCancel) {
 	const isMenuHTML = typeof contentOrMenuItems == "string", formattedMenuItems = []; 
 
 	const menuObject = {}; if (!isMenuHTML) {
@@ -44,9 +44,12 @@ async function showMenu(hostID, contentOrMenuItems, x, y, adjustX, adjustY, data
 		}; 
 		
 		// add cancellation menu item
-		formattedMenuItems.push({menubreak: true});
-		memory.menuFunctions[functionIndex] = {function: _=>{}}; 
-		formattedMenuItems.push({menuentry: {displayText:await i18n.get("Cancel"), functionID: functionIndex}});
+		if (!dontShowCancel) {
+			formattedMenuItems.push({menubreak: true});
+			memory.menuFunctions[functionIndex] = {function: _=>{}}; 
+			formattedMenuItems.push({menuentry: {displayText:await i18n.get("Cancel"), functionID: functionIndex}});
+		}
+		
 		menuObject.items = formattedMenuItems;
 	} else menuObject.htmlContent = await router.expandPageData(contentOrMenuItems, undefined, {...data, hostID});
 
