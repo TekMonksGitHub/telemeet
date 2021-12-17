@@ -99,7 +99,7 @@ export const i18n = {
 "admin": "Administrator",
 "AddUser": "Add User",
 "AllRoomsTableHeader": "Meeting Name,Organizer,Start Time,Action",
-"MyRoomsTableHeader": "Room - Click to share,Date Created,Delete?,Action",
+"MyRoomsTableHeader": "Room - Click for menu,Date Created,Delete?,Action",
 "MeetLoadError": "Meet API failed to load, timedout.",
 "MediaDevicesFailed": "Failed to find any audio video devices.",
 "SettingsHelp": "Press the record button below to record a test video and play it back to check if your devices are working properly. To test the speakers, press the audio button.",
@@ -111,5 +111,8 @@ export const i18n = {
 "RoomLinkEmailSubject": "Join my meeting",
 "RoomLinkEmailBody": "Please click the following link to join my meeting\n",
 "ShareEmail": "✉ Email",
-"ShareLink": "⧉ Copy link"
+"ShareLink": "⧉ Copy link",
+"EditRoom": "✎ Edit room",
+"RoomEditFailedExists": "Room edit failed. New room name already exists.",
+"RoomEditFailedCheckLogs": "Room edit failed. Contact your administrator for more help."
 }

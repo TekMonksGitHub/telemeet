@@ -22,7 +22,7 @@ td {
 }
 tr > td:nth-child(1) {min-width: 25em}
 tr > td:nth-child(2) {min-width: 25em}
-tr > td:nth-child(3) {width: 8em}
+tr > td:nth-child(3) {width: 15em}
 tr > td:nth-child(4) {width: 6em}
 
 tr:first-child > td {

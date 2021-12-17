@@ -14,7 +14,7 @@ import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'], DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
 const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_CONSTANTS.API_PATH+"/createroom", 
-	API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom";
+	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom";
 
 async function elementConnected(host) {
 	const data = {}; 
@@ -150,6 +150,11 @@ function deleteRoom(room, id) {
 	return apiman.rest(API_DELETEROOM, "POST", {room, id}, true, false);
 }
 
+function editRoom(oldroom, newroom, newpassword, id) {
+	LOG.info(`Editing room ${oldroom} due to moderator request.`);
+	return apiman.rest(API_EDITROOM, "POST", {oldroom, room: newroom, pass: newpassword, id}, true, false);
+}
+
 async function _startVideo(shadowRoot, containedElement) {
 	shadowRoot.querySelector("img#camicon").src = `${COMPONENT_PATH}/img/camera.svg`;
 	shadowRoot.querySelector("img#camcontrol").src = `${COMPONENT_PATH}/img/camera.svg`; 
@@ -191,6 +196,6 @@ const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.s
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, createRoom, meetSettings, exitMeeting, changeBackground, deleteRoom, joinRoom,
-	joinRoomFromTelemeetInternal};
+	toggleScreenshare, toggleRaisehand, createRoom, meetSettings, exitMeeting, changeBackground, deleteRoom, editRoom,
+	joinRoom, joinRoomFromTelemeetInternal};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);

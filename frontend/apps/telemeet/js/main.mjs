@@ -77,14 +77,29 @@ async function deleteRoom(room) {
     else _showMessage(await i18n.get("RoomDeletionFailed"));
 }
 
-async function shareRoom(room, password, event) {
+async function showMyRoomMenu(room, password, event) {
     const roomLink = `${APP_CONSTANTS.JOIN_HTML}?data=${btoa(`${room}:${password}`)}`; 
     const emailBody = encodeURIComponent(await i18n.get("RoomLinkEmailBody") + roomLink);
 
     const menus = {}; menus[await i18n.get("ShareEmail")] = async _=> 
         window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
     menus[await i18n.get("ShareLink")] = _ => navigator.clipboard.writeText(roomLink);
+    menus[await i18n.get("EditRoom")] = _ => {
+        const shadowRoot = window.monkshu_env.components["html-fragment"].getShadowRootByHostId("myrooms");
+        shadowRoot.querySelector("input#room").value = room; shadowRoot.querySelector("input#oldroom").value = room; 
+        shadowRoot.querySelector("input#pass").value = password;
+        shadowRoot.querySelector("button#createButton").classList.remove("visible");  
+        shadowRoot.querySelector("button#editButton").classList.add("visible"); 
+        shadowRoot.querySelector("button#cancelButton").classList.add("visible"); 
+    }
 	contextmenu().showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2, null, true);
+}
+
+async function editRoom(oldroom, newroom, newpassword) {
+    const telemeet = window.monkshu_env.components["telemeet-join"];
+    const result = await telemeet.editRoom(oldroom, newroom, newpassword, session.get(APP_CONSTANTS.USERID)); 
+    if (result.result) {_reloadRoomLists(); return true;}
+    else {_showMessage(await i18n.get(result.reason == "ROOMEXISTS" ? "RoomEditFailedExists" : "RoomEditFailedCheckLogs")); return false;}
 }
 
 function showLoginMessages() {
@@ -127,7 +142,7 @@ async function _getRoomsListAsCSV() {
     const _escCSV = v => v.indexOf(",") != -1 ? `"${v}"`:v;
     const joinLinkHTML = await $$.requireText("./pages/joinlink.html"), 
         deleteLinkHTML = await $$.requireText("./pages/deletelink.html"),
-        shareLinkHTML = await $$.requireText("./pages/sharelink.html");
+        myroomLinkHTML = await $$.requireText("./pages/myroomlink.html");
 
     let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
     const roomsResult = await apiman.rest(API_GETROOMS, "GET", {id: session.get(APP_CONSTANTS.USERID).toString()}, true);
@@ -136,13 +151,13 @@ async function _getRoomsListAsCSV() {
             moderator: room.moderator, joinText: await i18n.get("Join")}));
 
         const allRoomsCSVLine = [_escCSV(room.name), _escCSV(`${room.moderatorName} &lt;${room.moderator}&gt;`), 
-            _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), joinLink].join(",");
+            _escCSV(new Date(room.creationtime).toLocaleString(i18n.getSessionLang())), joinLink].join(",");
         allRoomsCSV += allRoomsCSVLine + "\r\n";
 
         if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) {
             const deleteLink = _escCSV(router.getMustache().render(deleteLinkHTML, {room: room.name, deleteText: await i18n.get("Delete")}));
-            const shareLink = _escCSV(router.getMustache().render(shareLinkHTML, {room: room.name, password: room.password}));
-            const myRoomsCSVLine = [shareLink, _escCSV(new Date(room.creationtime).toLocaleTimeString(i18n.getSessionLang())), 
+            const shareLink = _escCSV(router.getMustache().render(myroomLinkHTML, {room: room.name, password: room.password}));
+            const myRoomsCSVLine = [shareLink, _escCSV(new Date(room.creationtime).toLocaleString(i18n.getSessionLang())), 
                 deleteLink, joinLink].join(",");
             myRoomsCSV += myRoomsCSVLine + "\r\n";
         }
@@ -157,4 +172,4 @@ const _getConfirmation = async message => {
 }
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
-    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, shareRoom};
+    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, showMyRoomMenu, editRoom};

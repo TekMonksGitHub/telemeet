@@ -49,7 +49,9 @@ div#maincontent {
     overflow: auto;
     padding: 1em 1em;
     justify-content: space-between;
-    min-height: 2em;
+    height: 3.5em;
+    align-items: center;
+    overflow: overlay;
 }
 
 span#title {
@@ -66,7 +68,11 @@ input {
     border: 1px solid #a0a0a0;
     padding: 0.5em;
     margin-right: 1%;
-    width: 40%;
+    min-width: 30%;
+    height: 2.5em;
+}
+input.edit {
+    width: 31%;
 }
 
 button {
@@ -79,7 +85,13 @@ button {
     white-space: nowrap;
     text-align: center;
     padding: 0em 1em;
+    display: none;
+    min-width: 6em;
+    min-width: 6em;
+    height: 2.5em;
+    margin-left: 1%;
 }
+button.visible {display: inline-block}
 
 spread-sheet {
     height: calc(100% - 2em);
@@ -93,14 +105,30 @@ spread-sheet {
     <input id="room" type="text" placeholder="{{i18n.RoomID}}">
 
     <input id="pass" type="password" placeholder="{{i18n.Password}}">
+
+    <input id="oldroom" type="hidden">
     
-    <button onclick='const creationFunc = async _ => {if (await monkshu_env.apps.telemeet.main.createRoom(
+    <button id="createButton" class="visible" onclick='const creationFunc = async _ => {if (await monkshu_env.apps.telemeet.main.createRoom(
         monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value.trim(), 
         monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
         this)) {
             monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value = "";
             monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value = "";
         }}; creationFunc();'>{{i18n.Create}}</button>
+
+    <button id="editButton" class="hidden" onclick='const editFunc = async _ => {if (await monkshu_env.apps.telemeet.main.editRoom(
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"oldroom").value.trim(), 
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value.trim(), 
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
+        this)) monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"cancelButton").click();
+    }; editFunc();'>{{i18n.Edit}}</button>
+    <button id="cancelButton" class="hidden" onclick='const cancelFunc = _ => {
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value = "";
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value = "";
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"createButton").classList.add("visible");
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"editButton").classList.remove("visible");
+        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"cancelButton").classList.remove("visible");
+    }; cancelFunc();'>{{i18n.Cancel}}</button>
     </div>
 
     <spread-sheet id="myroomslist" rows="4" columns="4" onlyText="true" barstyle="1em solid #00732e" 

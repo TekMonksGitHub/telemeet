@@ -5,7 +5,7 @@ SCHEMA
         "styleBody":"url(./pages/allroomslist.styleBody.css)", "showToolbar": false, "readOnlySheet": true, 
         "showSearch": true, "hasHeaders": true, "value": "{{{allRoomsList}}}"},
     "telemeet": {"html":"telemeet-join", "id":"telemeet"},
-    "createroom": {"html":"html-fragment", "htmlfile":"./pages/createroom.html", "style":"width: 100%", "data":"{{{myRoomsList}}}"}
+    "myrooms": {"html":"html-fragment", "htmlfile":"./pages/myrooms.html", "style":"width: 100%", "data":"{{{myRoomsList}}}"}
 }
 ======
 
@@ -15,11 +15,11 @@ LAYOUT
 -----------------------------
 |        allroomslist       |
 -----------------------------
-|    telemeet  | createroom |
+|    telemeet  |   myrooms  |
 -----------------------------
 =================
 Row Heights = 2fr, 1.5fr
-Col Widths = 1fr, 1fr
+Col Widths = 0.5fr, 1fr
 =================
 
 
