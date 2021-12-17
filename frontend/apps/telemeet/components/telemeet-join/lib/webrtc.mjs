@@ -47,6 +47,9 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	meetAPI.addEventListener("videoConferenceJoined", _confInfo => {
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 	});
+	meetAPI.addEventListener("tileViewChanged", status => {
+		for (const tileVsFilmstripListener of memory.tileVsFilmstripListeners) tileVsFilmstripListener(status.enabled);
+	});
 
 	memory.meetAPI = meetAPI; 
 }
@@ -75,11 +78,14 @@ const addScreenShareListener = (listener, memory) => memory.screenShareListeners
     memory.screenShareListeners.push(listener) : memory.screenShareListeners=[listener];
 const addRaiseHandListener = (listener, memory) => memory.raiseHandListeners ?
 	memory.raiseHandListeners.push(listener) : memory.raiseHandListeners=[listener];
+const addTileVsFilmstripListener = (listener, memory) => memory.tileVsFilmstripListeners ?
+	memory.tileVsFilmstripListeners.push(listener) : memory.tileVsFilmstripListeners=[listener];
 
 const toggleAudio = memory => _executeMeetCommand(memory, "toggleAudio");
 const toggleVideo = memory => _executeMeetCommand(memory, "toggleVideo");
 const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScreen");
-const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
+const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleShareScreen");
+const toggleTileVsFilmstrip = memory => _executeMeetCommand(memory, "toggleTileView");
 const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
 const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete memory.meetAPI;}
 
@@ -90,5 +96,5 @@ function _executeMeetCommand(memory, command, params) {
 function _closeStream(stream) { for (const track of stream.getTracks()) {track.stop(); stream.removeTrack(track);} }
 
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
-	addScreenShareListener, addRaiseHandListener, toggleAudio, toggleVideo, toggleShareScreen, toggleRaiseHand, 
-	exitMeeting, changeBackground, getMediaDevices};
+	addScreenShareListener, addRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, toggleShareScreen, 
+	toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices};

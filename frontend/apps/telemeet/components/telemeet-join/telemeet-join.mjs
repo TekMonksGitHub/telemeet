@@ -63,6 +63,7 @@ async function toggleMike(element, isFromMeet) {
 const exitMeeting = element => _executeMeetCommand(element, "exitMeeting");
 const toggleScreenshare = element => _executeMeetCommand(element, "toggleShareScreen");
 const toggleRaisehand = element => _executeMeetCommand(element, "toggleRaiseHand");
+const toggleTileVsFilmstrip = element => _executeMeetCommand(element, "toggleTileVsFilmstrip");
 const changeBackground = element => _executeMeetCommand(element, "changeBackground");
 
 async function createRoom(roomName, roomPass, id) {	
@@ -120,6 +121,8 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);
 		webrtc.addRaiseHandListener(handUp => shadowRoot.querySelector("img#raisehandcontrol").src = 
 			`${COMPONENT_PATH}/img/${handUp?"":"no"}raisehand.svg`, memory);
+		webrtc.addTileVsFilmstripListener(tileView => shadowRoot.querySelector("img#tilevsfilmstripcontrol").src = 
+			`${COMPONENT_PATH}/img/${tileView?"filmstrip":"tile"}.svg`, memory);
 
 		webrtc.openTelemeet(result.url, roomPass, !result.isModerator, result.isModerator, 
 			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory);
@@ -196,6 +199,6 @@ const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.s
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, createRoom, meetSettings, exitMeeting, changeBackground, deleteRoom, editRoom,
-	joinRoom, joinRoomFromTelemeetInternal};
+	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, meetSettings, exitMeeting, changeBackground, 
+	deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);

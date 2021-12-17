@@ -22,7 +22,7 @@ div#content {
 }
 
 div#videodiv {
-    height: 100%;
+    min-height: 100%;
     width: 100%;
     position: relative;
     border-radius: var(--border-radius);
@@ -181,6 +181,7 @@ span#controls > img {
     <img id="changebackgroundcontrol" src="{{componentpath}}/img/changebackground.svg" onclick="monkshu_env.components['telemeet-join'].changeBackground(this)">
     <img id="screensharecontrol" src="{{componentpath}}/img/noscreenshare.svg" onclick="monkshu_env.components['telemeet-join'].toggleScreenshare(this)">
     <img id="raisehandcontrol" src="{{componentpath}}/img/noraisehand.svg" onclick="monkshu_env.components['telemeet-join'].toggleRaisehand(this)">
+    <img id="tilevsfilmstripcontrol" src="{{componentpath}}/img/tile.svg" onclick="monkshu_env.components['telemeet-join'].toggleTileVsFilmstrip(this)">
     <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this, true)">
     <img id="exitcontrol" src="{{componentpath}}/img/exit.svg" onclick="monkshu_env.components['telemeet-join'].exitMeeting(this)">
     </span>
