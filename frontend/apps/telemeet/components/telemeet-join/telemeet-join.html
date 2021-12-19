@@ -141,9 +141,30 @@ span#controls {
     background-color: #293548;
     opacity: 1;
 }
+span#meetinginfo {
+    position: fixed;
+    top: 2vh;
+    overflow: hidden;
+    border-radius: 0.2em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    max-width: 80vw;
+    background-color: #2935489c;
+    opacity: 1;
+    text-align: center;
+    color: #D3D3D3;
+    font-size: small;
+    cursor: default;
+    padding: 0.4em;
+    box-sizing: border-box;
+}
 @keyframes hideAnimation {from{opacity: 1;} to{opacity: 0.10;}}
-span#controls:hover {opacity: 1 !important; animation: none !important;}
-span#controls.animate {animation: hideAnimation 5s ease-out 5s forwards;}
+span#controls:hover, span#meetinginfo:hover {opacity: 1 !important; animation: none !important;}
+span#controls.animate, span#meetinginfo.animate {animation: hideAnimation 5s ease-out 5s forwards;}
 span#controls > img {
     height: 3em; 
     width: 3em;
@@ -174,7 +195,9 @@ span#controls > img {
 <dialog-box id="telemeetdialog"></dialog-box>
 </div>
 
-<div id="telemeet">
+<div id="telemeet" data-room="">
+    <span id="meetinginfo"></span>
+
     <span id="controls">
     <img id="camcontrol" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this, true)">
     <img id="mikecontrol" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this, true)">

@@ -14,7 +14,7 @@ import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'], DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
 const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_CONSTANTS.API_PATH+"/createroom", 
-	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom";
+	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom", DIV_TELEMEET = "div#telemeet";
 
 async function elementConnected(host) {
 	const data = {}; 
@@ -28,13 +28,13 @@ async function elementConnected(host) {
 
 	telemeet_join.setDataByHost(host, data);
 
-	const memory = telemeet_join.getMemoryByHost(host), sessionMemory = telemeet_join.getSessionMemory(host.id); 
-	memory.roomExitListeners = []; if (sessionMemory.videoOn == undefined) sessionMemory.videoOn = true; 
+	const sessionMemory = telemeet_join.getSessionMemory(host.id); 
+	if (sessionMemory.videoOn == undefined) sessionMemory.videoOn = true; 
 	if (sessionMemory.mikeOn == undefined) sessionMemory.mikeOn = true;
 }
 
 async function elementRendered(element) {  
-	const shadowRoot = telemeet_join.getShadowRootByHost(element), containedElement = shadowRoot.querySelector("div#telemeet");
+	const shadowRoot = telemeet_join.getShadowRootByHost(element), containedElement = shadowRoot.querySelector(DIV_TELEMEET);
 	if (_getSessionMemoryVariable("videoOn", containedElement)) _startVideo(shadowRoot, element);	// cam controls auto show when video starts
 	else {_stopVideo(shadowRoot, element); shadowRoot.querySelector("span#camcontrol").classList.add("visible");}	// show cam controls allow user to start cam etc. 
 	if (_getSessionMemoryVariable("mikeOn", containedElement)) _startMike(shadowRoot); else _stopMike(shadowRoot);
@@ -86,15 +86,11 @@ function joinRoomFromTelemeetInternal(element) {
 	joinRoom(host, roomName, roomPass, id, name);
 }
 
-async function joinRoom(hostElement, roomName, roomPass, id, name) {
-	const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector("div#telemeet"),
-		memory = telemeet_join.getMemoryByContainedElement(divTelemeet), spanControls = shadowRoot.querySelector("span#controls");
-	
-	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
+async function joinRoom(hostElement, roomName, roomPass, id, name) {	
+	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;};
 
 	const req = {room: roomName, pass: roomPass, id};
 	const result = await apiman.rest(API_ENTERROOM, "GET", req, false, true);
-
 	if (result && !result.result) {	// backend refused
 		_showError(await i18n.get(result.reason=="NO_ROOM"?"RoomNotCreatedError":"RoomPasswordError"));
 		return;
@@ -102,20 +98,29 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 
 	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id);
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
-		let roomClosed = false;	// room is open now
+		const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector(DIV_TELEMEET);
+		let roomClosed = false;	_setRoom(divTelemeet, roomName); // room is open now
 
-		const exitListener = (_roomName, callFromLogout) => {	// delete the room, close FW on moderator exit
+		let meetingInfoTimer; const exitListener = (_roomName, callFromLogout) => {	// delete the room, close FW on moderator exit
 			if (roomClosed) return;	else roomClosed = true; // return if already closed, else close it
-			divTelemeet.classList.remove("visible");	// stop showing the telemeet div
+			divTelemeet.classList.remove("visible"); // stop showing the telemeet div
+			if (meetingInfoTimer) {clearInterval(meetingInfoTimer); meetingInfoTimer = undefined;}	// stop updating meeting info
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
-			if (memory.lastVideoStateOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
+			if (sessionMemory.videoOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
 		}; 
-
 		loginmanager.addLogoutListener(_=>exitListener(roomName, true));
+
+		const memory = _getRoomMemory(divTelemeet), spanControls = shadowRoot.querySelector("span#controls"), 
+			spanMeetinginfo = shadowRoot.querySelector("span#meetinginfo");
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
-			memory.lastVideoStateOn = sessionMemory.videoOn; _stopVideo(shadowRoot, divTelemeet, true); 
-			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); spanControls.classList.add("animate"); spanControls.style.opacity = "1";
+			_stopVideo(shadowRoot, divTelemeet, true); 
+			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); 
+			spanControls.classList.add("animate"); spanControls.style.opacity = "1";
+			spanMeetinginfo.classList.add("animate"); spanMeetinginfo.style.opacity = "1";
+			const startTime = Date.now();
+			meetingInfoTimer = util.setIntervalImmediately(_=>spanMeetinginfo.innerHTML = 			// start showing meeting info
+				`Meeting room - ${roomName} | Meeting Duration - ${((Date.now() - startTime)/(1000*60)).toFixed(1)} minutes`, 1000);
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);
@@ -137,15 +142,17 @@ async function meetSettings(element, fromMeet) {
 	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
 	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
 
-	const exitListener = _ => {DIALOG.hideDialog("telemeetdialog"); webrtc.removeRoomExitListener(exitListener, memory);}, 
-		memory = telemeet_join.getMemoryByContainedElement(element);
-	webrtc.addRoomExitListener(exitListener, memory);
+	if (fromMeet) {
+		const memory = _getRoomMemory(element), exitListener = _ => { DIALOG.hideDialog("telemeetdialog"); 
+			webrtc.removeRoomExitListener(exitListener, memory); };
+		webrtc.addRoomExitListener(exitListener, memory);
+	}
 	const retVals = await DIALOG.showDialog(`${DIALOGS_PATH}/setupav.html`, 
 		false, false, data, "telemeetdialog", ["speaker", "microphone", "camera"]);
-	webrtc.removeRoomExitListener(exitListener, memory); 
+	if (fromMeet) webrtc.removeRoomExitListener(exitListener, memory);
 
 	DIALOG.hideDialog("telemeetdialog");
-	LOG.info(JSON.stringify(retVals));
+	LOG.info(JSON.stringify(retVals));	// TODO: set these here
 }
 
 function deleteRoom(room, id) {
@@ -191,11 +198,16 @@ function _stopMike(shadowRoot) {
 const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error}, 
 	"dialog", [], _=> DIALOG.hideDialog("dialog"));
 
-const _executeMeetCommand = (containedElement, command, params) => webrtc[command](
-	telemeet_join.getMemoryByContainedElement(containedElement), params);
+const _executeMeetCommand = (containedElement, command, params) => webrtc[command](_getRoomMemory(containedElement), params);
 const _getSessionMemoryVariable = (varName, element) => telemeet_join.getSessionMemoryByContainedElement(element)[varName];
 const _setSessionMemoryVariable = (varName, element, value) => telemeet_join.getSessionMemoryByContainedElement(element)[varName] = value;
 const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.src = icons[1]; else element.src = icons[0]; }
+const _getRoomMemory = containedElement => { const room = _getRoom(containedElement), 
+	mem = telemeet_join.getMemoryByContainedElement(containedElement); if (!mem[room]) mem[room] = {}; return mem[room]; }
+const _getRoom = containedElement => {const shadowRoot = telemeet_join.getShadowRootByContainedElement(containedElement);
+	return shadowRoot.querySelector(DIV_TELEMEET).dataset.room;}
+const _setRoom = (containedElement, room) => {const shadowRoot = telemeet_join.getShadowRootByContainedElement(containedElement);
+	return shadowRoot.querySelector(DIV_TELEMEET).dataset.room = room;}
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
