@@ -137,7 +137,8 @@ span#signin > span > a {
 	<title>{{i18n.Title}}</title>
 	
 	<script type="module">
-	import {login_box} from "./components/login-box/login-box.mjs"; 
+	import "./components/login-box/login-box.mjs"; 
+	import "./components/dialog-box/dialog-box.mjs";
 	import {language} from "./js/language.mjs"; window.language=language;
 	</script>
 </head>
@@ -170,6 +171,9 @@ span#signin > span > a {
 	<span class="langsel" onclick="language.changeLanguage('th')">&nbsp;ภาษาไทย</span>
 	<span class="langsel" onclick="language.changeLanguage('zh')">中文</span>
 </div>	
+
+<dialog-box id="dialog"></dialog-box>
+
 </body>
 
 </html>

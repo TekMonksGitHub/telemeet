@@ -29,6 +29,7 @@ export const i18n = {
 "RegisterSuccess": "Welcome! Registration successful",
 "RoomLoginMsg": "Join Room",
 "RoomPasswordError": "Incorrect room name or password",
+"RoomNotOpenError": "Room is not open yet, please retry later.",
 "RoomNotCreatedError": "Room has not been opened for guests by the moderator yet",
 "RoomExistsError": "Room already exists.",
 "RoomBadIDError": "Bad ID provided, room creation failed",

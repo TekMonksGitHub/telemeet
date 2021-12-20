@@ -1,5 +1,5 @@
 /**
- * Validates a request to enter a room given its password or if 
+ * Executes a request to enter a room given its password or if 
  * the one entering is the moderator.
  * (C) 2020 TekMonks. All rights reserved.
  */
@@ -11,13 +11,20 @@ exports.doService = async jsonReq => {
 	
 	const telemeetRooms = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.ROOMSKEY)||{}; 
 	const roomID = jsonReq.room.toUpperCase();
-	const result = telemeetRooms[roomID] && ((telemeetRooms[roomID].moderator == jsonReq.id) || 
-		(telemeetRooms[roomID].password == jsonReq.pass));
-	const reason = result ? null : (telemeetRooms[roomID]?"BAD_PASSWORD":"NO_ROOM");
+	const result = telemeetRooms[roomID] && (telemeetRooms[roomID].moderator == jsonReq.id || 
+		(telemeetRooms[roomID].password == jsonReq.pass && telemeetRooms[roomID].startTime != null));
+	const reason = result ? null : (telemeetRooms[roomID] ? (telemeetRooms[roomID].startTime?"BAD_PASSWORD":"NO_MODERATOR") : "NO_ROOM");
 	LOG.debug(`Result of request to enter room -> ${jsonReq.room} for id -> ${jsonReq.id} is -> ${result}, failure reason (if any) is: ${reason}`);
+	if (!result) return {result: false, reason};
+
+	if (jsonReq.id == telemeetRooms[roomID].moderator) telemeetRooms[roomID].startTime = Date.now();
+	if (telemeetRooms[roomID].participants[jsonReq.id]) telemeetRooms[roomID].participants[jsonReq.id].count++;
+	else telemeetRooms[roomID].participants[jsonReq.id] = {name: jsonReq.name, id: jsonReq.id, timeOfEntry: Date.now(), count: 1};
+	DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);  
 
 	return {result, reason, isModerator: telemeetRooms[roomID] ? 
-		jsonReq.id == telemeetRooms[roomID].moderator : false, url: `${telemeet.url}/${jsonReq.room}`}; 
+		jsonReq.id == telemeetRooms[roomID].moderator : false, url: `${telemeet.url}/${jsonReq.room}`,
+		startTime: telemeetRooms[roomID].startTime}; 
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.room && (jsonReq.id||jsonReq.pass));
+const validateRequest = jsonReq => (jsonReq && jsonReq.room && (jsonReq.id||jsonReq.pass) && jsonReq.name);

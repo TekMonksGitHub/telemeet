@@ -9,9 +9,9 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-const API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", TELEMEET_ID = "telemeet", ALL_ROOMS_LIST_ID = "allroomslist",
-    MY_ROOMS_LIST_ID = "myroomslist", CONTEXT_MENU_ID = "maincontextmenu";
+const TELEMEET_ID = "telemeet", ALL_ROOMS_LIST_ID = "allroomslist", MY_ROOMS_LIST_ID = "myroomslist", CONTEXT_MENU_ID = "maincontextmenu";
 const dialog = _ => monkshu_env.components['dialog-box'], contextmenu = _ => window.monkshu_env.components["context-menu"];
+let telemeetJoin;
 
 async function changeStatus(status) {
     const req = {id: session.get(APP_CONSTANTS.USERID), status};
@@ -107,11 +107,17 @@ function showLoginMessages() {
     if (data.showDialog) { _showMessage(data.showdialog().message); delete data.showDialog; router.setCurrentPageData(data); }
 }
 
-function interceptPageLoadAndData(){
+async function interceptPageLoadAndData(){
+    telemeetJoin = (await import(`${APP_CONSTANTS.COMPONENTS_PATH}/telemeet-join/telemeet-join.mjs`)).telemeet_join;
+
     router.addOnLoadPage(APP_CONSTANTS.MAIN_HTML, _ => {    // refresh list of rooms at regular intervals
         const old_timer = session.get("__telemeet_pagelist_refresh_timer");
         if (old_timer) clearTimeout(old_timer); const newTimer = setInterval(_reloadRoomLists, APP_CONSTANTS.ROOM_REFRESH_INTERVAL);
         session.set("__telemeet_pagelist_refresh_timer", newTimer);
+        loginmanager.addLogoutListener(_=>{ // clear refreshing list of rooms on logout
+            const old_timer = session.get("__telemeet_pagelist_refresh_timer");
+            if (old_timer) clearTimeout(old_timer);
+        });
     });
 
     router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {   // set the list of rooms
@@ -145,14 +151,16 @@ async function _getRoomsListAsCSV() {
         myroomLinkHTML = await $$.requireText("./pages/myroomlink.html");
 
     let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
-    const roomsResult = await apiman.rest(API_GETROOMS, "GET", {id: session.get(APP_CONSTANTS.USERID).toString()}, true);
+    const roomsResult = await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString());
     if (roomsResult.result) for (const room of roomsResult.rooms) {
         const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join")}));
 
-        const allRoomsCSVLine = [_escCSV(room.name), _escCSV(`${room.moderatorName} &lt;${room.moderator}&gt;`), 
-            _escCSV(new Date(room.creationtime).toLocaleString(i18n.getSessionLang())), joinLink].join(",");
-        allRoomsCSV += allRoomsCSVLine + "\r\n";
+        if (room.startTime) {   // show only rooms which are active
+            const allRoomsCSVLine = [_escCSV(room.name), _escCSV(`${room.moderatorName} &lt;${room.moderator}&gt;`), 
+                _escCSV(new Date(room.startTime).toLocaleString(i18n.getSessionLang())), joinLink].join(",");
+            allRoomsCSV += allRoomsCSVLine + "\r\n";
+        }
 
         if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) {
             const deleteLink = _escCSV(router.getMustache().render(deleteLinkHTML, {room: room.name, deleteText: await i18n.get("Delete")}));
@@ -161,7 +169,7 @@ async function _getRoomsListAsCSV() {
                 deleteLink, joinLink].join(",");
             myRoomsCSV += myRoomsCSVLine + "\r\n";
         }
-    } else LOG.error("Get rooms API failed.");
+    } else LOG.error("Get rooms call failed.");
     return {allRoomsCSV, myRoomsCSV};
 }
 
