@@ -7,5 +7,7 @@
     "reset_url": "http://localhost:8080/apps/telemeet/reset.html",
     "initiallogin_url": "http://localhost:8080/apps/telemeet/initiallogin.html",
     "base_url": "http://localhost:8080/apps/telemeet/index.html?.=",
-    "reset_expiry_time": 43200000
+    "reset_expiry_time": 43200000,
+    "room_cleaner_check_frequency": 5000,
+    "room_cleaner_max_wait": 2000
 }

@@ -6,25 +6,33 @@
 
 exports.doService = async jsonReq => {
 	if (!validateRequest(jsonReq)) {LOG.error("Validation failure."); return CONSTANTS.FALSE_RESULT;}
+	if (jsonReq.fromRoomCleaner) LOG.info(`Room cleaner sent exit room request for room -> ${jsonReq.room} for id -> ${jsonReq.id} session ID ${jsonReq.sessionID}`);
 	
 	const telemeetRooms = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.ROOMSKEY)||{}; 
 	const roomID = jsonReq.room.toUpperCase();
-	const result = telemeetRooms[roomID] && telemeetRooms[roomID].participants[jsonReq.id] &&
-		(telemeetRooms[roomID].moderator == jsonReq.id || telemeetRooms[roomID].password == jsonReq.pass);
-	const reason = result ? null : (telemeetRooms[roomID] ? 
-		((telemeetRooms[roomID].moderator == jsonReq.id || telemeetRooms[roomID].password == jsonReq.pass)?"NO_MODERATOR":"BAD_PASSWORD"):"NO_ROOM");
+	const result = telemeetRooms[roomID] && telemeetRooms[roomID].participants[jsonReq.id];
+	const reason = result ? null : (telemeetRooms[roomID] ? "NO_SUCH_PARTICIPANT":"NO_ROOM");
 	
-	LOG.debug(`Result of request to exit room -> ${jsonReq.room} for id -> ${jsonReq.id} is -> ${result}, failure reason (if any) is: ${reason}`);
+	LOG.debug(`Result of request to exit room -> ${jsonReq.room} for id -> ${jsonReq.id} session ID ${jsonReq.sessionID} is -> ${result}, failure reason (if any) is: ${reason}`);
 	if (!result) return {result, reason};
 	
-	telemeetRooms[roomID].participants[jsonReq.id].count--;
-	if (telemeetRooms[roomID].participants[jsonReq.id].count == 0) {
-		if (jsonReq.id == telemeetRooms[roomID].moderator) delete telemeetRooms[roomID].startTime;
-		delete telemeetRooms[roomID].participants[jsonReq.id]
-	}
-	DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);  
+	_reduceSessions(telemeetRooms, roomID, jsonReq.id, jsonReq.sessionID); 
 
-	return {result, reason, isModerator: telemeetRooms[roomID] ? jsonReq.id == telemeetRooms[roomID].moderator : false}; 
+	return {result, reason, isModerator: jsonReq.id == telemeetRooms[roomID].moderator}; 
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.room && (jsonReq.id||jsonReq.pass));
+function _reduceSessions(telemeetRooms, roomID, participantID, sessionID) {
+	let modified = false;
+	if (telemeetRooms[roomID].participants[participantID].sessions[sessionID]) 
+		{delete telemeetRooms[roomID].participants[participantID].sessions[sessionID]; modified = true;}
+
+	if (Object.keys(telemeetRooms[roomID].participants[participantID].sessions).length == 0) {
+		if (participantID == telemeetRooms[roomID].moderator) delete telemeetRooms[roomID].startTime;
+		delete telemeetRooms[roomID].participants[participantID]
+		modified = true;
+	}
+
+	if (modified) DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);  
+}
+
+const validateRequest = jsonReq => (jsonReq && jsonReq.room && jsonReq.id && jsonReq.sessionID);

@@ -18,13 +18,16 @@ exports.doService = async jsonReq => {
 	if (!result) return {result: false, reason};
 
 	if (jsonReq.id == telemeetRooms[roomID].moderator) telemeetRooms[roomID].startTime = Date.now();
-	if (telemeetRooms[roomID].participants[jsonReq.id]) telemeetRooms[roomID].participants[jsonReq.id].count++;
-	else telemeetRooms[roomID].participants[jsonReq.id] = {name: jsonReq.name, id: jsonReq.id, timeOfEntry: Date.now(), count: 1};
+
+	if (!telemeetRooms[roomID].participants[jsonReq.id]) telemeetRooms[roomID].participants[jsonReq.id] = 
+		{name: jsonReq.name, id: jsonReq.id, timeOfEntry: Date.now(), sessions: {}};
+	telemeetRooms[roomID].participants[jsonReq.id].sessions[jsonReq.sessionID] = {lastHeartbeat: Date.now()};
+
 	DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);  
 
-	return {result, reason, isModerator: telemeetRooms[roomID] ? 
-		jsonReq.id == telemeetRooms[roomID].moderator : false, url: `${telemeet.url}/${jsonReq.room}`,
-		startTime: telemeetRooms[roomID].startTime}; 
+	return {result, reason, isModerator: jsonReq.id == telemeetRooms[roomID].moderator, 
+		url: `${telemeet.url}/${jsonReq.room}`, startTime: telemeetRooms[roomID].startTime, 
+		totalSessions: Object.keys(telemeetRooms[roomID].participants[jsonReq.id].sessions).length}; 
 }
 
-const validateRequest = jsonReq => (jsonReq && jsonReq.room && (jsonReq.id||jsonReq.pass) && jsonReq.name);
+const validateRequest = jsonReq => (jsonReq && jsonReq.room && jsonReq.id && jsonReq.name && jsonReq.sessionID);

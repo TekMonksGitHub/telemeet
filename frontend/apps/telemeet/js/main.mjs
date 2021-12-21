@@ -152,7 +152,7 @@ async function _getRoomsListAsCSV() {
 
     let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
     const roomsResult = await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString());
-    if (roomsResult.result) for (const room of roomsResult.rooms) {
+    if (roomsResult?.result) for (const room of roomsResult.rooms) {
         const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join")}));
 

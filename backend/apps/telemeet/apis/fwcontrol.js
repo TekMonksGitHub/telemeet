@@ -5,6 +5,7 @@
  * (C) 2020 TekMonks. All rights reserved.
  */
 
+const utils = require(`${CONSTANTS.LIBDIR}/utils.js`);
 const crypt = require(`${CONSTANTS.LIBDIR}/crypt.js`);
 const telemeet = require(`${APP_CONSTANTS.CONF_DIR}/telemeet.json`);
 const fwControl = require(`${APP_CONSTANTS.LIB_DIR}/mirrorFWController.js`);
@@ -16,7 +17,7 @@ exports.doService = async (jsonReq, servObject) => {
 
     if (!telemeet.fwEnabled) return CONSTANTS.TRUE_RESULT;  // no firewall operation required
  
-    const clientIP = jsonReq.ip || servObject.req.connection.remoteAddress;
+    const clientIP = jsonReq.ip || utils.getClientIP(servObject.req);
 
     // operate the firewall for the client IP
     const result = await fwControl.sendFirewallMessage(telemeet.fwHost, telemeet.fwPort, clientIP, null, jsonReq.mode, 

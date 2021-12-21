@@ -12,6 +12,7 @@ import "./subcomponents/dialog-box/dialog-box.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
+import {roomconnectionmanager as roomman} from "./lib/roomconnectionmanager.mjs";
 
 const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'], DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
 const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_CONSTANTS.API_PATH+"/createroom", 
@@ -91,7 +92,7 @@ function joinRoomFromTelemeetInternal(element) {
 async function joinRoom(hostElement, roomName, roomPass, id, name) {	
 	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;};
 
-	const req = {room: roomName, pass: roomPass, id, name};
+	const sessionID = self.crypto.randomUUID(), req = {room: roomName, pass: roomPass, id, name, sessionID};
 	const result = await apiman.rest(API_ENTERROOM, "GET", req, false, true);
 	if (result && !result.result) {	// backend refused
 		_showError(await i18n.get(result.reason=="NO_ROOM"?"RoomNotCreatedError":(result.reason=="NO_MODERATOR"?
@@ -101,11 +102,14 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 
 	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id);
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
+		roomman.startSendingConnectionActiveBeats(roomName, id, sessionID);	// send heartbeats to keep the room alive
+
 		const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector(DIV_TELEMEET);
 		let roomClosed = false;	_setRoom(divTelemeet, roomName); // room is open now
 		let meetingInfoTimer; const exitListener = async (_roomName, callFromLogout) => {	
 			if (roomClosed) return;	else roomClosed = true; // return if already closed, else close it
 			const exitResult = await apiman.rest(API_EXITROOM, "POST", req, true);	// exit the room
+			roomman.stopSendingConnectionActiveBeats(sessionID);	// no need anymore of this
 			if (!exitResult || !exitResult.result) LOG.warn(`Room exit failed for ${id} due to ${result.reason}`);
 			divTelemeet.classList.remove("visible"); // stop showing the telemeet div
 			if (meetingInfoTimer) {clearInterval(meetingInfoTimer); meetingInfoTimer = undefined;}	// stop updating meeting info
@@ -118,10 +122,10 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			spanMeetinginfo = shadowRoot.querySelector("span#meetinginfo");
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
-			_stopVideo(shadowRoot, divTelemeet, true); 
-			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); 
-			spanControls.classList.add("animate"); spanControls.style.opacity = "1";
-			spanMeetinginfo.classList.add("animate"); spanMeetinginfo.style.opacity = "1";
+			_stopVideo(shadowRoot, divTelemeet, true); 	// stop local video
+			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); 	// show telemeet div
+			spanControls.classList.add("animate"); spanControls.style.opacity = "1";	// animate controls
+			spanMeetinginfo.classList.add("animate"); spanMeetinginfo.style.opacity = "1";	// animate meeting info
 			meetingInfoTimer = util.setIntervalImmediately(_=>spanMeetinginfo.innerHTML = 			// start showing meeting info
 				`Meeting room - ${roomName} | Meeting Duration - ${((Date.now() - result.startTime)/(1000*60)).toFixed(1)} minutes`, 1000);
 		}, memory);
