@@ -109,8 +109,8 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 		let meetingInfoTimer; const exitListener = async (_roomName, callFromLogout) => {	
 			if (roomClosed) return;	else roomClosed = true; // return if already closed, else close it
 			const exitResult = await apiman.rest(API_EXITROOM, "POST", req, true);	// exit the room
+			if (!exitResult || !exitResult.result) LOG.warn(`Room exit failed for ${id} due to ${exitResult.reason}`);
 			roomman.stopSendingConnectionActiveBeats(sessionID);	// no need anymore of this
-			if (!exitResult || !exitResult.result) LOG.warn(`Room exit failed for ${id} due to ${result.reason}`);
 			divTelemeet.classList.remove("visible"); // stop showing the telemeet div
 			if (meetingInfoTimer) {clearInterval(meetingInfoTimer); meetingInfoTimer = undefined;}	// stop updating meeting info
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
@@ -137,7 +137,8 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			`${COMPONENT_PATH}/img/${tileView?"filmstrip":"tile"}.svg`, memory);
 
 		webrtc.openTelemeet(result.url, roomPass, !result.isModerator, result.isModerator, 
-			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory);
+			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory, 
+			_getSessionMemoryVariable("avDevices", divTelemeet));
 
 		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
 			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
@@ -149,17 +150,18 @@ async function meetSettings(element, fromMeet) {
 	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
 	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
 
-	if (fromMeet) {
-		const memory = _getRoomMemory(element), exitListener = _ => { DIALOG.hideDialog("telemeetdialog"); 
-			webrtc.removeRoomExitListener(exitListener, memory); };
-		webrtc.addRoomExitListener(exitListener, memory);
-	}
+	const memory = _getRoomMemory(element), exitListener = _ => { DIALOG.hideDialog("telemeetdialog"); 
+		webrtc.removeRoomExitListener(exitListener, memory); };
+	if (fromMeet) webrtc.addRoomExitListener(exitListener, memory);
 	const retVals = await DIALOG.showDialog(`${DIALOGS_PATH}/setupav.html`, 
 		false, false, data, "telemeetdialog", ["speaker", "microphone", "camera"]);
 	if (fromMeet) webrtc.removeRoomExitListener(exitListener, memory);
 
-	DIALOG.hideDialog("telemeetdialog");
-	LOG.info(JSON.stringify(retVals));	// TODO: set these here
+	DIALOG.hideDialog("telemeetdialog"); 
+	const _devStrToObj = deviceString => { return {label: deviceString.split(",")[0], id: deviceString.split(",")[1]} };
+	const devices = {speaker: _devStrToObj(retVals.speaker), microphone: _devStrToObj(retVals.microphone), camera: _devStrToObj(retVals.camera)};
+	if (fromMeet) {_executeMeetCommand(element, "setAVDevices", devices); _setSessionMemoryVariable("avDevices", element, devices)}
+	else _setSessionMemoryVariable("avDevices", element, devices);
 }
 
 function deleteRoom(room, id) {

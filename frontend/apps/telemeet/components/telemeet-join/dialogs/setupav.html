@@ -128,17 +128,17 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
     <div id="middleselectors">
         <select id="speaker">
             {{#speakers}}
-            <option value="{{deviceId}}">{{label}}</option>
+            <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/speakers}}
         </select>
         <select id="microphone">
             {{#microphones}}
-            <option value="{{deviceId}}">{{label}}</option>
+            <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/microphones}}
         </select>
         <select id="camera">
             {{#cameras}}
-            <option value="{{deviceId}}">{{label}}</option>
+            <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/cameras}}
         </select>
     </div>

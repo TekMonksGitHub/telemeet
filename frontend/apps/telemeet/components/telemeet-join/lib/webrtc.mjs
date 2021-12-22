@@ -7,8 +7,13 @@ import {util} from "/framework/js/util.mjs";
 
 const MODULE_PATH = util.getModulePath(import.meta);
 
-async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userEmail, videoOn, mikeOn, parentNode, memory) {
+async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userEmail, videoOn, mikeOn, 
+		parentNode, memory, avDevices) {
+
 	const hostURL = new URL(url), roomName = hostURL.pathname.replace(/^\/+/,"");
+	let mappedDevices; if (avDevices) mappedDevices = { audioInput: avDevices.microphone.label,
+		audioOutput: avDevices.speaker.label, videoInput: avDevices.camera.label };
+
 	await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
 	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
 		roomName, width: "100%", height: "100%", parentNode, noSSL: false,
@@ -36,7 +41,8 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 			SUPPORT_URL: "http://teleworkr.com"
 		},
 		remoteVideoMenu: {},
-        userInfo: {email: userEmail, displayName: userName}
+        userInfo: {email: userEmail, displayName: userName},
+		devices: mappedDevices
 	});
 	const _roomExited = _ => {
 		parentNode.removeChild(util.getChildrenByTagName(parentNode, "iframe")[0]);	// remove the iframe
@@ -95,13 +101,19 @@ const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleShareScreen
 const toggleTileVsFilmstrip = memory => _executeMeetCommand(memory, "toggleTileView");
 const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
 const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete memory.meetAPI;}
+const setAVDevices = (memory, devices) => {
+	_executeMeetCommand(memory, "setAudioInputDevice", [devices.microphone.label,devices.microphone.id]);
+	_executeMeetCommand(memory, "setAudioOutputDevice", [devices.speaker.label,devices.speaker.id]);
+	_executeMeetCommand(memory, "setVideoInputDevice", [devices.camera.label,devices.camera.id]);
+}
 
-function _executeMeetCommand(memory, command, params) {
-	if (memory.meetAPI) memory.meetAPI.executeCommand(command, ...(params||[]));
+async function _executeMeetCommand(memory, command, params) {
+	if (memory.meetAPI[command]) return await memory.meetAPI[command](...(params||[]));	// it is a function call
+	else if (memory.meetAPI) memory.meetAPI.executeCommand(command, ...(params||[])); // it is a command
 }
 
 function _closeStream(stream) { for (const track of stream.getTracks()) {track.stop(); stream.removeTrack(track);} }
 
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
 	addScreenShareListener, addRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, toggleShareScreen, 
-	toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices};
+	toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices, setAVDevices};

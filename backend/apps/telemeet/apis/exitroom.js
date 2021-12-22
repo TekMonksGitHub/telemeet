@@ -10,7 +10,7 @@ exports.doService = async jsonReq => {
 	
 	const telemeetRooms = DISTRIBUTED_MEMORY.get(APP_CONSTANTS.ROOMSKEY)||{}; 
 	const roomID = jsonReq.room.toUpperCase();
-	const result = telemeetRooms[roomID] && telemeetRooms[roomID].participants[jsonReq.id];
+	const result = (telemeetRooms[roomID] && telemeetRooms[roomID].participants[jsonReq.id] != null);
 	const reason = result ? null : (telemeetRooms[roomID] ? "NO_SUCH_PARTICIPANT":"NO_ROOM");
 	
 	LOG.debug(`Result of request to exit room -> ${jsonReq.room} for id -> ${jsonReq.id} session ID ${jsonReq.sessionID} is -> ${result}, failure reason (if any) is: ${reason}`);
