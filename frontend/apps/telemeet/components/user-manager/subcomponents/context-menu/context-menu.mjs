@@ -31,8 +31,13 @@
   * @param adjustX Any adjustment to make for the menu X coordinates (e.g. shift right by 5px or -5px)
   * @param adjustY Any adjustment to make for the menu Y coordinates (e.g. shift top by 5px or -5px)
   * @param data Any additional data to pass to the HTML renderer
+  * @param dontShowCancel Don't show the cancel menu item
+  * @param isTopMenu Menu rises up, that is the bottom is positioned where the click was, instead of bottom
+  * @param dontCloseIfClickedWithin Won't auto close the menu if the click is within the menu
   */
- async function showMenu(hostID, contentOrMenuItems, x, y, adjustX, adjustY, data, dontShowCancel) {
+ async function showMenu(hostID, contentOrMenuItems, x, y, adjustX, adjustY, data, dontShowCancel, isTopMenu, 
+		 dontCloseIfClickedWithin) {
+ 
 	 const isMenuHTML = typeof contentOrMenuItems == "string", formattedMenuItems = []; 
  
 	 const menuObject = {}; if (!isMenuHTML) {
@@ -53,14 +58,22 @@
 		 menuObject.items = formattedMenuItems;
 	 } else menuObject.htmlContent = await router.expandPageData(contentOrMenuItems, undefined, {...data, hostID});
  
-	 const positioner = context_menu.getShadowRootByHostId(hostID).querySelector("div#positioner"), 
-		 positionerRect = positioner.getBoundingClientRect(), yAdjusted = y-positionerRect.y+adjustY||0, xAdjusted = x-positionerRect.x+adjustX||0;
+	 const signX = adjustX.toString().trim().startsWith("-") ? "-":"+",  signY = adjustY.toString().trim().startsWith("-") ? "-":"+",
+		 appendUnitsX = typeof(adjustX) == "number" ? "px":adjustX.trim().substring(parseInt(adjustX).toString().length), 
+		 appendUnitsY = typeof(adjustY) == "number" ? "px":adjustY.trim().substring(parseInt(adjustY).toString().length),
+		 positioner = context_menu.getShadowRootByHostId(hostID).querySelector("div#positioner"), 
+		 positionerRect = positioner.getBoundingClientRect(), 
+		 yAdjusted = `calc(${isTopMenu?"100vh -":"0px +"} ${y}px - ${positionerRect.y}px ${signY} ${Math.abs(parseInt(adjustY))+appendUnitsY||"0px"})`, 
+		 xAdjusted = `calc(${x}px - ${positionerRect.x}px ${signX} ${Math.abs(parseInt(adjustX))+appendUnitsX||"0px"})`;
 		 
 	 const cloneData = {...data}; if (cloneData.styleBody) delete cloneData.styleBody; const host = context_menu.getHostElementByID(hostID);
-	 const styleBody = `<style>${host.getAttribute("styleBody")||""}\ndiv#menu {top:${yAdjusted}px; left:${xAdjusted}px; border-width:1px}\n${data?.styleBody||""}</style>`;
+	 const styleBody = `<style>${host.getAttribute("styleBody")||""}\ndiv#menu {${isTopMenu?"bottom:":"top:"}${yAdjusted}; left:${xAdjusted}; border-width:1px}\n${data?.styleBody||""}</style>`;
 	 const dataForMenu = {...menuObject, ...cloneData, styleBody};
 	 
-	 window.addEventListener("click", function(_) {window.removeEventListener("click", this); hideMenu(hostID);})
+	 window.addEventListener("click", function(event) {
+		 window.removeEventListener("click", this); 
+		 if ((!dontCloseIfClickedWithin)||_isClickOutsideMenu(hostID, event)) hideMenu(hostID);
+	 });
 	 context_menu.bindData(dataForMenu, hostID); 
  }
  
@@ -82,6 +95,13 @@
   */
  async function hideMenu(hostID) {
 	 const dataForMenu = {}; await context_menu.bindData(dataForMenu, hostID); 
+ }
+ 
+ function _isClickOutsideMenu(hostID, event) {
+	 const menuDiv = context_menu.getShadowRootByHostId(hostID).querySelector("div#menu");
+	 const menuRect = menuDiv.getBoundingClientRect(); 
+	 if (event.clientX >= menuRect.left && event.clientX <= menuRect.right && event.clientY >= menuRect.top &&
+		 event.clientY <= menuRect.bottom) return false; else return true;
  }
  
  // convert this all into a WebComponent so we can use it

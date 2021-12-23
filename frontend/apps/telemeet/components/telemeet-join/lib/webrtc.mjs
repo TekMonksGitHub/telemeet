@@ -3,6 +3,7 @@
  * (C) 2020 TekMonks. All rights reserved.
  * License: See enclosed license file.
  */
+import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 
 const MODULE_PATH = util.getModulePath(import.meta);
@@ -14,7 +15,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	let mappedDevices; if (avDevices) mappedDevices = { audioInput: avDevices.microphone.label,
 		audioOutput: avDevices.speaker.label, videoInput: avDevices.camera.label };
 
-	await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
+	/*await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
 	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
 		roomName, width: "100%", height: "100%", parentNode, noSSL: false,
 		configOverwrite: { 
@@ -45,8 +46,8 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		devices: mappedDevices
 	});
 	const _roomExited = _ => {
-		parentNode.removeChild(util.getChildrenByTagName(parentNode, "iframe")[0]);	// remove the iframe
-		meetAPI.dispose(); delete memory.meetAPI;
+		const meetIFRame = util.getChildrenByTagName(parentNode, "iframe")[0]; 
+		if (meetIFRame) parentNode.removeChild(meetIFRame);	meetAPI.dispose(); delete memory.meetAPI;
 		for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(roomName);
 	}; meetAPI.addEventListener("videoConferenceLeft", _roomExited);
 	meetAPI.addEventListener("screenSharingStatusChanged", status => {
@@ -63,8 +64,10 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	});
 	meetAPI.addEventListener("log", logObject => { if (logObject.logLevel == "warn" || logObject.logLevel == "error") 
 		LOG[logObject.logLevel](`[WEB_RTC] ${logObject.args}`) });
+	_subscribeNotifications(meetAPI, memory);
 
-	memory.meetAPI = meetAPI; 
+	memory.meetAPI = meetAPI; */
+	for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 }
 
 async function getMediaDevices() {
@@ -93,11 +96,13 @@ const addRaiseHandListener = (listener, memory) => memory.raiseHandListeners ?
 	memory.raiseHandListeners.push(listener) : memory.raiseHandListeners=[listener];
 const addTileVsFilmstripListener = (listener, memory) => memory.tileVsFilmstripListeners ?
 	memory.tileVsFilmstripListeners.push(listener) : memory.tileVsFilmstripListeners=[listener];
+const addNotificationListener = (listener, memory) => memory.notificationListeners ?
+	memory.notificationListeners.push(listener) : memory.notificationListeners=[listener];
 
 const toggleAudio = memory => _executeMeetCommand(memory, "toggleAudio");
 const toggleVideo = memory => _executeMeetCommand(memory, "toggleVideo");
 const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScreen");
-const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleShareScreen");
+const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
 const toggleTileVsFilmstrip = memory => _executeMeetCommand(memory, "toggleTileView");
 const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
 const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete memory.meetAPI;}
@@ -114,6 +119,21 @@ async function _executeMeetCommand(memory, command, params) {
 
 function _closeStream(stream) { for (const track of stream.getTracks()) {track.stop(); stream.removeTrack(track);} }
 
+function _subscribeNotifications(meetAPI, memory) {
+	const _dispatchEvent = message => {for (const notificationListener of memory.notificationListeners) notificationListener(message)};
+
+	meetAPI.addEventListener("cameraError", event => _dispatchEvent({message: event.message, type: "cameraError"}));
+	meetAPI.addEventListener("browserSupported", async event => {
+		if (!event.supported) _dispatchEvent({message: await i18n.get("UnsupportedBrowser"), type: "browserSupport"}) });
+	meetAPI.addEventListener("errorOccurred", event => _dispatchEvent({message: event.message, type: "webrtcError"}));
+	meetAPI.addEventListener("micError", event => _dispatchEvent({message: event.message, type: "micError"}));
+	meetAPI.addEventListener("dominantSpeakerChanged", async event => _dispatchEvent({
+		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("NowTheSpeaker"), type: "dominantSpeaker"}));
+	meetAPI.addEventListener("raiseHandUpdated", async event => {if (event.handRaised!=0) _dispatchEvent({
+		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("HasRaisedHand"), type: "raiseHand"}) });
+}
+
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
-	addScreenShareListener, addRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, toggleShareScreen, 
-	toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices, setAVDevices};
+	addScreenShareListener, addRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, 
+	toggleShareScreen, toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices, 
+	setAVDevices, addNotificationListener};

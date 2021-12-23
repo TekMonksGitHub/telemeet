@@ -115,5 +115,8 @@ export const i18n = {
 "ShareLink": "⧉ Copy link",
 "EditRoom": "✎ Edit room",
 "RoomEditFailedExists": "Room edit failed. New room name already exists.",
-"RoomEditFailedCheckLogs": "Room edit failed. Contact your administrator for more help."
+"RoomEditFailedCheckLogs": "Room edit failed. Contact your administrator for more help.",
+"UnsupportedBrowser": "This browser is not supported, please contact support.",
+"NowTheSpeaker": "is now the dominant speaker.",
+"HasRaisedHand": "has raised their hand."
 }

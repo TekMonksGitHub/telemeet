@@ -1,0 +1,45 @@
+<style>
+div#menu {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    cursor: default;
+}
+
+div#notifications {
+    display: flex;
+    flex-direction: column;
+    min-width: 25vw;
+    max-width: 50vw;
+    min-height: 25vh;
+    max-height: 80vh;
+    background-color: #293548;
+    border: 1px solid #D3D3D3;
+    border-radius: 1em;
+    padding: 1em;
+    color: #D3D3D3;
+}
+
+div#notificationsubject {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+span#dot {font-size: x-small;}
+span#notification{margin-left: 0.5em;}
+
+span#notificationtext {
+    margin-left: 3em;
+    font-size: smaller;
+}
+</style>
+
+<div id="notifications">
+    {{#items}}
+    <div id="notificationsubject" {{#isNew}}style="color: #E79696"{{/isNew}}>
+        <span id="dot">{{#isNew}}⬤{{/isNew}}{{^isNew}}&nbsp;{{/isNew}}</span>
+        <span id="notification">{{subject}}</span>
+    </div>
+    <span id="notificationtext">{{message}}</span>
+    {{/items}}
+</div>

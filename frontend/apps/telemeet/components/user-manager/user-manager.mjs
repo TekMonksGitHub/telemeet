@@ -51,7 +51,7 @@ async function searchModified(element) {
 
 async function userMenuClicked(event, element, name, id, _org, role, approved) {
 	const CONTEXT_MENU = window.monkshu_env.components["context-menu"];
-	const menus = {}; menus[await i18n.get("Edit")] = _=>_editUser(name, id, role, approved, element); 
+	const menus = {}; menus[await i18n.get("Edit")] = _=>editUser(name, id, role, approved, element); 
 	menus[await i18n.get("Delete")] = _ => _deleteUser(name, id, element); menus[await i18n.get("Reset")] = _ => _resetUser(name, id, element);
 	if (approved == 0) menus[await i18n.get("Approve")] = _=>_approveUser(name, id, element);
 	CONTEXT_MENU.showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2);

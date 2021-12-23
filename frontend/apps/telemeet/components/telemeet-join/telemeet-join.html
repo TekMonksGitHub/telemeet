@@ -194,6 +194,7 @@ span#controls > img {
 
 <div id="telemeet" data-room="">
     <span id="meetinginfo"></span>
+    <context-menu id="contextmenu"></context-menu>
 
     <span id="controls">
     <img id="camcontrol" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this, true)">
@@ -203,6 +204,7 @@ span#controls > img {
     <img id="raisehandcontrol" src="{{componentpath}}/img/noraisehand.svg" onclick="monkshu_env.components['telemeet-join'].toggleRaisehand(this)">
     <img id="tilevsfilmstripcontrol" src="{{componentpath}}/img/tile.svg" onclick="monkshu_env.components['telemeet-join'].toggleTileVsFilmstrip(this)">
     <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this, true)">
+    <img id="notificationscontrol" src="{{componentpath}}/img/nonotifications.svg" onclick="event.stopPropagation(); monkshu_env.components['telemeet-join'].showNotifications(this, event)">
     <img id="exitcontrol" src="{{componentpath}}/img/exit.svg" onclick="monkshu_env.components['telemeet-join'].exitMeeting(this)">
     </span>
 </div>

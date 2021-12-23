@@ -8,16 +8,18 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {fwcontrol} from "./lib/fwcontrol.mjs";
 import {session} from "/framework/js/session.mjs";
-import "./subcomponents/dialog-box/dialog-box.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
+import {context_menu} from "./subcomponents/context-menu/context-menu.mjs";
+import {dialog_box as DIALOG} from "./subcomponents/dialog-box/dialog-box.mjs";
 import {roomconnectionmanager as roomman} from "./lib/roomconnectionmanager.mjs";
 
-const COMPONENT_PATH = util.getModulePath(import.meta), DIALOG = monkshu_env.components['dialog-box'], DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
+const COMPONENT_PATH = util.getModulePath(import.meta), DIALOGS_PATH = `${COMPONENT_PATH}/dialogs`;
 const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_CONSTANTS.API_PATH+"/createroom", 
 	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom", 
-	API_EXITROOM = APP_CONSTANTS.API_PATH+"/exitroom", API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", DIV_TELEMEET = "div#telemeet";
+	API_EXITROOM = APP_CONSTANTS.API_PATH+"/exitroom", API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", 
+	DIV_TELEMEET = "div#telemeet", HOSTID_CONTEXT_MENU = "contextmenu";
 
 	async function elementConnected(host) {
 	const data = {}; 
@@ -135,6 +137,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			`${COMPONENT_PATH}/img/${handUp?"":"no"}raisehand.svg`, memory);
 		webrtc.addTileVsFilmstripListener(tileView => shadowRoot.querySelector("img#tilevsfilmstripcontrol").src = 
 			`${COMPONENT_PATH}/img/${tileView?"filmstrip":"tile"}.svg`, memory);
+		webrtc.addNotificationListener(message=>_showWebRTCNotification(message, divTelemeet), memory);
 
 		webrtc.openTelemeet(result.url, roomPass, !result.isModerator, result.isModerator, 
 			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory, 
@@ -162,6 +165,12 @@ async function meetSettings(element, fromMeet) {
 	const devices = {speaker: _devStrToObj(retVals.speaker), microphone: _devStrToObj(retVals.microphone), camera: _devStrToObj(retVals.camera)};
 	if (fromMeet) {_executeMeetCommand(element, "setAVDevices", devices); _setSessionMemoryVariable("avDevices", element, devices)}
 	else _setSessionMemoryVariable("avDevices", element, devices);
+}
+
+async function showNotifications(element, event) {
+	const notificationsHTML = await $$.requireText(`${DIALOGS_PATH}/notifications.html`);
+	const data = {items: [{subject: "Camera Issue - 5 minutes ago", message: "Unable to open the camera properly.", isNew: true}]}
+	context_menu.showMenu(HOSTID_CONTEXT_MENU, notificationsHTML, event.x, event.y, "-20vw", "1em", data, true, true, true);
 }
 
 function deleteRoom(room, id) {
@@ -209,6 +218,10 @@ function _stopMike(shadowRoot) {
 const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error}, 
 	"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
 
+function _showWebRTCNotification(message, containedElement) {
+	alert(message.message);
+}
+
 const _executeMeetCommand = (containedElement, command, params) => webrtc[command](_getRoomMemory(containedElement), params);
 const _getSessionMemoryVariable = (varName, element) => telemeet_join.getSessionMemoryByContainedElement(element)[varName];
 const _setSessionMemoryVariable = (varName, element, value) => telemeet_join.getSessionMemoryByContainedElement(element)[varName] = value;
@@ -222,6 +235,6 @@ const _setRoom = (containedElement, room) => {const shadowRoot = telemeet_join.g
 
 const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
-	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, getRooms, meetSettings, exitMeeting, 
-	changeBackground, deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal};
+	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, getRooms, meetSettings, showNotifications, 
+	exitMeeting, changeBackground, deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);
