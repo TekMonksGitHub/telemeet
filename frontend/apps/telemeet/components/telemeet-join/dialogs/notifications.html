@@ -1,4 +1,23 @@
 <style>
+div::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 15vh 15vw;
+    border-radius: 10px !important;
+}
+
+div::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
 div#menu {
     border: none;
     background-color: transparent;
@@ -18,13 +37,16 @@ div#notifications {
     border-radius: 1em;
     padding: 1em;
     color: #D3D3D3;
+    overflow: auto;
 }
 
 div#notificationsubject {
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-top: 1em;
 }
+div#notificationsubject:first-child {margin-top: 0em;}
 span#dot {font-size: x-small;}
 span#notification{margin-left: 0.5em;}
 

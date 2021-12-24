@@ -15,7 +15,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	let mappedDevices; if (avDevices) mappedDevices = { audioInput: avDevices.microphone.label,
 		audioOutput: avDevices.speaker.label, videoInput: avDevices.camera.label };
 
-	/*await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
+	await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
 	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
 		roomName, width: "100%", height: "100%", parentNode, noSSL: false,
 		configOverwrite: { 
@@ -66,8 +66,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		LOG[logObject.logLevel](`[WEB_RTC] ${logObject.args}`) });
 	_subscribeNotifications(meetAPI, memory);
 
-	memory.meetAPI = meetAPI; */
-	for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
+	memory.meetAPI = meetAPI;
 }
 
 async function getMediaDevices() {
@@ -122,15 +121,15 @@ function _closeStream(stream) { for (const track of stream.getTracks()) {track.s
 function _subscribeNotifications(meetAPI, memory) {
 	const _dispatchEvent = message => {for (const notificationListener of memory.notificationListeners) notificationListener(message)};
 
-	meetAPI.addEventListener("cameraError", event => _dispatchEvent({message: event.message, type: "cameraError"}));
+	meetAPI.addEventListener("cameraError", event => _dispatchEvent({message: event.message, type: "camera"}));
 	meetAPI.addEventListener("browserSupported", async event => {
-		if (!event.supported) _dispatchEvent({message: await i18n.get("UnsupportedBrowser"), type: "browserSupport"}) });
+		if (!event.supported) _dispatchEvent({message: await i18n.get("UnsupportedBrowser"), type: "browser"}) });
 	meetAPI.addEventListener("errorOccurred", event => _dispatchEvent({message: event.message, type: "webrtcError"}));
-	meetAPI.addEventListener("micError", event => _dispatchEvent({message: event.message, type: "micError"}));
+	meetAPI.addEventListener("micError", event => _dispatchEvent({message: event.message, type: "microphone"}));
 	meetAPI.addEventListener("dominantSpeakerChanged", async event => _dispatchEvent({
-		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("NowTheSpeaker"), type: "dominantSpeaker"}));
+		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("NowTheSpeaker"), type: "meeting"}));
 	meetAPI.addEventListener("raiseHandUpdated", async event => {if (event.handRaised!=0) _dispatchEvent({
-		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("HasRaisedHand"), type: "raiseHand"}) });
+		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("HasRaisedHand"), type: "meeting"}) });
 }
 
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 

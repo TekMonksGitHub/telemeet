@@ -119,5 +119,12 @@ export const i18n = {
 "RoomEditFailedCheckLogs": "Room edit failed. Contact your administrator for more help.",
 "UnsupportedBrowser": "This browser is not supported, please contact support.",
 "NowTheSpeaker": "is now the dominant speaker",
-"HasRaisedHand": "has raised their hand."
+"HasRaisedHand": "has raised their hand.",
+"NoNotifications": "No notifications",
+"NoNewNotifications": "No new notifications",
+"CameraSubject": "Camera related message",
+"MicrophoneSubject": "Microphone related message",
+"BrowserSubject": "Browser related message",
+"MeetingSubject": "Meeting message",
+"GeneralErrorSubject": "General meeting error"
 }

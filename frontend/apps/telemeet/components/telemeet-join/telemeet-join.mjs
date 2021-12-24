@@ -168,9 +168,16 @@ async function meetSettings(element, fromMeet) {
 }
 
 async function showNotifications(element, event) {
+	if (context_menu.isOpen(HOSTID_CONTEXT_MENU)) {context_menu.hideMenu(HOSTID_CONTEXT_MENU); return;}
+	
 	const notificationsHTML = await $$.requireText(`${DIALOGS_PATH}/notifications.html`);
-	const data = {items: [{subject: "Camera Issue - 5 minutes ago", message: "Unable to open the camera properly.", isNew: true}]}
-	context_menu.showMenu(HOSTID_CONTEXT_MENU, notificationsHTML, event.x, event.y, "-20vw", "1em", data, true, true, true);
+	const notifications = _getRoomMemory(element).notifications || {items: [{subject: await i18n.get("NoNotifications"), 
+		message: await i18n.get("NoNewNotifications"), isNew: false}]};
+	context_menu.showMenu(HOSTID_CONTEXT_MENU, notificationsHTML, event.x, event.y, "-20vw", "1em", 
+		util.clone(notifications), true, true, true);
+	for (const notification of notifications.items) notification.isNew = false;	// all so far are now shown and no longer new
+	telemeet_join.getShadowRootByContainedElement(element).querySelector("img#notificationscontrol").src = 
+		`${COMPONENT_PATH}/img/nonotifications.svg`;
 }
 
 function deleteRoom(room, id) {
@@ -218,8 +225,19 @@ function _stopMike(shadowRoot) {
 const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error}, 
 	"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
 
-function _showWebRTCNotification(message, containedElement) {
-	alert(message.message);
+async function _showWebRTCNotification(message, containedElement) {
+	let subject; switch (message.type) {
+		case "camera": subject = await i18n.get("CameraSubject"); break;
+		case "microphone": subject = await i18n.get("MicrophoneSubject"); break;
+		case "browser": subject = await i18n.get("BrowserSubject"); break;
+		case "meeting": subject = await i18n.get("MeetingSubject"); break;
+		case "webrtcError": subject = await i18n.get("GeneralErrorSubject"); break;
+		default: subject = await i18n.get("MeetingSubject"); break;
+	}; subject += " - "+new Date().toLocaleString();
+	if (!_getRoomMemory(containedElement).notifications) _getRoomMemory(containedElement).notifications = {items:[]};
+	_getRoomMemory(containedElement).notifications.items.unshift({subject, message: message.message, isNew: true});
+	telemeet_join.getShadowRootByContainedElement(containedElement).querySelector("img#notificationscontrol").src = 
+		`${COMPONENT_PATH}/img/notifications.svg`;
 }
 
 const _executeMeetCommand = (containedElement, command, params) => webrtc[command](_getRoomMemory(containedElement), params);

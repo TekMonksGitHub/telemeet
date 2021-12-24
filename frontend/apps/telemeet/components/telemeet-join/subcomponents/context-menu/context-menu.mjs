@@ -75,6 +75,7 @@ async function showMenu(hostID, contentOrMenuItems, x, y, adjustX, adjustY, data
 		if ((!dontCloseIfClickedWithin)||_isClickOutsideMenu(hostID, event)) hideMenu(hostID);
 	});
 	context_menu.bindData(dataForMenu, hostID); 
+	context_menu.getMemory(hostID).isOpen = true;
 }
 
 /**
@@ -95,7 +96,11 @@ async function menuClicked(containedElement, functionIndex) {
  */
 async function hideMenu(hostID) {
 	const dataForMenu = {}; await context_menu.bindData(dataForMenu, hostID); 
+	context_menu.getMemory(hostID).isOpen = false;
 }
+
+/** @return true if menu is open, false otherwise */
+const isOpen = hostID => context_menu.getMemory(hostID).isOpen == true;
 
 function _isClickOutsideMenu(hostID, event) {
 	const menuDiv = context_menu.getShadowRootByHostId(hostID).querySelector("div#menu");
@@ -105,5 +110,5 @@ function _isClickOutsideMenu(hostID, event) {
 }
 
 // convert this all into a WebComponent so we can use it
-export const context_menu = {trueWebComponentMode: true, showMenu, menuClicked, hideMenu, elementRendered}
+export const context_menu = {trueWebComponentMode: true, showMenu, menuClicked, hideMenu, elementRendered, isOpen}
 monkshu_component.register("context-menu", `${COMPONENT_PATH}/context-menu.html`, context_menu);
