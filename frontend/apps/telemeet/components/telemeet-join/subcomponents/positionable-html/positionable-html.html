@@ -1,0 +1,41 @@
+<!--
+/* Context menu component.
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+ -->
+<style>
+body {margin: 0}    
+    
+div#positioner {
+    height: 0px; 
+    width: 0px; 
+    top: 0px; 
+    left: 0px; 
+    position: absolute;
+    padding: 0px;
+    border: 0px;
+}
+
+div#content {
+    position: absolute;
+    overflow: hidden;
+    border: 0px solid #98CCFD;
+    font-family: inherit;
+    background: #DFF0FE;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 5px #ccc;
+    z-index: 1000;
+}
+</style>
+
+{{{styleBody}}}
+
+<div id="positioner"></div>
+
+<div id="content">
+    {{{htmlContent}}}
+</div>

@@ -1,0 +1,114 @@
+<style>
+div::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 15vh 15vw;
+    border-radius: 10px !important;
+}
+
+div::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+div#content {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    cursor: default;
+    border: 1px solid #D3D3D3;
+    border-radius: 1em;
+}
+
+div#wrapper {
+    color: #D3D3D3;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: #293548;
+}
+
+div#chats {
+    display: flex;
+    flex-direction: column;
+    min-width: 25vw;
+    max-width: 50vw;
+    min-height: 25vh;
+    max-height: 70vh;
+    padding: 1em;
+    color: #D3D3D3;
+    overflow: auto;
+}
+
+div#chatsubject {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 1em;
+}
+div#chatsubject:first-child {margin-top: 0em;}
+span#dot {
+    font-size: x-small;
+    min-width: 1em;
+}
+span#chat{
+    margin-left: 0.5em;
+    font-size: smaller;
+    font-weight: bold;
+}
+
+span#chattext {
+    margin-left: 3em;
+    font-size: smaller;
+}
+
+span#sendmessage{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    color: #000000;
+    background: #D3D3D3;
+}
+textarea#message {
+    outline: none;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+    padding: 0.5em 0.5em 0em 1em;
+    height: 5em;
+    width: 100%;
+}
+textarea::-webkit-scrollbar {display: none}
+img#sendimg {
+    width: 2em;
+    margin-right: 0.5em;
+}
+</style>
+
+<div id="wrapper">
+<div id="chats">
+    {{#items}}
+    <div id="chatsubject" {{#isNew}}style="color: #E79696"{{/isNew}}>
+        <span id="dot">{{#isNew}}⬤{{/isNew}}{{^isNew}}&nbsp;{{/isNew}}</span>
+        <span id="chat">{{subject}}</span>
+    </div>
+    <span id="chattext">{{message}}</span>
+    {{/items}}
+</div>
+<span id="sendmessage">
+    <textarea id="message">{{{unsentMessage}}}</textarea>
+    <img id="sendimg" src="{{{component_path}}}/img/sendmessage.svg" onclick='
+        const textarea = this.parentElement.querySelector("textarea#message");
+        if (monkshu_env.components["telemeet-join"].sendChatMessage(textarea.value, "{{hostTelemeetJoinID}}")) {
+            textarea.value = ""; textarea.innerText = "";}'>
+</span>
+</div>

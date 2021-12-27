@@ -53,9 +53,9 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	meetAPI.addEventListener("screenSharingStatusChanged", status => {
 		for (const screenShareListener of memory.screenShareListeners||[]) screenShareListener(status.on);
 	}); 
-	meetAPI.addEventListener("raiseHandUpdated", status => {
-		for (const raiseHandListener of memory.raiseHandListeners||[]) raiseHandListener(status.handRaised?true:false, status.id);
-	}); 
+	meetAPI.addEventListener("raiseHandUpdated", status => { if (meetAPI.getEmail(status.id) == userEmail) for (
+		const selfRaiseHandListener of memory.selfRaiseHandListeners||[]) selfRaiseHandListener(
+			status.handRaised?true:false, userName, userEmail); }); 
 	meetAPI.addEventListener("videoConferenceJoined", _confInfo => {
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 	});
@@ -64,7 +64,11 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	});
 	meetAPI.addEventListener("log", logObject => { if (logObject.logLevel == "warn" || logObject.logLevel == "error") 
 		LOG[logObject.logLevel](`[WEB_RTC] ${logObject.args}`) });
+	meetAPI.addEventListener("incomingMessage", message => {for (const chatListener of memory.chatListeners) 
+		chatListener({fromName: meetAPI.getDisplayName(message.from), fromEmail: meetAPI.getEmail(message.from), 
+			message: message.message}) });
 	_subscribeNotifications(meetAPI, memory);
+	meetAPI._webrtc_env = {localName: userName, localEmail: userEmail, localRoom: roomName};
 
 	memory.meetAPI = meetAPI;
 }
@@ -91,12 +95,13 @@ const removeRoomExitListener = (listener, memory) => { if (memory.roomExitListen
 	memory.roomExitListeners.splice(memory.roomExitListeners.indexOf(listener),1); }
 const addScreenShareListener = (listener, memory) => memory.screenShareListeners ?
 	memory.screenShareListeners.push(listener) : memory.screenShareListeners=[listener];
-const addRaiseHandListener = (listener, memory) => memory.raiseHandListeners ?
-	memory.raiseHandListeners.push(listener) : memory.raiseHandListeners=[listener];
+const addSelfRaiseHandListener = (listener, memory) => memory.selfRaiseHandListeners ?
+	memory.selfRaiseHandListeners.push(listener) : memory.selfRaiseHandListeners=[listener];
 const addTileVsFilmstripListener = (listener, memory) => memory.tileVsFilmstripListeners ?
 	memory.tileVsFilmstripListeners.push(listener) : memory.tileVsFilmstripListeners=[listener];
 const addNotificationListener = (listener, memory) => memory.notificationListeners ?
 	memory.notificationListeners.push(listener) : memory.notificationListeners=[listener];
+const addChatListener = (listener, memory) => memory.chatListeners ? memory.chatListeners.push(listener) : memory.chatListeners=[listener];
 
 const toggleAudio = memory => _executeMeetCommand(memory, "toggleAudio");
 const toggleVideo = memory => _executeMeetCommand(memory, "toggleVideo");
@@ -109,6 +114,11 @@ const setAVDevices = (memory, devices) => {
 	_executeMeetCommand(memory, "setAudioInputDevice", [devices.microphone.label,devices.microphone.id]);
 	_executeMeetCommand(memory, "setAudioOutputDevice", [devices.speaker.label,devices.speaker.id]);
 	_executeMeetCommand(memory, "setVideoInputDevice", [devices.camera.label,devices.camera.id]);
+}
+const sendMeetingMessage = (memory, message) => {
+	_executeMeetCommand(memory, "sendChatMessage", [{message}]);
+	for (const chatListener of memory.chatListeners) chatListener(
+		{fromName: memory.meetAPI._webrtc_env.localName, fromEmail: memory.meetAPI._webrtc_env.localEmail, message});	// inform local listeners a message was sent / received
 }
 
 async function _executeMeetCommand(memory, command, params) {
@@ -133,6 +143,6 @@ function _subscribeNotifications(meetAPI, memory) {
 }
 
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
-	addScreenShareListener, addRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, 
+	addScreenShareListener, addSelfRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, 
 	toggleShareScreen, toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices, 
-	setAVDevices, addNotificationListener};
+	setAVDevices, addNotificationListener, addChatListener, sendMeetingMessage};

@@ -195,10 +195,12 @@ span#controls > img {
 <div id="telemeet" data-room="">
     <span id="meetinginfo"></span>
     <context-menu id="contextmenu"></context-menu>
+    <positionable-html id="positionablehtml"></positionable-html>
 
     <span id="controls">
     <img id="camcontrol" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this, true)">
     <img id="mikecontrol" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this, true)">
+    <img id="chatcontrol" src="{{componentpath}}/img/nochat.svg" onclick="event.stopImmediatePropagation(); monkshu_env.components['telemeet-join'].showChat(this, event)">
     <img id="changebackgroundcontrol" src="{{componentpath}}/img/changebackground.svg" onclick="monkshu_env.components['telemeet-join'].changeBackground(this)">
     <img id="screensharecontrol" src="{{componentpath}}/img/noscreenshare.svg" onclick="monkshu_env.components['telemeet-join'].toggleScreenshare(this)">
     <img id="raisehandcontrol" src="{{componentpath}}/img/noraisehand.svg" onclick="monkshu_env.components['telemeet-join'].toggleRaisehand(this)">

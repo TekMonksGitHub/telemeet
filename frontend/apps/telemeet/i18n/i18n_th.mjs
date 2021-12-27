@@ -126,5 +126,7 @@ export const i18n = {
 "MicrophoneSubject": "Microphone related message",
 "BrowserSubject": "Browser related message",
 "MeetingSubject": "Meeting message",
-"GeneralErrorSubject": "General meeting error"
+"GeneralErrorSubject": "General meeting error",
+"NoChats": "No chats",
+"NoNewChats": "No new chats"
 }
