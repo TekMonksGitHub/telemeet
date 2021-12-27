@@ -106,6 +106,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id);
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
 		roomman.startSendingConnectionActiveBeats(roomName, id, sessionID);	// send heartbeats to keep the room alive
+		_resetRoomUI();
 
 		const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector(DIV_TELEMEET);
 		let roomClosed = false;	_setRoom(divTelemeet, roomName); // room is open now
@@ -169,11 +170,12 @@ async function meetSettings(element, fromMeet) {
 	else _setSessionMemoryVariable("avDevices", element, devices);
 }
 
-async function showChat(element, event) {
-	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML)) {
+async function showChat(element, event, dontClose) {
+	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML) && (!dontClose)) {
 		_getRoomMemory(element).chatUnsentMessage = positionable_html.getShadowRootByHostId(HOSTID_POSTIONABLE_HTML).querySelector("textarea#message").value;
-		positionable_html.hide(HOSTID_POSTIONABLE_HTML); return;
+		positionable_html.hide(HOSTID_POSTIONABLE_HTML); delete _getRoomMemory(element).showChatParams; return;
 	}
+	_getRoomMemory(element).showChatParams = [element, event];	// save in case we get new chats while chat is open
 	
 	const chatHTML = await $$.requireText(`${DIALOGS_PATH}/chat.html`);
 	const chats = _getRoomMemory(element).chats || {items: [{subject: await i18n.get("NoChats"), 
@@ -250,6 +252,10 @@ function _stopMike(shadowRoot) {
 const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error}, 
 	"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
 
+function _resetRoomUI() {
+	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML)) positionable_html.hide(HOSTID_POSTIONABLE_HTML);
+}
+
 async function _showWebRTCNotification(message, containedElement) {
 	let subject; switch (message.type) {
 		case "camera": subject = await i18n.get("CameraSubject"); break;
@@ -270,6 +276,7 @@ async function _handleWebRTCChats(message, containedElement) {
 	if (!_getRoomMemory(containedElement).chats) _getRoomMemory(containedElement).chats = {items:[]};
 	_getRoomMemory(containedElement).chats.items.unshift({subject, message: message.message, isNew: true});
 	telemeet_join.getShadowRootByContainedElement(containedElement).querySelector("img#chatcontrol").src = `${COMPONENT_PATH}/img/chat.svg`;
+	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML)) showChat(..._getRoomMemory(containedElement).showChatParams, true);
 }
 
 const _executeMeetCommand = (containedElement, command, params) => webrtc[command](_getRoomMemory(containedElement), params);
