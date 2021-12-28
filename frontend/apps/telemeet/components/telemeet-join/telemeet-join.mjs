@@ -21,8 +21,11 @@ const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_
 	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom", 
 	API_EXITROOM = APP_CONSTANTS.API_PATH+"/exitroom", API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", 
 	DIV_TELEMEET = "div#telemeet", HOSTID_CONTEXT_MENU = "contextmenu", HOSTID_POSTIONABLE_HTML = "positionablehtml";
+let conf;
+
 
 async function elementConnected(host) {
+	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`);
 	const data = {}; 
 
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${await telemeet_join.getAttrValue(host, "styleBody")}</style>`;
@@ -105,7 +108,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 
 	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id);
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
-		roomman.startSendingConnectionActiveBeats(roomName, id, sessionID);	// send heartbeats to keep the room alive
+		roomman.startSendingConnectionActiveBeats(roomName, id, sessionID, conf);	// send heartbeats to keep the room alive
 		_resetRoomUI();
 
 		const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector(DIV_TELEMEET);
@@ -144,7 +147,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 
 		webrtc.openTelemeet(result.url, roomPass, !result.isModerator, result.isModerator, 
 			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory, 
-			_getSessionMemoryVariable("avDevices", divTelemeet));
+			_getSessionMemoryVariable("avDevices", divTelemeet), conf);
 
 		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
 			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
@@ -181,11 +184,13 @@ async function showChat(element, event, dontClose) {
 	const chats = _getRoomMemory(element).chats || {items: [{subject: await i18n.get("NoChats"), 
 		message: await i18n.get("NoNewChats"), isNew: false}]};
 	const unsentMessage = _getRoomMemory(element).chatUnsentMessage || "";
-	positionable_html.show(HOSTID_POSTIONABLE_HTML, chatHTML, event.x, event.y, "-20vw", "1em", 
+	await positionable_html.show(HOSTID_POSTIONABLE_HTML, chatHTML, event.x, event.y, "-20vw", "1em", 
 		{...util.clone(chats), unsentMessage, hostTelemeetJoinID: telemeet_join.getHostElementID(element), 
 			component_path: COMPONENT_PATH}, true);
 	for (const chat of chats.items) chat.isNew = false;	// all so far are now shown and no longer new
 	telemeet_join.getShadowRootByContainedElement(element).querySelector("img#chatcontrol").src = `${COMPONENT_PATH}/img/nochat.svg`;
+	const chatsDiv = positionable_html.getShadowRootByHostId(HOSTID_POSTIONABLE_HTML).querySelector("div#chats");
+	chatsDiv.scrollTop = chatsDiv.scrollHeight;	// scroll the chats to the bottom by default
 }
 
 function sendChatMessage(message, hostID) {
@@ -274,7 +279,7 @@ async function _showWebRTCNotification(message, containedElement) {
 async function _handleWebRTCChats(message, containedElement) {
 	const subject = message.fromName+" - "+new Date().toLocaleString();
 	if (!_getRoomMemory(containedElement).chats) _getRoomMemory(containedElement).chats = {items:[]};
-	_getRoomMemory(containedElement).chats.items.unshift({subject, message: message.message, isNew: true});
+	_getRoomMemory(containedElement).chats.items.push({subject, message: message.message, isNew: true});
 	telemeet_join.getShadowRootByContainedElement(containedElement).querySelector("img#chatcontrol").src = `${COMPONENT_PATH}/img/chat.svg`;
 	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML)) showChat(..._getRoomMemory(containedElement).showChatParams, true);
 }

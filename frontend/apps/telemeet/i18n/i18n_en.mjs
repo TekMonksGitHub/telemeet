@@ -127,5 +127,6 @@ export const i18n = {
 "MeetingSubject": "Meeting message",
 "GeneralErrorSubject": "General meeting error",
 "NoChats": "No chats",
-"NoNewChats": "No new chats"
+"NoNewChats": "No new chats",
+"UnknownUser": "Unknown user"
 }

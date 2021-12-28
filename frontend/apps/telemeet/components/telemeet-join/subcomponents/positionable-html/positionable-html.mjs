@@ -55,7 +55,7 @@ async function show(hostID, contentOrURL, x, y, adjustX=0, adjustY=0, data={}, i
 	const styleBody = `<style>${host.getAttribute("styleBody")||""}\ndiv#content {${isTop?"bottom:":"top:"}${yAdjusted}; left:${xAdjusted}; border-width:1px}\n${data?.styleBody||""}</style>`;
 	const dataForComponent = {...contentObject, styleBody};
 	
-	positionable_html.bindData(dataForComponent, hostID); 
+	await positionable_html.bindData(dataForComponent, hostID); 
 	positionable_html.getMemory(hostID).isShowing = true;
 }
 

@@ -5,13 +5,13 @@
  */
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-const API_HBROOMCONTROL = APP_CONSTANTS.API_PATH+"/roomcontrol", HEARTBEATINTERVAL = 1000;
+const API_HBROOMCONTROL = APP_CONSTANTS.API_PATH+"/roomcontrol";
 
 const timers = {};
 
-function startSendingConnectionActiveBeats(room, id, sessionID) {
+function startSendingConnectionActiveBeats(room, id, sessionID, conf) {
     const newTimer = setInterval(async _=>await apiman.rest(API_HBROOMCONTROL, "POST", {room, id, sessionID}, true), 
-        HEARTBEATINTERVAL);
+        conf.roomHeartbeatInterval);
     timers[sessionID] = newTimer;
 }
 

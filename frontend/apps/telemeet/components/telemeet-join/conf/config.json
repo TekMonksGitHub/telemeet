@@ -1,0 +1,5 @@
+{
+    "webrtcWaitEntry": 20000,
+    "webrtcWaitExit": 2000,
+    "roomHeartbeatInterval": 1000
+}

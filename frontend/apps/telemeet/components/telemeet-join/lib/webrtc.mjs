@@ -9,13 +9,15 @@ import {util} from "/framework/js/util.mjs";
 const MODULE_PATH = util.getModulePath(import.meta);
 
 async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userEmail, videoOn, mikeOn, 
-		parentNode, memory, avDevices) {
+		parentNode, memory, avDevices, conf) {
 
 	const hostURL = new URL(url), roomName = hostURL.pathname.replace(/^\/+/,"");
 	let mappedDevices; if (avDevices) mappedDevices = { audioInput: avDevices.microphone.label,
 		audioOutput: avDevices.speaker.label, videoInput: avDevices.camera.label };
 
-	await $$.require(`${MODULE_PATH}/../3p/external_api.js`);
+	memory.exitCalled = false; memory.entryCalled = false; memory.conf = conf;
+
+	await $$.require(`${MODULE_PATH}/../3p/external_api.js`); 
 	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
 		roomName, width: "100%", height: "100%", parentNode, noSSL: false,
 		configOverwrite: { 
@@ -46,27 +48,29 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		devices: mappedDevices
 	});
 	const _roomExited = _ => {
+		if (memory.exitCalled) return; else memory.exitCalled = true;	// check if already called
 		const meetIFRame = util.getChildrenByTagName(parentNode, "iframe")[0]; 
-		if (meetIFRame) parentNode.removeChild(meetIFRame);	meetAPI.dispose(); delete memory.meetAPI;
+		if (meetIFRame) parentNode.removeChild(meetIFRame);	meetAPI.dispose(); 
 		for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(roomName);
-	}; meetAPI.addEventListener("videoConferenceLeft", _roomExited);
+	}; meetAPI.addEventListener("videoConferenceLeft", _roomExited); 
 	meetAPI.addEventListener("screenSharingStatusChanged", status => {
 		for (const screenShareListener of memory.screenShareListeners||[]) screenShareListener(status.on);
 	}); 
-	meetAPI.addEventListener("raiseHandUpdated", status => { if (meetAPI.getEmail(status.id) == userEmail) for (
+	meetAPI.addEventListener("raiseHandUpdated", status => { if (status.id == meetAPI._myUserID) for (
 		const selfRaiseHandListener of memory.selfRaiseHandListeners||[]) selfRaiseHandListener(
 			status.handRaised?true:false, userName, userEmail); }); 
 	meetAPI.addEventListener("videoConferenceJoined", _confInfo => {
+		if (memory.entryCalled) return; else memory.entryCalled = true;	// return if already called
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
-	});
+	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", meetAPI._events.videoConferenceJoined, memory.conf.webrtcWaitEntry);
 	meetAPI.addEventListener("tileViewChanged", status => {
 		for (const tileVsFilmstripListener of memory.tileVsFilmstripListeners) tileVsFilmstripListener(status.enabled);
 	});
 	meetAPI.addEventListener("log", logObject => { if (logObject.logLevel == "warn" || logObject.logLevel == "error") 
 		LOG[logObject.logLevel](`[WEB_RTC] ${logObject.args}`) });
-	meetAPI.addEventListener("incomingMessage", message => {for (const chatListener of memory.chatListeners) 
-		chatListener({fromName: meetAPI.getDisplayName(message.from), fromEmail: meetAPI.getEmail(message.from), 
-			message: message.message}) });
+	meetAPI.addEventListener("incomingMessage", async message => {for (const chatListener of memory.chatListeners) 
+		chatListener({fromName: meetAPI.getDisplayName(message.from)||await i18n.get("UnknownUser"), 
+			fromEmail: meetAPI.getEmail(message.from)||"", message: message.message}) });
 	_subscribeNotifications(meetAPI, memory);
 	meetAPI._webrtc_env = {localName: userName, localEmail: userEmail, localRoom: roomName};
 
@@ -109,14 +113,17 @@ const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScre
 const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
 const toggleTileVsFilmstrip = memory => _executeMeetCommand(memory, "toggleTileView");
 const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
-const exitMeeting = memory => {_executeMeetCommand(memory, "hangup"); delete memory.meetAPI;}
+const exitMeeting = memory => {
+	_watchFlagAndCallOnTimeout(memory, "exitCalled", memory.meetAPI._events.videoConferenceLeft, memory.conf.webrtcWaitExit); 
+	_executeMeetCommand(memory, "hangup"); 	delete memory.meetAPI;
+}
 const setAVDevices = (memory, devices) => {
 	_executeMeetCommand(memory, "setAudioInputDevice", [devices.microphone.label,devices.microphone.id]);
 	_executeMeetCommand(memory, "setAudioOutputDevice", [devices.speaker.label,devices.speaker.id]);
 	_executeMeetCommand(memory, "setVideoInputDevice", [devices.camera.label,devices.camera.id]);
 }
 const sendMeetingMessage = (memory, message) => {
-	_executeMeetCommand(memory, "sendChatMessage", [{message}]);
+	_executeMeetCommand(memory, "sendChatMessage", [message]);
 	for (const chatListener of memory.chatListeners) chatListener(
 		{fromName: memory.meetAPI._webrtc_env.localName, fromEmail: memory.meetAPI._webrtc_env.localEmail, message});	// inform local listeners a message was sent / received
 }
@@ -140,6 +147,11 @@ function _subscribeNotifications(meetAPI, memory) {
 		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("NowTheSpeaker"), type: "meeting"}));
 	meetAPI.addEventListener("raiseHandUpdated", async event => {if (event.handRaised!=0) _dispatchEvent({
 		message: meetAPI.getDisplayName(event.id)+" "+await i18n.get("HasRaisedHand"), type: "meeting"}) });
+}
+
+function _watchFlagAndCallOnTimeout(memory, flag, functions, timeout) {
+	setTimeout(_=>{ if (!memory[flag]) 
+		for (const functionThis of Array.isArray(functions)?functions:[functions]) functionThis(); }, timeout);
 }
 
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
