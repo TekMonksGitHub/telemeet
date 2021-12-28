@@ -50,7 +50,7 @@ async function playrecording(containedElement) {
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
     const videoOut = shadowRoot.querySelector(VIDEO_INOUT), videoHelp = shadowRoot.querySelector(VIDEO_HELP); 
     videoOut.style.display = "block"; videoHelp.style.display = "none";
-    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await videoOut.setSinkId(selectedAudioOut.value);
+    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await videoOut.setSinkId(selectedAudioOut.value.split(",")[1]);
     const playButton = shadowRoot.querySelector(PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(STOP_PLAY_BUTTON);
     playButton.style.display = "none"; videoOut.currentTime = 0; videoOut.muted = false; videoOut.volume = 0.5; 
     videoOut.play(); videoOut.addEventListener("ended", _=> stopplayrecording(containedElement)); stopPlayButton.style.display = "inline"; 
@@ -79,7 +79,8 @@ async function restartAVTracks(containedElement) {
     const selectedAudioIn = shadowRoot.querySelector(SELECTOR_MIKE);
     const selectedVideoIn = shadowRoot.querySelector(SELECTOR_CAM);
     const videoIn = shadowRoot.querySelector(VIDEO_INOUT);
-    const constraints = { audio: {deviceId: {exact: selectedAudioIn.value }}, video: {deviceId: {exact: selectedVideoIn.value }} };
+    const constraints = { audio: {deviceId: {exact: selectedAudioIn.value.split(",")[1] }}, 
+        video: {deviceId: {exact: selectedVideoIn.value.split(",")[1] }} };
 
     try {
         const stream = await window.navigator.mediaDevices.getUserMedia(constraints);
@@ -92,7 +93,7 @@ async function playspeakers(containedElement) {
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
     const audioOut = shadowRoot.querySelector(AUDIO_OUT);
     const playButton = shadowRoot.querySelector(AUDIO_PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(AUDIO_STOP_BUTTON);
-    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await audioOut.setSinkId(selectedAudioOut.value);
+    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await audioOut.setSinkId(selectedAudioOut.value.split(",")[1]);
     playButton.style.display = "none"; audioOut.currentTime = 0; audioOut.volume = 0.5; audioOut.play(); stopPlayButton.style.display = "inline";
     audioOut.addEventListener("ended", _=> stopplayspeakers(containedElement)); 
 }

@@ -134,7 +134,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			spanControls.classList.add("animate"); spanControls.style.opacity = "1";	// animate controls
 			spanMeetinginfo.classList.add("animate"); spanMeetinginfo.style.opacity = "1";	// animate meeting info
 			meetingInfoTimer = util.setIntervalImmediately(_=>spanMeetinginfo.innerHTML = 			// start showing meeting info
-				`Meeting room - ${roomName} | Meeting Duration - ${((Date.now() - result.startTime)/(1000*60)).toFixed(1)} minutes`, 1000);
+				`Meeting room - ${roomName} | Meeting Duration - ${((Date.now() - result.startTime)/(1000*60)).toFixed(1)} minutes`, conf.meetingDurationUpdateInterval);
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);

@@ -1,5 +1,42 @@
 {
     "webrtcWaitEntry": 20000,
     "webrtcWaitExit": 2000,
-    "roomHeartbeatInterval": 1000
+    "roomHeartbeatInterval": 1000,
+    "meetingDurationUpdateInterval": 10000,
+    "meetConfig": {
+        "enableNoAudioDetection": true,
+        "enableNoisyMicDetection": false,
+        "startAudioMuted": 6,
+        "maxFullResolutionParticipants": 2,
+        "startVideoMuted": 4,
+        "videoQuality": {"preferredCodec": "VP9"},
+        "hideLobbyButton": true,
+        "enableClosePage": true,
+        "defaultLocalDisplayName": "A Teleworkr",
+        "defaultRemoteDisplayName": "Fellow Teleworkr",
+        "gatherStats": false,
+        "remoteVideoMenu": {"disableKick": true, "disableGrantModerator": true},
+        "conferenceInfo": {"alwaysVisible": [], "autoHide": []},
+        "notifications": [],
+        "hideParticipantsStats": true,
+        "disableShowMoreStats": true,
+        "apiLogLevels": ["warn", "log", "error", "info", "debug"]
+    },
+    "meetInterfaceConfig": {
+        "DISABLE_DOMINANT_SPEAKER_INDICATOR": true,
+        "DISABLE_JOIN_LEAVE_NOTIFICATIONS": true,
+        "DISABLE_FOCUS_INDICATOR": true,
+        "DISABLE_VIDEO_BACKGROUND": true,
+        "DEFAULT_REMOTE_DISPLAY_NAME": "Fellow Teleworkr",
+        "DEFAULT_LOCAL_DISPLAY_NAME": "A Teleworkr",
+        "AUTHENTICATION_ENABLE": false,
+        "TOOLBAR_BUTTONS": [], 
+        "DEFAULT_BACKGROUND": "#000000",
+        "APP_NAME": "Teleworkr Meet",
+        "NATIVE_APP_NAME": "Teleworkr Meet",
+        "JITSI_WATERMARK_LINK": "http://teleworkr.com",
+        "HIDE_INVITE_MORE_HEADER": true,
+        "SHOW_POWERED_BY": false,
+        "SUPPORT_URL": "http://teleworkr.com"
+    }
 }

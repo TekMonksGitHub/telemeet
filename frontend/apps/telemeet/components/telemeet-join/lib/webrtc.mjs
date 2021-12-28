@@ -18,35 +18,11 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	memory.exitCalled = false; memory.entryCalled = false; memory.conf = conf;
 
 	await $$.require(`${MODULE_PATH}/../3p/external_api.js`); 
-	const meetAPI = new JitsiMeetExternalAPI(hostURL.host, {
-		roomName, width: "100%", height: "100%", parentNode, noSSL: false,
-		configOverwrite: { 
-			startWithVideoMuted: !videoOn, 
-			startWithAudioMuted: !mikeOn, 
-			remoteVideoMenu: {disableKick: true, disableGrantModerator: true},
-			conferenceInfo: {alwaysVisible: [], autoHide: []},
-			notifications: [],
-			hideParticipantsStats: true,
-			disableShowMoreStats: true,
-			apiLogLevels: ["warn", "log", "error", "info", "debug"]
-		},
-		interfaceConfigOverwrite: { 
-			AUTHENTICATION_ENABLE: false,
-			TOOLBAR_BUTTONS: [], 
-			DEFAULT_BACKGROUND: "#000000",
-			DEFAULT_REMOTE_DISPLAY_NAME: "Fellow Teleworkr",
-			DEFAULT_LOCAL_DISPLAY_NAME: "Fellow Teleworkr",
-			APP_NAME: "Teleworkr Meet",
-			NATIVE_APP_NAME: "Teleworkr Meet",
-			JITSI_WATERMARK_LINK: "http://teleworkr.com",
-			HIDE_INVITE_MORE_HEADER: true,
-			SHOW_POWERED_BY: false,
-			SUPPORT_URL: "http://teleworkr.com"
-		},
-		remoteVideoMenu: {},
-        userInfo: {email: userEmail, displayName: userName},
-		devices: mappedDevices
-	});
+	const options = { roomName, width: "100%", height: "100%", parentNode, noSSL: false,
+		configOverwrite: {startWithVideoMuted: !videoOn, startWithAudioMuted: !mikeOn, ...conf.meetConfig},
+		interfaceConfigOverwrite: {...conf.meetInterfaceConfig}, remoteVideoMenu: {}, 
+		userInfo: {email: userEmail, displayName: userName}, devices: mappedDevices
+	}, meetAPI = new JitsiMeetExternalAPI(hostURL.host, options);
 	const _roomExited = _ => {
 		if (memory.exitCalled) return; else memory.exitCalled = true;	// check if already called
 		const meetIFRame = util.getChildrenByTagName(parentNode, "iframe")[0]; 
