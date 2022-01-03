@@ -130,8 +130,8 @@ img.logo {
 
 <div class="lgbox">
 	<span><br><br>{{i18n.ResetMsg}}<br><br></span>
-	<register-box id="reset" roles='["{{APP_CONSTANTS.GUEST_ROLE}}", "{{APP_CONSTANTS.USER_ROLE}}"]' type="reset" email="{{url.e}}" 
-		time="{{url.t}}" minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}" routeOnSuccess="./main.html" 
+	<register-box id="reset" roles='["{{APP_CONSTANTS.GUEST_ROLE}}", "{{APP_CONSTANTS.USER_ROLE}}"]' type="reset" 
+		email="{{url.e}}" time="{{url.t}}" minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}" routeOnSuccess="./main.html" 
 		dataOnSuccess='{"showDialog":{"message": "{{i18n.ResetSuccess}}"}}'></register-box>
 </div>
 

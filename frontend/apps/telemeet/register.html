@@ -158,7 +158,7 @@ span#signin > span > a {
 
 <div class="lgbox">
 	<span><br><br>{{i18n.RegisterMsg}}<br><br></span>
-	<register-box id="register" roles="[APP_CONSTANTS.GUEST_ROLE, APP_CONSTANTS.USER_ROLE]" 
+	<register-box id="register" roles='["{{APP_CONSTANTS.GUEST_ROLE}}", "{{APP_CONSTANTS.USER_ROLE}}"]' 
 		routeOnSuccess="./main.html" type="register" minlength="{{APP_CONSTANTS.MIN_PASS_LENGTH}}"
 		dataOnSuccess='{"showDialog":{"message": "{{i18n.RegisterSuccess}}"}}'></register-box>
 </div>
