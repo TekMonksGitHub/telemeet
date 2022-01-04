@@ -1,12 +1,17 @@
 <style>
-@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
+@import url('https://fonts.googleapis.com/css?family=Red+Hat+Text');
 
 body {
 	margin: 0; 
 	padding: 0; 
-	font-family: 'Raleway'; 
+	font-family: 'Red Hat Text'; 
 	background-color: rgb(79, 180, 237);
 }
+
+a:link {text-decoration:none; color:black;}    /* unvisited link */
+a:visited {text-decoration:none;} /* visited link */
+a:hover {text-decoration:underline;}   /* mouse over link */
+a:active {text-decoration:underline;}  /* selected link */
 
 div#bodydiv {
 	display: flex;
@@ -35,7 +40,6 @@ div#header {
     justify-content: space-around;
     align-items: center;
 	margin: 1em;
-	flex-wrap: wrap-reverse;
 	width: calc(100% - 2em);
 	height: 4em;
 }
@@ -50,12 +54,8 @@ span#signin {
 	color: #ffffff;
 	cursor: default;
 	overflow: hidden;
-    width: 54em;
-    text-align: center;
+    text-align: right;
 	flex-grow: 1;
-}
-@media only screen and (min-width: 960px) {	/* is desktop */
-    span#signin {text-align: right;}
 }
 span#signin > span {padding-right: 3em;}
 span#signin > span:last-child {
@@ -75,7 +75,6 @@ div#maincontent {
     align-items: center;
 	width: 100%;
 	flex-direction: row;
-	flex-wrap: wrap;
 }
 
 .lgbox {
@@ -94,7 +93,6 @@ div.lgbox > span {
 	font-size: small;
 }
 
-
 .advtextbox{
 	color: #ffffff;
 	text-align: center;
@@ -103,22 +101,19 @@ div.lgbox > span {
     flex-direction: column;
     align-items: center;
     height: fit-content;
-	margin-bottom: 10%;
+	margin-bottom: min(10%, 4em);
 }
 .advtextbox > h1 {
 	font-weight: 250;
-	font-family: 'Raleway';
 	margin: 0em;
 }
 .advtextbox > h2 {
 	font-weight: 250;
-	font-family: 'Raleway';
 	font-size: medium;
 	margin: 0em;
 }
 .advtextbox > p {
 	font-weight: 400;
-	font-family: 'Raleway';
 	background-color: #ffffff;
 	color: #444444;
 	border-radius: 0.8em;
@@ -139,10 +134,12 @@ div.lgbox > span {
 	font-size: x-small;
 }
 
-a:link {text-decoration:none; color:black;}    /* unvisited link */
-a:visited {text-decoration:none;} /* visited link */
-a:hover {text-decoration:underline;}   /* mouse over link */
-a:active {text-decoration:underline;}  /* selected link */
+@media only screen and (max-width: 959px) {	/* mobile screens */
+	div#maincontent {flex-direction: column;}
+	div#header {flex-direction: column-reverse;}
+	span#signin {text-align: center;}
+	.lgbox {padding: 1em;}
+}
 </style>
 
 <!doctype html>
