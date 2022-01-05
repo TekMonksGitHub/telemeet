@@ -38,5 +38,6 @@
         "HIDE_INVITE_MORE_HEADER": true,
         "SHOW_POWERED_BY": false,
         "SUPPORT_URL": "http://teleworkr.com"
-    }
+    },
+    "mobileBreakpoint": "959px"
 }

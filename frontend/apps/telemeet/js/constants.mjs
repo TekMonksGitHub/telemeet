@@ -35,12 +35,12 @@ export const APP_CONSTANTS = {  // application.mjs injects all the settings from
     API_VALIDATE_TOTP: API_PATH+"/validatetotp",
     API_GETTOTPSEC: API_PATH+"/gettotpsec",
     API_GETPROFILE: API_PATH+"/getprofile",
-    BCRYPT_SALT: "$2a$10$VFyiln/PpFyZc.ABoi4ppf",
     USERID: "userid",
     PWPH: "pwph",
     TIMEOUT: 600000,
     USERNAME: "username",
     USERORG: "userorg",
+
     USER_ROLE: "user",
     GUEST_ROLE: "guest",
     ADMIN_ROLE: "admin",
@@ -49,6 +49,10 @@ export const APP_CONSTANTS = {  // application.mjs injects all the settings from
         admin:[window.location.origin, APP_PATH+"/index.html", APP_PATH+"/error.html", APP_PATH+"/main.html", APP_PATH+"/reset.html", APP_PATH+"/initiallogin.html", APP_PATH+"/register.html", APP_PATH+"/loginroom.html", APP_PATH+"/login.html", APP_PATH+"/manage.html", $$.MONKSHU_CONSTANTS.ERROR_HTML],
         guest:[window.location.origin, APP_PATH+"/index.html", APP_PATH+"/error.html", APP_PATH+"/reset.html", APP_PATH+"/initiallogin.html", APP_PATH+"/register.html", APP_PATH+"/login.html", APP_PATH+"/loginroom.html", $$.MONKSHU_CONSTANTS.ERROR_HTML]
     },
+
     API_KEYS: {"*":"fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389"},
-    KEY_HEADER: "X-API-Key"
+    KEY_HEADER: "X-API-Key",
+
+    MOBILE_MEDIA_QUERY_START: "<style>@media only screen and (max-width: 959px) {",
+    MOBILE_MEDIA_QUERY_END: "}</style>"
 }

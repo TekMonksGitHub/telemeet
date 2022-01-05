@@ -33,7 +33,10 @@ async function elementConnected(host) {
 	data.name = host.getAttribute("name")||"";
 	data.room = host.getAttribute("room")||"";
 	data.pass = host.getAttribute("pass")||"";
-	data["show-joiner-dialog"] = host.getAttribute("showJoinerDialog") || undefined;
+	data["show-joiner-dialog"] = host.getAttribute("showJoinerDialog")?.toLowerCase() == "true" ? "true" : undefined;
+	if (!data["show-joiner-dialog"]) data.styleBody = (data.styleBody||"")+"<style>div#videodiv{height: 100%}</style>";
+	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
+	data.MOBILE_MEDIA_QUERY_END = "}</style>";
 
 	telemeet_join.setDataByHost(host, data);
 
@@ -44,8 +47,8 @@ async function elementConnected(host) {
 
 async function elementRendered(element) {  
 	const shadowRoot = telemeet_join.getShadowRootByHost(element), containedElement = shadowRoot.querySelector(DIV_TELEMEET);
-	if (_getSessionMemoryVariable("videoOn", containedElement)) _startVideo(shadowRoot, element);	// cam controls auto show when video starts
-	else {_stopVideo(shadowRoot, element); shadowRoot.querySelector("span#camcontrol").classList.add("visible");}	// show cam controls allow user to start cam etc. 
+	if (_getSessionMemoryVariable("videoOn", containedElement)) _startVideo(shadowRoot, containedElement);	// cam controls auto show when video starts
+	else {_stopVideo(shadowRoot, containedElement); shadowRoot.querySelector("span#camcontrol").classList.add("visible");}	// show cam controls allow user to start cam etc. 
 	if (_getSessionMemoryVariable("mikeOn", containedElement)) _startMike(shadowRoot); else _stopMike(shadowRoot);
 }
 
@@ -295,7 +298,7 @@ const _getRoom = containedElement => {const shadowRoot = telemeet_join.getShadow
 const _setRoom = (containedElement, room) => {const shadowRoot = telemeet_join.getShadowRootByContainedElement(containedElement);
 	return shadowRoot.querySelector(DIV_TELEMEET).dataset.room = room;}
 
-const trueWebComponentMode = false;	// making this false renders the component without using Shadow DOM
+const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
 	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, getRooms, meetSettings, showNotifications, 
 	exitMeeting, changeBackground, deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal, showChat, sendChatMessage};

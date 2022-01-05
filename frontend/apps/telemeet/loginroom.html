@@ -1,47 +1,11 @@
 <style>
-@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;display=swap');
+@import url('https://fonts.googleapis.com/css?family=Red+Hat+Text');
 
 body {
-	margin: 0; padding: 0;
-	font-family: 'Raleway';
+	margin: 0; 
+	padding: 0; 
+	font-family: 'Red Hat Text'; 
 	background-color: rgb(79, 180, 237);
-	min-height: 600px;
-}
-
-body::after {
-  content: "";
-  background: url(./img/logob.png);
-  background-size: auto 100%;
-  width: 100%;
-  height: 100%;
-  background-repeat: no-repeat;
-  opacity: 0.05;
-  position: absolute;
-  z-index: -1;   
-}
-
-.lgbox {
-	position: absolute;
-    top: 15vh;
-    left: 4em;
-    width: 50em;
-    height: 70vh;
-    background-color: transparent;
-    font-size: smaller;
-}
-
-.langbox {
-	position: absolute;
-	top: max(560px, calc(100vh - 40px));
-	right: 40px;
-	color: white;
-	text-align: center;
-	cursor: default;
-}
-
-.langsel {
-	cursor: pointer;
-	font-size: 11px;
 }
 
 a:link {text-decoration:none; color:black;}    /* unvisited link */
@@ -49,77 +13,132 @@ a:visited {text-decoration:none;} /* visited link */
 a:hover {text-decoration:underline;}   /* mouse over link */
 a:active {text-decoration:underline;}  /* selected link */
 
-.advtextbox{
+div#bodydiv {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 100%;
+}
+
+body::after {
+	content: "";
+	background: url(./img/logob.png);
+	background-size: auto 100%;
+	width: 100%;
+	height: 100%;
+	background-repeat: no-repeat;
+	opacity: 0.05;
 	position: absolute;
-    top: 50%;
-    right: 2em;
-    width: calc(100vw - 50em);
-    color: #ffffff;
-    text-align: center;
-    user-select: none;
-    transform: translateY(-50%);
+	z-index: -1;   
+	top: 0;
+    left: 0;
 }
 
-.advtextbox > h1 {
-	font-weight: 250;
-	font-family: 'Raleway';
+div#header {
+	display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+	margin: 1em;
+	width: calc(100% - 2em);
+	height: 4em;
 }
-
-.advtextbox > h2 {
-	font-weight: 250;
-	font-family: 'Raleway';
-	font-size: medium;
-}
-
-.advtextbox > p {
-	font-weight: 500;
-	font-family: 'Raleway';
-	font-size: medium;
-	background-color: #ffffff;
-	color: #444444;
-	border-radius: 10px;
-	padding: 10px 5px 10px 5px;
-	width: 120px;
-	left: calc(50% - 50px);
-	position: relative;
-	font-size: smaller;
-	margin-top: 30px;
-	cursor: default;
-}
-
+span#imgheader {text-align: center;}
 img.logo {
-	top: 40px;
-	left: 100px;
-	width: 148px;
 	height: 25px;
-	position: absolute;
-	user-select: none;
 	cursor: pointer;
 }
-
 span#signin {
-	top: 40px;
-	right: 100px;
-	position: absolute;
 	font-size: 0.8em;
 	font-weight: 500;
 	color: #ffffff;
 	cursor: default;
+	overflow: hidden;
+    text-align: right;
+	flex-grow: 1;
 }
-
-span#signin > span {padding-right: 30px;}
-
+span#signin > span {padding-right: 3em;}
 span#signin > span:last-child {
 	color: #ffca36;
 	font-weight: 700;
 	text-transform: uppercase;
+	padding-right: 0px;
 }
-
 span#signin > span > a {
 	text-decoration: none;
 	color: inherit;
 }
+
+div#maincontent {
+	display: flex;
+    justify-content: space-around;
+    align-items: center;
+	width: 100%;
+	flex-direction: row;
+}
+
+.lgbox {
+	width: 80vw;
+	text-align: center;
+	font-size: smaller;
+	margin-bottom: 1em;
+	height: 70vh;
+	max-height: 40em;
+	max-width: 50vw;
+}
+
+div.lgbox > span {
+	font-weight: 600;
+	font-size: small;
+}
+
+.advtextbox{
+	color: #ffffff;
+	text-align: center;
+	max-width: 24em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+	margin-bottom: min(10%, 2em);
+}
+.advtextbox > h1 {
+	font-weight: 250;
+	margin: 0em;
+}
+.advtextbox > h2 {
+	font-weight: 250;
+	font-size: medium;
+	margin: 0em;
+}
+.advtextbox > p {
+	font-weight: 400;
+	background-color: #ffffff;
+	color: #444444;
+	border-radius: 0.8em;
+	padding: 1em;
+	font-size: smaller;
+	margin: 1em 0em 0em 0em;
+    cursor: default;
+}
+
+.langbox {
+	color: white;
+	text-align: center;
+	cursor: default;
+	margin-bottom: 0.5em;
+}
+.langsel {
+	cursor: pointer;
+	font-size: x-small;
+}
 </style>
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
+	div#maincontent {flex-direction: column-reverse;}
+	div#header {flex-direction: column-reverse;}
+	span#signin {text-align: center;}
+	.lgbox {width: 80vw; height: 50vh; max-width: 80vw; min-height: 25em;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
 
 <!doctype html>
 <html>
@@ -136,22 +155,28 @@ span#signin > span > a {
 </head>
 
 <body>
-<img class="logo" src="./img/logo.png" onclick="window.open('http://teleworkr.com', '_blank')"></img>
-
+<div id="bodydiv">
+<div id="header">
+<span id="imgheader">
+	<img class="logo" src="./img/logo.png" onclick="window.open('http://teleworkr.com', '_blank')"></img>
+</span>
 <span id="signin">
 	<span><a href="{{#_org_monkshu_makeLink}}./loginroom.html{{/_org_monkshu_makeLink}}">{{i18n.RoomLoginMsg}}</a></span>
 	<span><a href="{{#_org_monkshu_makeLink}}./register.html{{/_org_monkshu_makeLink}}">{{i18n.Register}}</a></span>
 	<span><a href="{{#_org_monkshu_makeLink}}./login.html{{/_org_monkshu_makeLink}}">{{i18n.SignIn}}</a></span>
 </span>
+</div>
 
+<div id="maincontent">
+<div class="lgbox">
+	<telemeet-join id="telemeet" name="{{url.name}}" room="{{url.room}}" pass="{{url.pass}}"
+		enterOnly="true" stylebody="url(./pages/loginroom.stylebody.css)" showJoinerDialog="true"></telemeet-join>
+</div>
 <div class="advtextbox">
 	<h1>{{i18n.logintagline}}</h1>
 	<h2>{{i18n.loginsubtag}}</h2>
 	<p onclick="window.open('http://teleworkr.com', '_blank')">{{i18n.learn}}</p>
 </div>
-
-<div class="lgbox">
-	<page-generator file="./pages/loginroom.page"></page-generator>
 </div>
 
 <div class="langbox">
@@ -161,6 +186,8 @@ span#signin > span > a {
 	<span class="langsel" onclick="language.changeLanguage('th')">&nbsp;ภาษาไทย</span>
 	<span class="langsel" onclick="language.changeLanguage('zh')">中文</span>
 </div>	
+</div>
+
 </body>
 
 </html>
