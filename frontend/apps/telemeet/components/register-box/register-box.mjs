@@ -6,11 +6,16 @@
  */
 import {base32} from "./3p/base32.mjs";
 import {i18n} from "/framework/js/i18n.mjs";
+import {util} from "/framework/js/util.mjs";
 import {router} from "/framework/js/router.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
+const COMPONENT_PATH = util.getModulePath(import.meta);
+let conf;
+
 async function elementConnected(element) {
+	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`);
 	const data = {};
 
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
@@ -25,6 +30,8 @@ async function elementConnected(element) {
 	data.reset = type == "reset"?true:undefined;
 	if (element.getAttribute("email") && element.getAttribute("time") && (type == "reset" || type == "initial")) 
 		await _checkAndFillAccountProfile(data, element.getAttribute("email"), element.getAttribute("time"));
+	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
+	data.MOBILE_MEDIA_QUERY_END = "}</style>";
 
 	if (element.id) {
 		if (!register_box.datas) register_box.datas = {}; register_box.datas[element.id] = data;

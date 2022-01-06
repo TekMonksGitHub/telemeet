@@ -27,6 +27,7 @@ input {
     font-family: inherit;
     font-size: smaller;
 }
+input#org {margin-bottom: 1em;}
 
 button {
     width: 80%;
@@ -62,6 +63,11 @@ span#otp, span#password {
     padding-top: 0px;
     padding-bottom: 0px;
 }
+span#password {
+    margin-left: 5%;
+    margin-right: 5%;
+    justify-content: space-between;
+}
 
 span#otp > img {
     margin: 10px 10px 0px 16px;
@@ -83,11 +89,28 @@ span#otp > div#otp_help_and_input > p {
     margin: 10px 12px 0px 10px;
 }
 
+span#otp > div#otp_help_and_input > p#mobileotpmsg {display: none;}
+
 span#otp > div#otp_help_and_input > input {
     margin-top: 0px;
 }
 
+span#otp > button {display: none;}
 </style>
+{{{MOBILE_MEDIA_QUERY_START}}}
+    input {margin: 0; margin-top: 1em; width: 100%;}
+    span#password {margin-left: 0; margin-right: 0; margin-bottom: 1em; justify-content: space-between;}
+    span#otp {justify-content: space-between; margin-bottom: 1em;}
+    span#otp > img {display: none;}
+    span#otp > button {display: inline-block;}
+    span#otp > div#otp_help_and_input {max-width: 30%; color: #444444;}
+    span#otp > div#otp_help_and_input > p#desktopotpmsg {display: none;} 
+    span#otp > div#otp_help_and_input > p#mobileotpmsg {margin: 0; display: inline;}
+    span#otp > div#otp_help_and_input > input {width: 100%;}
+    span#otp > div#otp_help_and_input > input::placeholder {color: transparent;}
+    button {max-width: 30%; min-width: 30%; padding: 5px; text-transform: none; margin: 0;}
+    button#submit {padding: 1em; margin-top: 1em;}
+{{{MOBILE_MEDIA_QUERY_END}}}
 
 {{{styleBody}}}
 
@@ -105,15 +128,18 @@ span#otp > div#otp_help_and_input > input {
 <input type="text" id="org" placeholder="{{i18n.Org}}" value="{{org}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')" {{#reset}}readonly{{/reset}} {{#initial}}readonly{{/initial}}>
 <span id="password">
-    <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass1" placeholder="{{Password}}" 
+    <password-box style="width:45%; padding: 10px 0px 10px 0px;" id="pass1" placeholder="{{Password}}" 
         required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
-    <password-box style="width:80%; padding: 10px 0px 10px 0px;" id="pass2" placeholder="{{PasswordAgain}}" 
+    <password-box style="width:45%; padding: 10px 0px 10px 0px;" id="pass2" placeholder="{{PasswordAgain}}" 
         required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
 </span>
 <span id="otp">
     <img src="{{totpQRCodeData}}">
+    <button onclick="">First install Google Authenticator</button>
+    <button onclick="">Then click here for the OTP code</button>
     <div id="otp_help_and_input">
-        <p>{{AuthenticatorMsg}}</p>
+        <p id="desktopotpmsg">{{AuthenticatorMsg}}</p>
+        <p id="mobileotpmsg">Enter Code</p>
         <input type="number" id="otp" placeholder="{{i18n.Otp}}" required minlength="6" {{^reset}}required="true"{{/reset}} 
             oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')" 
             onkeyup="if (event.keyCode == 13) monkshu_env.components['register-box'].getShadowRootByContainedElement(this).querySelector('#submit').click();">

@@ -16,8 +16,7 @@ async function elementConnected(element) {
 		minlength: element.getAttribute("minlength"),
 		required: element.getAttribute("required"),
 		pattern: element.getAttribute("pattern"),
-		onkeyup: element.getAttribute("onkeyup"),
-		style: element.getAttribute("style")
+		onkeyup: element.getAttribute("onkeyup")
 	}
 
 	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
