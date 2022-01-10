@@ -129,5 +129,10 @@ export const i18n = {
 "GeneralErrorSubject": "General meeting error",
 "NoChats": "No chats",
 "NoNewChats": "No new chats",
-"UnknownUser": "Unknown user"
+"UnknownUser": "Unknown user",
+"iOSTOTPHelpHeader": "Clicking the button below will open the Google Authenticator. Once it is open, follow these steps.",
+"iOSTOTPHelp1": "Click the ⨁ icon located at the bottom,",
+"iOSTOTPHelp2": "Then select “Enter a setup key”,",
+"iOSTOTPHelp3": "Then type “Telemeet” into the “Account” field and paste the copied value in the “Key” field and click “Add” to setup a new code.",
+"OpenGoogleAuthenticator": "Open Authenticator"
 }

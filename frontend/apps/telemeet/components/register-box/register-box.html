@@ -135,8 +135,8 @@ span#otp > button {display: none;}
 </span>
 <span id="otp">
     <img src="{{totpQRCodeData}}">
-    <button onclick="">First install Google Authenticator</button>
-    <button onclick="">Then click here for the OTP code</button>
+    <button onclick="window.open('{{authLink}}')">First install Google Authenticator</button>
+    <button onclick='window.monkshu_env.components["register-box"].openAuthenticator(this, "{{{totpURL}}}")'>Then click here for the code</button>
     <div id="otp_help_and_input">
         <p id="desktopotpmsg">{{AuthenticatorMsg}}</p>
         <p id="mobileotpmsg">Enter Code</p>
@@ -147,3 +147,4 @@ span#otp > button {display: none;}
 </span>
 <button id="submit" onclick="monkshu_env.components['register-box'].registerOrUpdate(this);">{{Submit}}</button>
 </div>
+<dialog-box id="register_box_dialog"></dialog-box>
