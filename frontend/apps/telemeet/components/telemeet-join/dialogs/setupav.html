@@ -10,7 +10,9 @@ div#maincontainer {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 70vw;
+    max-width: calc(90vw - 3em);
+    overflow: auto;
+    color: var(--text-color);
 }
 
 div#maincontrols {
@@ -20,14 +22,14 @@ div#maincontrols {
     margin-bottom: 3em;
 }
 
-div#lefttextcolum, div#middleselectors, div#righttestcolumn {
+div#selectors, div#videotestcolumn {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
-div#lefttextcolum{ width: 15%; color: var(--text-color); } 
-div#middleselectors{ width: 50%; } 
-div#righttestcolumn{ width: 25%; }
+div#selectors{ width: 20em; } 
+div#selectors > span {text-align: left;}
+div#videotestcolumn{ min-width: 16em; width: 16em; margin-left: 3em; }
 
 select {
     padding: 0.5em;
@@ -111,6 +113,14 @@ span.testbutton {
 span.button:last-child {margin-right: 0em;}
 </style>
 
+{{{MOBILE_MEDIA_QUERY_START}}}
+    div#maincontrols {flex-direction: column;}
+    div#videotestcolumn {min-width: 20em; width: 20em; margin: 0; margin-top: 3em;}
+    span#lowerbuttonbar {justify-content: space-between;}
+    div#dialog {overflow: auto; max-height: calc(85vh - 3em);}
+    video#testvideo {height: 20vh; min-height: 18em;}
+{{{MOBILE_MEDIA_QUERY_END}}}
+
 <script type="module">
 import {setupav} from "{{{componentpath}}}/dialogs/setupav.mjs";
 setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
@@ -119,23 +129,22 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
 <div id="maincontainer">
 
 <div id="maincontrols">
-    <div id="lefttextcolum">
-        <span>Speakers</span>
-        <span>Microphone</span>
-        <span>Video&nbsp;Camera</span>
-    </div>
-
-    <div id="middleselectors">
+    <div id="selectors">
+        <span>{{i18n.Speakers}}</span>
         <select id="speaker">
             {{#speakers}}
             <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/speakers}}
         </select>
+
+        <span>{{i18n.Microphone}}</span>
         <select id="microphone">
             {{#microphones}}
             <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/microphones}}
         </select>
+
+        <span>{{i18n.VideoCamera}}</span>
         <select id="camera">
             {{#cameras}}
             <option value="{{label}},{{deviceId}}">{{label}}</option>
@@ -143,7 +152,7 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
         </select>
     </div>
 
-    <div id="righttestcolumn">
+    <div id="videotestcolumn">
         <video id="testvideo"></video>
         <span id="testvideohelp"><span>{{i18n.SettingsHelp}}</span></span>
         <audio id="testaudio" src="{{{componentpath}}}/img/testaudio.mp3"></audio>

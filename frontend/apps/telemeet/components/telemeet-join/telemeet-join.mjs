@@ -137,7 +137,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			spanControls.classList.add("animate"); spanControls.style.opacity = "1";	// animate controls
 			spanMeetinginfo.classList.add("animate"); spanMeetinginfo.style.opacity = "1";	// animate meeting info
 			meetingInfoTimer = util.setIntervalImmediately(_=>spanMeetinginfo.innerHTML = 			// start showing meeting info
-				`Meeting room - ${roomName} | Meeting Duration - ${((Date.now() - result.startTime)/(1000*60)).toFixed(1)} minutes`, conf.meetingDurationUpdateInterval);
+				`${roomName} - ${((Date.now() - result.startTime)/(1000*60)).toFixed(1)} minutes`, conf.meetingDurationUpdateInterval);
 		}, memory);
 		webrtc.addScreenShareListener(shareOn => shadowRoot.querySelector("img#screensharecontrol").src = 
 			`${COMPONENT_PATH}/img/${shareOn?"":"no"}screenshare.svg`, memory);
@@ -161,6 +161,8 @@ async function meetSettings(element, fromMeet) {
 	const data = await webrtc.getMediaDevices(); 
 	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
 	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
+	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
+	data.MOBILE_MEDIA_QUERY_END = "}</style>";
 
 	const memory = _getRoomMemory(element), exitListener = _ => { DIALOG.hideDialog("telemeetdialog"); 
 		webrtc.removeRoomExitListener(exitListener, memory); };

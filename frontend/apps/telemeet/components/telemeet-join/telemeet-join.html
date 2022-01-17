@@ -125,9 +125,9 @@ div#telemeet > iframe {
     background-color: black;
 }
 
-span#controls {
+span#controls, span#main_mobile_controls {
     position: fixed;
-    bottom: 1vh;
+    top: calc(99vh - 4em);
     overflow: hidden;
     border-radius: 1em;
     display: flex;
@@ -159,7 +159,7 @@ span#meetinginfo {
     color: #D3D3D3;
     font-size: small;
     cursor: default;
-    padding: 0.4em;
+    padding: 0.4em 0.8em;
     box-sizing: border-box;
 }
 @keyframes hideAnimation {from{opacity: 1;} to{opacity: 0.10;}}
@@ -169,6 +169,14 @@ span#controls > img {
     height: 3em; 
     width: 3em;
 }
+span#secondary_mobile_controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 65%;
+    align-items: center;
+}
+span#controls > img#mobilemenucontrol {display: none;}
 </style>
 {{{MOBILE_MEDIA_QUERY_START}}}
 	div#videodiv {height: calc(100% - 7.5em - 20px); min-height: calc(100% - 7.5em - 20px);}
@@ -176,6 +184,36 @@ span#controls > img {
     input#name, input#room, input#roompass {width: calc(33.333333% - 0.7em);}
     input#roompass {margin-right: 0;}
     span#join {margin-left: 0; margin-top: 1.5em;}
+    div#telemeet.visible {width: 100vw; height: 100vh; top: 0; left: 0; box-shadow: none; border-radius: 0;}
+    span#meetinginfo.animate {opacity: 1 !important; animation: none !important;}
+    span#controls {top: calc(100vh - 4em); overflow: visible; opacity: 1 !important; animation: none !important;}
+    span#secondary_mobile_controls {
+        position: absolute;
+        bottom: 4em;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #293548;
+        width: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding: 1em 0.5em;
+        box-sizing: border-box;
+        flex-wrap: wrap;
+        border-radius: 1em 1em 0em 0em;
+        border-bottom: 1px solid #000000;
+        max-height: 0; height: 0;
+        visibility: hidden;
+        transition: max-height 0.25s ease-in;
+        overflow: hidden;
+    }
+    span#secondary_mobile_controls.visible {
+        max-height: calc(100vh - 4em); height: auto;
+        visibility: visible;
+        width: calc(80vw - 5em);
+    }
+    span#secondary_mobile_controls > img {margin: 5%;}
+    span#controls > img#mobilemenucontrol {display: block;}
 {{{MOBILE_MEDIA_QUERY_END}}}
 
 {{{styleBody}}}
@@ -199,24 +237,35 @@ span#controls > img {
 </span>
 {{/show-joiner-dialog}}
 
-<dialog-box id="telemeetdialog"></dialog-box>
+<dialog-box id="telemeetdialog" style="width: 0; height: 0;"></dialog-box>
 </div>
 
 <div id="telemeet" data-room="">
-    <span id="meetinginfo"></span>
     <context-menu id="contextmenu"></context-menu>
     <positionable-html id="positionablehtml"></positionable-html>
+
+    <span id="meetinginfo"></span>
 
     <span id="controls">
     <img id="camcontrol" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this, true)">
     <img id="mikecontrol" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this, true)">
-    <img id="chatcontrol" src="{{componentpath}}/img/nochat.svg" onclick="event.stopImmediatePropagation(); monkshu_env.components['telemeet-join'].showChat(this, event, false)">
-    <img id="changebackgroundcontrol" src="{{componentpath}}/img/changebackground.svg" onclick="monkshu_env.components['telemeet-join'].changeBackground(this)">
-    <img id="screensharecontrol" src="{{componentpath}}/img/noscreenshare.svg" onclick="monkshu_env.components['telemeet-join'].toggleScreenshare(this)">
-    <img id="raisehandcontrol" src="{{componentpath}}/img/noraisehand.svg" onclick="monkshu_env.components['telemeet-join'].toggleRaisehand(this)">
-    <img id="tilevsfilmstripcontrol" src="{{componentpath}}/img/tile.svg" onclick="monkshu_env.components['telemeet-join'].toggleTileVsFilmstrip(this)">
-    <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this, true)">
-    <img id="notificationscontrol" src="{{componentpath}}/img/nonotifications.svg" onclick="event.stopImmediatePropagation(); monkshu_env.components['telemeet-join'].showNotifications(this, event)">
+    <span id="secondary_mobile_controls">
+        <img id="chatcontrol" src="{{componentpath}}/img/nochat.svg" onclick="event.stopImmediatePropagation(); monkshu_env.components['telemeet-join'].showChat(this, event, false)">
+        <img id="changebackgroundcontrol" src="{{componentpath}}/img/changebackground.svg" onclick="monkshu_env.components['telemeet-join'].changeBackground(this)">
+        <img id="screensharecontrol" src="{{componentpath}}/img/noscreenshare.svg" onclick="monkshu_env.components['telemeet-join'].toggleScreenshare(this)">
+        <img id="raisehandcontrol" src="{{componentpath}}/img/noraisehand.svg" onclick="monkshu_env.components['telemeet-join'].toggleRaisehand(this)">
+        <img id="tilevsfilmstripcontrol" src="{{componentpath}}/img/tile.svg" onclick="monkshu_env.components['telemeet-join'].toggleTileVsFilmstrip(this)">
+        <img id="settingscontrol" src="{{componentpath}}/img/settings.svg" onclick="monkshu_env.components['telemeet-join'].meetSettings(this, true)">
+        <img id="notificationscontrol" src="{{componentpath}}/img/nonotifications.svg" onclick="event.stopImmediatePropagation(); monkshu_env.components['telemeet-join'].showNotifications(this, event)">
+    </span>
     <img id="exitcontrol" src="{{componentpath}}/img/exit.svg" onclick="monkshu_env.components['telemeet-join'].exitMeeting(this)">
+    <img id="mobilemenucontrol" src="{{componentpath}}/img/menuopen.svg" onclick="
+        if (this.parentNode.querySelector('span#secondary_mobile_controls').classList.contains('visible')) {
+            this.parentNode.querySelector('span#secondary_mobile_controls').classList.remove('visible');
+            this.src = '{{componentpath}}/img/menuopen.svg';
+        } else {
+            this.parentNode.querySelector('span#secondary_mobile_controls').classList.add('visible');
+            this.src = '{{componentpath}}/img/menuclose.svg';
+        }">
     </span>
 </div>

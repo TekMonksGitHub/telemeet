@@ -20,7 +20,8 @@
         "notifications": [],
         "hideParticipantsStats": true,
         "disableShowMoreStats": true,
-        "apiLogLevels": ["warn", "log", "error", "info", "debug"]
+        "apiLogLevels": ["warn", "log", "error", "info", "debug"],
+        "disableDeepLinking": true
     },
     "meetInterfaceConfig": {
         "DISABLE_DOMINANT_SPEAKER_INDICATOR": true,
