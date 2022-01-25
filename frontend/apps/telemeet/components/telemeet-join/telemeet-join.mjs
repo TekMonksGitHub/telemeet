@@ -7,6 +7,7 @@ import {webrtc} from "./lib/webrtc.mjs";
 import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {fwcontrol} from "./lib/fwcontrol.mjs";
+import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
@@ -21,11 +22,12 @@ const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_
 	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom", 
 	API_EXITROOM = APP_CONSTANTS.API_PATH+"/exitroom", API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", 
 	DIV_TELEMEET = "div#telemeet", HOSTID_CONTEXT_MENU = "contextmenu", HOSTID_POSTIONABLE_HTML = "positionablehtml";
-let conf;
+let conf, mediaQueryStart, mediaQueryEnd;
 
 
 async function elementConnected(host) {
-	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`);
+	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`); 
+	mediaQueryStart = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`; mediaQueryEnd = "}</style>";
 	const data = {}; 
 
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${await telemeet_join.getAttrValue(host, "styleBody")}</style>`;
@@ -35,8 +37,7 @@ async function elementConnected(host) {
 	data.pass = host.getAttribute("pass")||"";
 	data["show-joiner-dialog"] = host.getAttribute("showJoinerDialog")?.toLowerCase() == "true" ? "true" : undefined;
 	if (!data["show-joiner-dialog"]) data.styleBody = (data.styleBody||"")+"<style>div#videodiv{height: 100%}</style>";
-	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
-	data.MOBILE_MEDIA_QUERY_END = "}</style>";
+	data.MOBILE_MEDIA_QUERY_START = mediaQueryStart; data.MOBILE_MEDIA_QUERY_END = mediaQueryEnd;
 
 	telemeet_join.setDataByHost(host, data);
 
@@ -191,7 +192,8 @@ async function showChat(element, event, dontClose) {
 	const unsentMessage = _getRoomMemory(element).chatUnsentMessage || "";
 	await positionable_html.show(HOSTID_POSTIONABLE_HTML, chatHTML, event.x, event.y, "-20vw", "1em", 
 		{...util.clone(chats), unsentMessage, hostTelemeetJoinID: telemeet_join.getHostElementID(element), 
-			component_path: COMPONENT_PATH}, true);
+			component_path: COMPONENT_PATH, MOBILE_MEDIA_QUERY_START: mediaQueryStart, 
+			MOBILE_MEDIA_QUERY_END: mediaQueryEnd}, true);
 	for (const chat of chats.items) chat.isNew = false;	// all so far are now shown and no longer new
 	telemeet_join.getShadowRootByContainedElement(element).querySelector("img#chatcontrol").src = `${COMPONENT_PATH}/img/nochat.svg`;
 	const chatsDiv = positionable_html.getShadowRootByHostId(HOSTID_POSTIONABLE_HTML).querySelector("div#chats");
@@ -211,7 +213,8 @@ async function showNotifications(element, event) {
 	const notifications = _getRoomMemory(element).notifications || {items: [{subject: await i18n.get("NoNotifications"), 
 		message: await i18n.get("NoNewNotifications"), isNew: false}]};
 	context_menu.showMenu(HOSTID_CONTEXT_MENU, notificationsHTML, event.x, event.y, "-20vw", "1em", 
-		util.clone(notifications), true, true, true);
+		{...util.clone(notifications), MOBILE_MEDIA_QUERY_START: mediaQueryStart, MOBILE_MEDIA_QUERY_END: mediaQueryEnd}, 
+		true, true, true);
 	for (const notification of notifications.items) notification.isNew = false;	// all so far are now shown and no longer new
 	telemeet_join.getShadowRootByContainedElement(element).querySelector("img#notificationscontrol").src = 
 		`${COMPONENT_PATH}/img/nonotifications.svg`;

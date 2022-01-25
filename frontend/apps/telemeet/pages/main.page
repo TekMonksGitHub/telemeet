@@ -1,11 +1,9 @@
 SCHEMA
 ======
 {
-    "allroomslist": {"html":"spread-sheet", "rows":9, "columns":4, "onlyText": "true", "barstyle": "1em solid #00732e",
-        "styleBody":"url(./pages/allroomslist.styleBody.css)", "showToolbar": false, "readOnlySheet": true, 
-        "showSearch": true, "hasHeaders": true, "value": "{{{allRoomsList}}}"},
+    "allrooms": {"html":"card-roll", "background":"transparent", "value": "{{{allroomsList}}}"},
     "telemeet": {"html":"telemeet-join", "id":"telemeet"},
-    "myrooms": {"html":"html-fragment", "htmlfile":"./pages/myrooms.html", "style":"width: 100%", "data":"{{{myRoomsList}}}"}
+    "myrooms": {"html":"card-roll", "background":"#00C24E", "value":"{{{myroomsList}}}"}
 }
 ======
 
@@ -13,13 +11,27 @@ SCHEMA
 LAYOUT
 =================
 -----------------------------
-|        allroomslist       |
+|        allrooms           |
 -----------------------------
 |    telemeet  |   myrooms  |
 -----------------------------
 =================
 Row Heights = 2fr, 1.5fr
 Col Widths = 0.5fr, 1fr
+=================
+
+LAYOUT - MOBILE
+=================
+-----------------------------
+|        allrooms           |
+-----------------------------
+|         myrooms           |
+-----------------------------
+|         telemeet          |
+-----------------------------
+=================
+Row Heights = 1fr, 1fr, 1fr
+Col Widths = 1fr
 =================
 
 

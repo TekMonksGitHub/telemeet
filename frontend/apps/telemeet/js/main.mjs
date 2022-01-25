@@ -9,7 +9,7 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-const TELEMEET_ID = "telemeet", ALL_ROOMS_LIST_ID = "allroomslist", MY_ROOMS_LIST_ID = "myroomslist", CONTEXT_MENU_ID = "maincontextmenu";
+const TELEMEET_ID = "telemeet", ALL_ROOMS_CARDROLL = "allrooms", MY_ROOMS_CARDROLL = "myrooms", CONTEXT_MENU_ID = "maincontextmenu";
 const dialog = _ => monkshu_env.components['dialog-box'], contextmenu = _ => window.monkshu_env.components["context-menu"];
 let telemeetJoin;
 
@@ -121,20 +121,22 @@ async function interceptPageLoadAndData(){
     });
 
     router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {   // set the list of rooms
-        const {allRoomsCSV, myRoomsCSV} = await _getRoomsListAsCSV();
-        data.pageData = encodeURIComponent(JSON.stringify({allRoomsList: encodeURIComponent(allRoomsCSV),
-            myRoomsList: encodeURIComponent(JSON.stringify({myroomlist: encodeURIComponent(myRoomsCSV)}))}));
+        const {allRooms, myRooms} = await _getRoomsLists();
+        data.pageData = encodeURIComponent(JSON.stringify({
+            allroomsList: encodeURIComponent(JSON.stringify(allRooms)),
+            myroomsList: encodeURIComponent(JSON.stringify(myRooms))
+        }));
         if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; 
     });
 }
 
 async function _reloadRoomLists() {
-    const sheetComponent = window.monkshu_env.components["spread-sheet"];
-    const {allRoomsCSV, myRoomsCSV} = await _getRoomsListAsCSV();
-    const allroomsList = sheetComponent.getHostElementByID(ALL_ROOMS_LIST_ID);
-    const myroomslist = sheetComponent.getHostElementByID(MY_ROOMS_LIST_ID);
+    const cardRoll = window.monkshu_env.components["card-roll"];
+    const {allRooms, myRooms} = await _getRoomsLists();
+    const allroomsCardRoll = cardRoll.getHostElementByID(ALL_ROOMS_CARDROLL);
+    const myroomsCardRoll = cardRoll.getHostElementByID(MY_ROOMS_CARDROLL);
 
-    allroomsList.value = allRoomsCSV; myroomslist.value = myRoomsCSV;
+    allroomsCardRoll.value = JSON.stringify(allRooms); myroomsCardRoll.value = JSON.stringify(myRooms);
 }
 
 async function _getTOTPQRCode(key) {
@@ -144,33 +146,24 @@ async function _getTOTPQRCode(key) {
 	    `otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
-async function _getRoomsListAsCSV() {
-    const _escCSV = v => v.indexOf(",") != -1 ? `"${v}"`:v;
-    const joinLinkHTML = await $$.requireText("./pages/joinlink.html"), 
-        deleteLinkHTML = await $$.requireText("./pages/deletelink.html"),
-        myroomLinkHTML = await $$.requireText("./pages/myroomlink.html");
+async function _getRoomsLists() {
+    const allRoomsHTML = await $$.requireText("./pages/allrooms.html"), myRoomsHTML = await $$.requireText("./pages/myrooms.html");
 
-    let allRoomsCSV = `${await i18n.get("AllRoomsTableHeader")}\r\n`, myRoomsCSV = `${await i18n.get("MyRoomsTableHeader")}\r\n`;
+    const allroomsCards = [], myroomsCards = [];
     const roomsResult = await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString());
     if (roomsResult?.result) for (const room of roomsResult.rooms) {
-        const joinLink = _escCSV(router.getMustache().render(joinLinkHTML, {room: room.name, 
-            moderator: room.moderator, joinText: await i18n.get("Join")}));
+        
+        room.startTime = Date.now(); 
+        if (room.startTime) allroomsCards.push(router.getMustache().render(allRoomsHTML, {room: room.name, 
+            moderator: room.moderator, joinText: await i18n.get("Join"), moderatorName: room.moderatorName,
+            startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang())}));   // active rooms only
 
-        if (room.startTime) {   // show only rooms which are active
-            const allRoomsCSVLine = [_escCSV(room.name), _escCSV(`${room.moderatorName} &lt;${room.moderator}&gt;`), 
-                _escCSV(new Date(room.startTime).toLocaleString(i18n.getSessionLang())), joinLink].join(",");
-            allRoomsCSV += allRoomsCSVLine + "\r\n";
-        }
-
-        if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) {
-            const deleteLink = _escCSV(router.getMustache().render(deleteLinkHTML, {room: room.name, deleteText: await i18n.get("Delete")}));
-            const shareLink = _escCSV(router.getMustache().render(myroomLinkHTML, {room: room.name, password: room.password}));
-            const myRoomsCSVLine = [shareLink, _escCSV(new Date(room.creationtime).toLocaleString(i18n.getSessionLang())), 
-                deleteLink, joinLink].join(",");
-            myRoomsCSV += myRoomsCSVLine + "\r\n";
-        }
+        if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) myroomsCards.push(
+            router.getMustache().render(myRoomsHTML, {room: room.name, moderator: room.moderator, 
+                joinText: await i18n.get("Join"), creationTime: new Date(room.creationtime).toLocaleString(i18n.getSessionLang()),
+                password: room.password}));
     } else LOG.error("Get rooms call failed.");
-    return {allRoomsCSV, myRoomsCSV};
+    return {allRooms: allroomsCards, myRooms: myroomsCards};
 }
 
 const _showMessage = message => dialog().showMessage(`${APP_CONSTANTS.DIALOGS_PATH}/message.html`, {message}, "dialog");

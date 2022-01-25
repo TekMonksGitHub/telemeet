@@ -1,0 +1,77 @@
+<html>
+<head>
+<style>
+div.container {
+    padding: 1em;
+    box-sizing: border-box;
+    border-radius: 0.5em;
+    background-color: #00C24E;
+    color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-image: url("./img/meeting2.jpg");
+    background-size: cover;
+    min-width: 11em;
+    font-size: large;
+    /*  These calculations set the width and min-width so that below 400px they are 100% width, and above
+        400px they are 9em in width. Also the minimum width below 400px is 9em. */
+    --base_size: 100%;
+    --breakpoint_wide_px: 400px;
+    --breakpoint_wide_px_no_unit: 400;
+    --min_width_em_no_unit: 9;
+    --min_width_em: 9em;
+    --is_wide: clamp(0px, var(--base_size) - var(--breakpoint_wide_px), 1px);
+    --is_wide_em: clamp(0em, var(--base_size) - var(--breakpoint_wide_px), 1em);
+    --min_width_adder: calc(var(--is_wide_em) * var(--min_width_em_no_unit));
+    --subtractor: calc(var(--is_wide) * var(--breakpoint_wide_px_no_unit));
+    --preferred_width: min(var(--base_size), var(--breakpoint_wide_px));
+    --child-width: calc(var(--preferred_width) - var(--subtractor) + var(--min_width_adder));
+    --child-min-width: var(--min_width_em);
+}
+
+div.meetingtext {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #444444;
+    padding: 0.3em;
+    box-sizing: border-box;
+    border-radius: 0.5em;
+    display: flex;
+    flex-direction: column;
+    font-size: large;
+    width: var(--child-width);
+    min-width: var(--child-min-width);
+}
+span.time {font-size: x-small;}
+span.roomname {font-size: medium; font-weight: bolder;}
+span.moderator {font-size: medium;}
+
+button.button {
+    border-radius: 0.5em;
+    background-color: #FFFFFF;
+    color: #00C24E;
+    font-size: large;
+    border: none;
+    padding: 0.5em;
+    margin-left: auto;
+    box-shadow: 0px 0px 3px -2px #000000;
+    outline: none;
+    width: var(--child-width);
+    min-width: var(--child-min-width);
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <div class="meetingtext">
+        <span class="time">{{startTime}}</span>
+        <span class="roomname">{{room}}</span>
+        <span class="moderator">{{moderatorName}}</span>
+    </div>
+    <button class="button">{{joinText}}</button>
+</div>
+</body>
+</html>

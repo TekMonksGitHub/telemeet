@@ -1,137 +1,44 @@
+<html>
+<head>
 <style>
-div::-webkit-scrollbar {
-    width: 0.5em !important;
-    height: 0.5em !important;
-    scroll-behavior: smooth !important;
-}
-
-div::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    margin: 10px;
-    border-radius: 10px !important;
-}
-
-div::-webkit-scrollbar-thumb {
-    background-color: darkgrey !important;
-    border-radius: 10px !important;
-    background-clip: padding-box;
-}
-
-:host {
-    --border-color: #00C24E;
-    --text-color: #444444;
-    --text-background: white;
-    --inverse-text-color: white;
-    --border-radius: 0.5em;
-}
-
-body {
-    margin: 0;
-    height: 100%;
-}
-
-div#container {
+div.container {
+    padding: 0.5em;
+    border-radius: 1em;
+    background-color: #00C24E;
+    color: #FFFFFF;
+    width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-sizing: border-box;
-    overflow: overlay;
-    border-bottom: 0.5px solid var(--border-color);
 }
 
-div#maincontent {
-    max-width: 100%;
-    display: flex;
-    flex-direction: row;
-    overflow: auto;
-    padding: 1em 1em;
-    justify-content: space-between;
-    height: 3.5em;
-    align-items: center;
-    overflow: overlay;
+img.roomimg {
+    border-radius: 0.8em;
+    width: 100%;
+    height: 40%;
 }
 
-span#title {
-    text-align: center;
-    background-color: var(--border-color);
-    padding: 0.5em;
-    box-sizing: border-box;
-    color: var(--inverse-text-color);
-}
+span#time {font-size: x-small;}
+span#roomname {font-size: medium; font-weight: bolder;}
+span#moderator {font-size: larger;}
 
-input {
-    border-radius: var(--border-radius);
-    outline: none;
-    border: 1px solid #a0a0a0;
-    padding: 0.5em;
-    margin-right: 1%;
-    min-width: 30%;
-    height: 2.5em;
-}
-input.edit {
-    width: 31%;
-}
-
-button {
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    color: var(--inverse-text-color);
-    background-color: var(--border-color);
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    text-align: center;
-    padding: 0em 1em;
-    display: none;
-    min-width: 6em;
-    min-width: 6em;
-    height: 2.5em;
-    margin-left: 1%;
-}
-button.visible {display: inline-block}
-
-spread-sheet {
-    height: calc(100% - 2em);
+button#button {
+    border-radius: 0.5em;
+    background-color: #FFFFFF;
+    color: #00C24E;
+    font-weight: bolder;
+    font-size: x-large;
 }
 </style>
+</head>
 
-<div id="container">
-    <span id="title">{{i18n.MyRooms}}</span>
-
-    <div id="maincontent">
-    <input id="room" type="text" placeholder="{{i18n.RoomID}}">
-
-    <input id="pass" type="password" placeholder="{{i18n.Password}}">
-
-    <input id="oldroom" type="hidden">
-    
-    <button id="createButton" class="visible" onclick='const creationFunc = async _ => {if (await monkshu_env.apps.telemeet.main.createRoom(
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value.trim(), 
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
-        this)) {
-            monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value = "";
-            monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value = "";
-        }}; creationFunc();'>{{i18n.Create}}</button>
-
-    <button id="editButton" class="hidden" onclick='const editFunc = async _ => {if (await monkshu_env.apps.telemeet.main.editRoom(
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"oldroom").value.trim(), 
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value.trim(), 
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), 
-        this)) monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"cancelButton").click();
-    }; editFunc();'>{{i18n.Edit}}</button>
-    <button id="cancelButton" class="hidden" onclick='const cancelFunc = _ => {
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value = "";
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value = "";
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"createButton").classList.add("visible");
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"editButton").classList.remove("visible");
-        monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"cancelButton").classList.remove("visible");
-    }; cancelFunc();'>{{i18n.Cancel}}</button>
-    </div>
-
-    <spread-sheet id="myroomslist" rows="4" columns="4" onlyText="true" barstyle="1em solid #00732e" 
-        styleBody="url(./pages/myroomlist.styleBody.css)" showToolbar="false" readOnlySheet="true"
-        hasHeaders="true" value="{{{myroomlist}}}"></spread-sheet>
+<body>
+<div class="container">
+    <img class="roomimg" src="{{{roomImage}}}">
+    <span class="time">{{startTime}}</span>
+    <span class="roomname">{{room}}</span>
+    <span class="moderator">{{moderatorName}}</span>
+    <button class="button">{{joinText}}</button>
 </div>
+</body>
+</html>

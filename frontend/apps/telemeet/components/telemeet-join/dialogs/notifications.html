@@ -23,6 +23,7 @@ div#menu {
     background-color: transparent;
     box-shadow: none;
     cursor: default;
+    background-color: #293548;
 }
 
 div#notifications {
@@ -32,10 +33,10 @@ div#notifications {
     max-width: 50vw;
     min-height: 25vh;
     max-height: 80vh;
-    background-color: #293548;
     border: 1px solid #D3D3D3;
     border-radius: 1em;
     padding: 1em;
+    box-sizing: border-box;
     color: #D3D3D3;
     overflow: auto;
 }
@@ -46,7 +47,6 @@ div#notificationsubject {
     align-items: center;
     margin-top: 1em;
 }
-div#notificationsubject:first-child {margin-top: 0em;}
 span#dot {font-size: x-small;}
 span#notification{margin-left: 0.5em;}
 
@@ -54,8 +54,47 @@ span#notificationtext {
     margin-left: 3em;
     font-size: smaller;
 }
+span#close {
+    display: none;
+    color: #D3D3D3;
+    font-size: 1.5em;
+    margin: 0.3em 0.5em 0 0;
+    padding: 0;
+    text-align: right;
+}
 </style>
+{{{MOBILE_MEDIA_QUERY_START}}}
+    @keyframes expandwidth {
+        from {width: 0; left: 100vw;}
+        to {width: 80vw; left: 20vw;}
+    }
+	div#menu {
+        bottom: 0;
+        top: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: 0 0 5px #ccc;
+        border-left: 1px solid #D3D3D3;
+        animation-name: expandwidth;
+        animation-duration: 0.25s;
+        width: 80vw;
+        left: 20vw;
+    }
+    div#notifications {
+        min-width: 0vw;
+        max-width: 100vw;
+        min-height: 0vh;
+        max-height: 100vh;
+        height: 100%;
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        padding-top: 0;
+    }
+    span#close {display: inline;}
+{{{MOBILE_MEDIA_QUERY_END}}}
 
+<span id="close" onclick="monkshu_env.components['context-menu'].hideMenu('contextmenu')">X</span>
 <div id="notifications">
     {{#items}}
     <div id="notificationsubject" {{#isNew}}style="color: #E79696"{{/isNew}}>

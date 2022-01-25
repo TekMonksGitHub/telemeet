@@ -1,0 +1,59 @@
+<!--
+/* Context menu component.
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+ -->
+<style>
+body {margin: 0; width: 100%; height: 100%;}  
+
+div#cardmaincontainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: overlay;
+    padding-bottom: 0.7em;
+    box-sizing: border-box;
+} 
+
+div.card {
+    height: 100%;
+    flex-grow: 1;
+}
+div.card ~ div.card {margin-left: 1em;}
+</style>
+{{{MOBILE_MEDIA_QUERY_START}}}
+    div::-webkit-scrollbar {-webkit-appearance: none !important;}
+    div#cardmaincontainer {padding: 0;}
+{{{MOBILE_MEDIA_QUERY_END}}}
+
+{{{DESKTOP_MEDIA_QUERY_START}}}
+    div::-webkit-scrollbar {
+        width: 0.5em;
+        height: 0.5em;
+        scroll-behavior: smooth;
+    }
+
+    div::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        margin: 2em;
+        border-radius: 1em;
+    }
+
+    div::-webkit-scrollbar-thumb {
+        background-color: darkgrey;
+        border-radius: 1em;
+        background-clip: padding-box;
+    }
+{{{DESKTOP_MEDIA_QUERY_END}}}
+
+{{{styleBody}}}
+{{#isColumnLayout}}<style>div#container {flex-direction: column;}</style>{{/isColumnLayout}}
+
+<div id="cardmaincontainer">
+    {{#cards}}
+        <div class="card">{{{.}}}</div>
+    {{/cards}}
+</div>

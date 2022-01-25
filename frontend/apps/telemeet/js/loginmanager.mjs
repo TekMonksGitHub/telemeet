@@ -79,7 +79,7 @@ async function getProfileData(id, time) {
     if (resp && resp.result) return resp; else return null;
 }
 
-function startAutoLogoutTimer() {
+function startAutoLogoutTimer() { return;
     if (!session.get(APP_CONSTANTS.USERID)) return; // no one is logged in
     
     const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
