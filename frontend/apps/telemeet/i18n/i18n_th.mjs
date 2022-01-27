@@ -39,6 +39,7 @@ export const i18n = {
 "PasswordAgain" : "รหัสผ่านอีกครั้ง",
 "SignIn" : "เข้าสู่ระบบ",
 "Join": "Join",
+"Start": "Start",
 "NoRoom": "Missing room name.",
 "NoPass": "Missing room password",
 "BadLogin" : "ลงชื่อเข้าใช้ผิด",
@@ -137,5 +138,6 @@ export const i18n = {
 "OpenGoogleAuthenticator": "Open Authenticator",
 "Speakers": "Speakers",
 "Microphone": "Microphone",
-"VideoCamera": "Video Camera"
+"VideoCamera": "Video Camera",
+"MyRooms": "My Rooms"
 }

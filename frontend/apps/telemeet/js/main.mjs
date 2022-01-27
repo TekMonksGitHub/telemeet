@@ -77,22 +77,15 @@ async function deleteRoom(room) {
     else _showMessage(await i18n.get("RoomDeletionFailed"));
 }
 
-async function showMyRoomMenu(room, password, event) {
+async function linkShareRoom(room, password) {
+    const roomLink = `${APP_CONSTANTS.JOIN_HTML}?data=${btoa(`${room}:${password}`)}`; 
+    await $$.copyTextToClipboard(roomLink);
+}
+
+async function emailShareRoom(room, password) {
     const roomLink = `${APP_CONSTANTS.JOIN_HTML}?data=${btoa(`${room}:${password}`)}`; 
     const emailBody = encodeURIComponent(await i18n.get("RoomLinkEmailBody") + roomLink);
-
-    const menus = {}; menus[await i18n.get("ShareEmail")] = async _=> 
-        window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
-    menus[await i18n.get("ShareLink")] = _ => navigator.clipboard.writeText(roomLink);
-    menus[await i18n.get("EditRoom")] = _ => {
-        const shadowRoot = window.monkshu_env.components["html-fragment"].getShadowRootByHostId("myrooms");
-        shadowRoot.querySelector("input#room").value = room; shadowRoot.querySelector("input#oldroom").value = room; 
-        shadowRoot.querySelector("input#pass").value = password;
-        shadowRoot.querySelector("button#createButton").classList.remove("visible");  
-        shadowRoot.querySelector("button#editButton").classList.add("visible"); 
-        shadowRoot.querySelector("button#cancelButton").classList.add("visible"); 
-    }
-	contextmenu().showMenu(CONTEXT_MENU_ID, menus, event.pageX, event.pageY, 2, 2, null, true);
+    window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
 }
 
 async function editRoom(oldroom, newroom, newpassword) {
@@ -147,22 +140,26 @@ async function _getTOTPQRCode(key) {
 }
 
 async function _getRoomsLists() {
-    const allRoomsHTML = await $$.requireText("./pages/allrooms.html"), myRoomsHTML = await $$.requireText("./pages/myrooms.html");
+    const allRoomsHTML = await $$.requireText("./pages/allrooms.html"), 
+        myRoomsHTML = await $$.requireText("./pages/myrooms.html"), 
+        createRoomHTML = await $$.requireText("./pages/createroom.html"),
+        noMeetingsHTML = await $$.requireText("./pages/nomeetings.html");
 
-    const allroomsCards = [], myroomsCards = [];
+    const allroomsCards = [], myroomsCards = [router.getMustache().render(createRoomHTML, {APP_CONSTANTS, 
+        i18n: await i18n.getI18NObject()})];
     const roomsResult = await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString());
-    if (roomsResult?.result) for (const room of roomsResult.rooms) {
-        
-        room.startTime = Date.now(); 
+    if (roomsResult?.result) for (const room of roomsResult.rooms) { 
+        //room.startTime = Date.now();    // remove - only for design testing.       
         if (room.startTime) allroomsCards.push(router.getMustache().render(allRoomsHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join"), moderatorName: room.moderatorName,
-            startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang())}));   // active rooms only
+            startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang()), APP_CONSTANTS}));   // active rooms only
 
         if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) myroomsCards.push(
             router.getMustache().render(myRoomsHTML, {room: room.name, moderator: room.moderator, 
-                joinText: await i18n.get("Join"), creationTime: new Date(room.creationtime).toLocaleString(i18n.getSessionLang()),
-                password: room.password}));
+                joinText: await i18n.get("Start"), creationTime: new Date(room.creationtime).toLocaleString(i18n.getSessionLang()),
+                password: room.password, APP_CONSTANTS}));
     } else LOG.error("Get rooms call failed.");
+    if (allroomsCards.length == 0) allroomsCards.push(router.getMustache().render(noMeetingsHTML, {APP_CONSTANTS}));
     return {allRooms: allroomsCards, myRooms: myroomsCards};
 }
 
@@ -173,4 +170,4 @@ const _getConfirmation = async message => {
 }
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
-    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, showMyRoomMenu, editRoom};
+    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, linkShareRoom, emailShareRoom, editRoom};

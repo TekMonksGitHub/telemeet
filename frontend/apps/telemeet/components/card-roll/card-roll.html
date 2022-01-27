@@ -7,9 +7,16 @@
 <style>
 body {margin: 0; width: 100%; height: 100%;}  
 
+div#bodydiv {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
 div#cardmaincontainer {
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -17,6 +24,13 @@ div#cardmaincontainer {
     padding-bottom: 0.7em;
     box-sizing: border-box;
 } 
+
+div#title {
+    color: #FFFFFF;
+    text-align: center;
+    font-size: small;
+    margin-bottom: 0.5em;
+}
 
 div.card {
     height: 100%;
@@ -52,8 +66,11 @@ div.card ~ div.card {margin-left: 1em;}
 {{{styleBody}}}
 {{#isColumnLayout}}<style>div#container {flex-direction: column;}</style>{{/isColumnLayout}}
 
+<div id="bodydiv">
+{{#cardRollTitle}}<div id="title">{{.}}</div>{{/cardRollTitle}}
 <div id="cardmaincontainer">
     {{#cards}}
-        <div class="card">{{{.}}}</div>
+        <div class="card" id="card{{num}}">{{{content}}}</div>
     {{/cards}}
+</div>
 </div>

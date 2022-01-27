@@ -3,7 +3,7 @@ SCHEMA
 {
     "allrooms": {"html":"card-roll", "background":"transparent", "value": "{{{allroomsList}}}"},
     "telemeet": {"html":"telemeet-join", "id":"telemeet"},
-    "myrooms": {"html":"card-roll", "background":"#00C24E", "value":"{{{myroomsList}}}"}
+    "myrooms": {"html":"card-roll", "background":"#00C24E", "value":"{{{myroomsList}}}", "title":"{{i18n.MyRooms}}"}
 }
 ======
 
@@ -50,5 +50,10 @@ div.grid-container-extension {
     height: 100%;
     box-sizing: border-box;
     grid-gap: 2em;
+}
+.class-myrooms {
+    padding: 0.5em 1em 0.3em 1em;
+    border-radius: 0.5em;
+    background-color: #2ECC71;
 }
 =======

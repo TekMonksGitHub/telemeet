@@ -1,0 +1,49 @@
+<style>
+div#wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 12em;
+    height: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+    border-radius: 0.5em;
+    min-width: 9em;
+    font-size: medium;
+    background: #FFFFFF;
+}
+
+div#wrapper > input {
+    padding: 0.5em;
+    outline: none;
+    border-radius: 0.5em;
+    text-align: center;
+    color: #444444;
+    font-size: inherit;
+    border: 1px solid #00C24E;
+}
+
+div#wrapper > button {
+    border-radius: 0.5em;
+    color: #FFFFFF;
+    background-color: #00C24E;
+    border: none;
+    padding: 0.5em;
+    font-size: inherit;
+}
+
+div.card#card0 {flex-grow: 0;}
+</style>
+
+<div id="wrapper">
+    <input id="room" type="text" placeholder="{{i18n.RoomID}}">
+    <input id="pass" type="password" placeholder="{{i18n.Password}}">
+    <button id="createButton" onclick='const creationFunc = async _ => {
+        if (await monkshu_env.apps.telemeet.main.createRoom(
+                monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value.trim(), 
+                monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value.trim(), this)) {
+
+            monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"room").value = "";
+            monkshu_env.frameworklibs["util"].getChildByID(this.parentElement,"pass").value = "";
+        }}; creationFunc();'>{{i18n.Create}}</button>
+</div>

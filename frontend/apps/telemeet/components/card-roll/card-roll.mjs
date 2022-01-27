@@ -22,14 +22,16 @@ async function elementConnected(host) {
 }
 
 const _createElementData = async (host, value="[]") => {
-	let cards = []; try{cards = JSON.parse(value)} catch (err) {};
+	let rawcards = []; try{rawcards = JSON.parse(value)} catch (err) {}; const cards = [];
+	for (let [i,card] of rawcards.entries()) cards.push({num: i, content: card});
 	return { cards, isColumnLayout: host.getAttribute("column")?.toLowerCase() == "true"?true:undefined,
 		styleBody: host.getAttribute("styleBody")?`<style>${await card_roll.getAttrValue(host,"styleBody")}</style>`:undefined,
 		MOBILE_MEDIA_QUERY_START: `<style>@media only screen and (max-width: ${host.getAttribute("mobilebreakpoint")||MOBILE_BREAKPOINT}) and (hover: none) {`,
 		MOBILE_MEDIA_QUERY_END: "}</style>",
 		DESKTOP_MEDIA_QUERY_START: `<style>@media (hover: hover) {`,
 		DESKTOP_MEDIA_QUERY_END: "}</style>",
-		componentpath: COMPONENT_PATH  }; 
+		componentpath: COMPONENT_PATH,
+		cardRollTitle: host.getAttribute("title") }; 
 };
 
 // convert this all into a WebComponent so we can use it
