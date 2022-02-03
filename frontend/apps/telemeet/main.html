@@ -147,7 +147,14 @@ card-roll#myrooms {
 }
 </style>
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
-	body {min-width: 0; min-height: 0;}
+	body, html {min-width: 0; min-height: 0;}
+	span#header {display: none;}
+	div#maincontent {height: auto; margin: 0; padding: 1em 1em 0em 1em;}
+	card-roll#allrooms {height: 30vh; min-height: 15em;}
+	div#lowercontent {height: auto; flex-direction: column-reverse;}
+	telemeet-join#telemeet {margin: 0; height: 30vh; width: 100%; min-height: 40vw;}
+	card-roll#myrooms {padding-bottom: 1em; margin-bottom: 2em; box-sizing: border-box; height: 30vh; 
+		width: 100%;  min-height: 15em;}
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
 
 <!doctype html>
