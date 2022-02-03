@@ -1,10 +1,29 @@
 <!--
-/* Context menu component.
+/* Card roll component.
  * (C) 2020 TekMonks. All rights reserved.
  * License: See enclosed LICENSE file.
  */
  -->
 <style>
+*::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+*::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
 body {margin: 0; width: 100%; height: 100%;}  
 
 div#bodydiv {

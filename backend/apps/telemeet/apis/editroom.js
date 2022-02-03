@@ -17,7 +17,7 @@ exports.doService = async jsonReq => {
     if (telemeetRooms[oldroomID].moderator != jsonReq.id) return {result: false, reason: "REQUESTORNOTMODERATOR"};
 
     telemeetRooms[roomID] = telemeetRooms[oldroomID]; telemeetRooms[roomID].password = jsonReq.pass; 
-    telemeetRooms[roomID].name = jsonReq.room; delete telemeetRooms[oldroomID];
+    telemeetRooms[roomID].name = jsonReq.room; telemeetRooms[roomID].image = jsonReq.image; delete telemeetRooms[oldroomID];
     LOG.debug(`Room edited ${jsonReq.oldroom} at ${utils.getDateTime()}, new name is ${jsonReq.name}.`);
 
     // why? because only set will propogate it globally. that's how the distributed memory works

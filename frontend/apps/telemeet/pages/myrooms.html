@@ -21,7 +21,7 @@ div.roomactions {
     align-items: center;
 }
 
-div.roomactions > img {height: 2em; width: 2em;}
+div.roomactions > img {height: 2em; width: 2em; cursor: pointer;}
 
 div.container {
     padding: 1em;
@@ -32,7 +32,7 @@ div.container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-image: url("./img/meeting2.jpg");
+    background-image: url("{{{image}}}");
     background-size: cover;
     min-width: 11em;
     font-size: large;
@@ -88,7 +88,7 @@ button.button {
 <div class="roomactions">
     <img src="{{APP_CONSTANTS.APP_PATH}}/img/email.svg" onclick="monkshu_env.apps.telemeet.main.emailShareRoom('{{{room}}}', '{{{password}}}')">
     <img src="{{APP_CONSTANTS.APP_PATH}}/img/link.svg" onclick="monkshu_env.apps.telemeet.main.linkShareRoom('{{{room}}}', '{{{password}}}')">
-    <img src="{{APP_CONSTANTS.APP_PATH}}/img/edit.svg">
+    <img src="{{APP_CONSTANTS.APP_PATH}}/img/edit.svg" onclick="monkshu_env.apps.telemeet.main.editRoom('{{{room}}}', '{{{password}}}', '{{{image}}}')">
     <img src="{{APP_CONSTANTS.APP_PATH}}/img/delete.svg" onclick="monkshu_env.apps.telemeet.main.deleteRoom('{{{room}}}')">
 </div>
 <div class="container">

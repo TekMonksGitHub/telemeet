@@ -23,13 +23,14 @@ body::-webkit-scrollbar-thumb {
     background-clip: padding-box;
 }
 
-body {
+body, html {
 	margin: 0;
 	padding: 0;
 	font-family: 'Red Hat Text', sans-serif;
 	overflow: auto;
-	min-width: 780px;
+	min-width: 880px;
 	min-height: 640px;
+	overflow: auto;
 }
 
 body::after {
@@ -115,6 +116,34 @@ div#maincontent {
 	background-color: transparent;
 	height: calc(100% - 9.6em);
 	margin: 1em 5em 3.5em 5em;
+	display: flex;
+	flex-direction: column;
+}
+
+div#lowercontent {
+	height: 43%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+	justify-content: space-between;
+}
+
+card-roll#allrooms {
+	height: 57%;
+    margin-bottom: 2em;
+}
+
+telemeet-join#telemeet {
+	margin-right: 2em;
+	width: 33.33%;
+	min-width: 10em;
+}
+
+card-roll#myrooms {
+	background-color: #2ECC71;
+    border-radius: 0.5em;
+    padding: 0.5em 1em 0.3em 1em;
+	width: min(66.67%, calc(100% - 14em))
 }
 </style>
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
@@ -136,10 +165,10 @@ div#maincontent {
 	import "./components/context-menu/context-menu.mjs";
 	import "./components/telemeet-join/telemeet-join.mjs";
 	import "./components/span-with-menu/span-with-menu.mjs";
-	import "/framework/components/page-generator/page-generator.mjs";
 	import "/framework/components/html-fragment/html-fragment.mjs";
 	import "./components/spread-sheet/spread-sheet.mjs";
 	import "./components/card-roll/card-roll.mjs";
+	import "./components/image-picker/image-picker.mjs";
 	import {loginmanager} from "./js/loginmanager.mjs"; monkshu_env.apps.telemeet.loginmanager = loginmanager;
 	</script>
 		
@@ -168,7 +197,11 @@ div#maincontent {
 </span>
 
 <div id="maincontent">
-	<page-generator file="./pages/main.page" pageData="{{{pageData}}}"></page-generator>
+	<card-roll id="allrooms" value="{{{allroomsList}}}"></card-roll>
+	<div id="lowercontent">
+		<telemeet-join id="telemeet"></telemeet-join>
+		<card-roll id="myrooms" background="#00C24E" value="{{{myroomsList}}}" title="{{i18n.MyRooms}}"></card-roll>
+	</div>
 </div>
 
 <dialog-box id="dialog"></dialog-box>

@@ -138,5 +138,6 @@ export const i18n = {
 "Speakers": "Speakers",
 "Microphone": "Microphone",
 "VideoCamera": "Video Camera",
-"MyRooms": "My Rooms"
+"MyRooms": "My Rooms",
+"MeetingImage": "Meeting image"
 }

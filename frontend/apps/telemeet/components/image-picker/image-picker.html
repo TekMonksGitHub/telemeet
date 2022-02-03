@@ -1,0 +1,65 @@
+<!--
+/* Image picker component.
+ * (C) 2020 TekMonks. All rights reserved.
+ * License: See enclosed LICENSE file.
+ */
+ -->
+<style>
+*::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+*::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+body {margin: 0; width: 100%; height: 100%;}  
+
+div#bodydiv {
+    display: grid;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    grid-template-columns: repeat(auto-fill, 4em);
+    grid-template-rows: repeat(auto-fill, 3em);
+    place-items: center;
+    justify-content: center;
+    grid-gap: 0.5em;
+}
+
+div#bodydiv > img {
+    height: 3em;
+    width: 4em;
+    border: none;
+    border-radius: 0.2em;
+    object-fit: cover;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+}
+
+img.selected {border: 1px solid black !important;}
+
+span.filler {flex-grow: 1;}
+</style>
+
+{{{styleBody}}}
+
+<div id="bodydiv">
+    {{#images}}
+    <img class="img{{#selected}} selected{{/selected}}" src="{{{imgurl}}}" 
+        onclick="monkshu_env.components['image-picker'].imgSelected(this, '{{{imgurl}}}')">
+    {{/images}}
+    <span class="filler"></span>
+</div>

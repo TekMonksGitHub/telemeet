@@ -17,7 +17,7 @@ exports.doService = async jsonReq => {
     if (Object.keys(telemeetRooms).includes(roomID)) return {result: false, reason: "ROOMEXISTS"};
 
     telemeetRooms[roomID] = {password: jsonReq.pass, moderator: jsonReq.id, creationtime: Date.now(), 
-        name: jsonReq.room, moderatorName: idDetails.name, participants: {}};
+        name: jsonReq.room, moderatorName: idDetails.name, participants: {}, image: jsonReq.image};
     LOG.debug(`Room created, ${jsonReq.room}, by user ${jsonReq.id} at ${utils.getDateTime()}`);
 
     // why? because only set will propogate it globally. that's how the distributed memory works

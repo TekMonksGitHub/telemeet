@@ -1,0 +1,94 @@
+<style>
+*::-webkit-scrollbar {
+    width: 0.5em !important;
+    height: 0.5em !important;
+    scroll-behavior: smooth !important;
+}
+
+*::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+    margin: 40px;
+    border-radius: 10px !important;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: darkgrey !important;
+    border-radius: 10px !important;
+    background-clip: padding-box;
+}
+
+div#maincontainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 40vw;
+    height: 60vh;
+    overflow-y: auto;
+}
+
+input {
+    padding: 1em;
+    width: 100%;
+    font-size: initial;
+    border: 1px solid #2ECC71;
+    border-radius: 0.5em;
+    outline: none;
+}
+
+div#buttonbar {justify-content: space-between;}
+
+div#error {display: none;}
+
+div#imagepicker {
+    height: 50%; 
+    display: flex;
+    flex-direction: column;
+    min-height: 14em;
+    margin-top: 2em;
+    flex-grow: 1;
+}
+
+image-picker {
+    border: 1px solid #2ECC71; 
+    border-radius: 0.5em;
+    padding: 1em;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+}   
+
+input ~ input {margin-top: 2em;}
+
+span#text {
+    font-size: smaller;
+    margin-bottom: 0.2em;
+}
+</style>
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
+    div#dialog {width: 98vw; height: 98vh; box-sizing: border-box;}
+    div#dialogcontent {margin: 0; height: calc(98vh - 9em); width: 100%;}
+    div#maincontainer {width: auto; height: calc(98vh - 10em);}
+    span#close {display:none;}
+    div#imagepicker {margin-bottom: 2em;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_LANDSCAPE_START}}}
+    div#dialog {height: 96vh;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_LANDSCAPE_END}}}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_PORTRAIT_START}}}
+    div#dialog {width: 96vw;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_PORTRAIT_END}}}
+
+<div id="maincontainer">
+    <input id="newroom" placeholder="{{i18n.RoomID}}" value="{{{oldroom}}}">
+    <input id="newpassword" type="password" placeholder="{{i18n.Password}}" value="{{{oldpassword}}}">
+    <div id="imagepicker">
+        <span id="text">{{i18n.MeetingImage}}</span>
+        <image-picker id="newimage" imagelist="{{imagelist}}" defaultvalue="{{oldimage}}"></image-picker>
+    </div>
+</div>
+
+<script>
+function onOK(element) {monkshu_env.components["dialog-box"].submit(element);}
+</script>
+    

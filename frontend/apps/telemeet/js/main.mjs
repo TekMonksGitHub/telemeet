@@ -9,8 +9,8 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-const TELEMEET_ID = "telemeet", ALL_ROOMS_CARDROLL = "allrooms", MY_ROOMS_CARDROLL = "myrooms", CONTEXT_MENU_ID = "maincontextmenu";
-const dialog = _ => monkshu_env.components['dialog-box'], contextmenu = _ => window.monkshu_env.components["context-menu"];
+const TELEMEET_ID = "telemeet", ALL_ROOMS_CARDROLL = "allrooms", MY_ROOMS_CARDROLL = "myrooms";
+const dialog = _ => monkshu_env.components['dialog-box'];
 let telemeetJoin;
 
 async function changeStatus(status) {
@@ -54,10 +54,13 @@ async function changeProfile(_element) {
 }
 
 async function createRoom(room, pass) {
+    const _random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+
     if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
     if ((!pass) || room.length==0) {_showMessage(await i18n.get("NoPass")); return;}
-    if (await window.monkshu_env.components["telemeet-join"].createRoom(room, pass, session.get(APP_CONSTANTS.USERID))) {
-        _reloadRoomLists(); return true; } else return false;
+    if (await window.monkshu_env.components["telemeet-join"].createRoom(room, pass, 
+        `${APP_CONSTANTS.APP_PATH}/img/meeting${_random(1,APP_CONSTANTS.NUM_ROOM_IMAGES)}.jpg`, 
+        session.get(APP_CONSTANTS.USERID))) { _reloadRoomLists(); return true; } else return false;
 }
 
 async function joinRoom(room, moderator) {
@@ -88,9 +91,14 @@ async function emailShareRoom(room, password) {
     window.location.href = `mailto:?subject=${await i18n.get("RoomLinkEmailSubject")}&body=${emailBody}`; 
 }
 
-async function editRoom(oldroom, newroom, newpassword) {
+async function editRoom(oldroom, oldpassword, oldimage) {
+    const imagelist = []; for (let i = 0; i < APP_CONSTANTS.NUM_ROOM_IMAGES; i++) imagelist.push(`${APP_CONSTANTS.APP_PATH}/img/meeting${i+1}.jpg`);
+    const {newroom, newpassword, newimage} = await dialog().showDialog(`${APP_CONSTANTS.DIALOGS_PATH}/editroom.html`, 
+        true, true, {oldroom, imagelist: JSON.stringify(imagelist), oldpassword, oldimage}, "dialog", 
+        ["newroom", "newpassword", "newimage"]); dialog().hideDialog("dialog");
+
     const telemeet = window.monkshu_env.components["telemeet-join"];
-    const result = await telemeet.editRoom(oldroom, newroom, newpassword, session.get(APP_CONSTANTS.USERID)); 
+    const result = await telemeet.editRoom(oldroom, newroom, newpassword, newimage, session.get(APP_CONSTANTS.USERID)); 
     if (result.result) {_reloadRoomLists(); return true;}
     else {_showMessage(await i18n.get(result.reason == "ROOMEXISTS" ? "RoomEditFailedExists" : "RoomEditFailedCheckLogs")); return false;}
 }
@@ -115,10 +123,8 @@ async function interceptPageLoadAndData(){
 
     router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {   // set the list of rooms
         const {allRooms, myRooms} = await _getRoomsLists();
-        data.pageData = encodeURIComponent(JSON.stringify({
-            allroomsList: encodeURIComponent(JSON.stringify(allRooms)),
-            myroomsList: encodeURIComponent(JSON.stringify(myRooms))
-        }));
+        data.allroomsList = encodeURIComponent(JSON.stringify(allRooms)); 
+        data.myroomsList = encodeURIComponent(JSON.stringify(myRooms));
         if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; 
     });
 }
@@ -143,7 +149,8 @@ async function _getRoomsLists() {
     const allRoomsHTML = await $$.requireText("./pages/allrooms.html"), 
         myRoomsHTML = await $$.requireText("./pages/myrooms.html"), 
         createRoomHTML = await $$.requireText("./pages/createroom.html"),
-        noMeetingsHTML = await $$.requireText("./pages/nomeetings.html");
+        noMeetingsHTML = await $$.requireText("./pages/nomeetings.html"), 
+        defaultRoomImage = `${APP_CONSTANTS.APP_PATH}/img/meeting1.jpg`;
 
     const allroomsCards = [], myroomsCards = [router.getMustache().render(createRoomHTML, {APP_CONSTANTS, 
         i18n: await i18n.getI18NObject()})];
@@ -152,12 +159,13 @@ async function _getRoomsLists() {
         //room.startTime = Date.now();    // remove - only for design testing.       
         if (room.startTime) allroomsCards.push(router.getMustache().render(allRoomsHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join"), moderatorName: room.moderatorName,
-            startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang()), APP_CONSTANTS}));   // active rooms only
+            startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang()), image: (room.image||defaultRoomImage),
+            APP_CONSTANTS}));   // active rooms only
 
         if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) myroomsCards.push(
             router.getMustache().render(myRoomsHTML, {room: room.name, moderator: room.moderator, 
                 joinText: await i18n.get("Start"), creationTime: new Date(room.creationtime).toLocaleString(i18n.getSessionLang()),
-                password: room.password, APP_CONSTANTS}));
+                password: room.password, image: (room.image||defaultRoomImage), APP_CONSTANTS}));
     } else LOG.error("Get rooms call failed.");
     if (allroomsCards.length == 0) allroomsCards.push(router.getMustache().render(noMeetingsHTML, {APP_CONSTANTS}));
     return {allRooms: allroomsCards, myRooms: myroomsCards};

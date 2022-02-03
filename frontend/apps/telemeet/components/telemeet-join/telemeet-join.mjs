@@ -79,11 +79,11 @@ const toggleRaisehand = element => _executeMeetCommand(element, "toggleRaiseHand
 const toggleTileVsFilmstrip = element => _executeMeetCommand(element, "toggleTileVsFilmstrip");
 const changeBackground = element => _executeMeetCommand(element, "changeBackground");
 
-async function createRoom(roomName, roomPass, id) {	
+async function createRoom(roomName, roomPass, roomImage, id) {	
 	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
 	if (roomPass.trim() == "") {_showError(await i18n.get("NoPass")); return;}
 
-	const req = {room: roomName, pass: roomPass, id};
+	const req = {room: roomName, pass: roomPass, image: roomImage, id};
 	const result = await apiman.rest(API_CREATEROOM, "POST", req, true, false);
 
 	if (result && !result.result) {_showError(await i18n.get(
@@ -225,9 +225,10 @@ function deleteRoom(room, id) {
 	return apiman.rest(API_DELETEROOM, "POST", {room, id}, true, false);
 }
 
-function editRoom(oldroom, newroom, newpassword, id) {
+function editRoom(oldroom, newroom, newpassword, newimage, id) {
 	LOG.info(`Editing room ${oldroom} due to moderator request.`);
-	return apiman.rest(API_EDITROOM, "POST", {oldroom, room: newroom, pass: newpassword, id}, true, false);
+	return apiman.rest(API_EDITROOM, "POST", {oldroom, room: newroom, pass: newpassword, image: newimage, id}, 
+		true, false);
 }
 
 const getRooms = id => apiman.rest(API_GETROOMS, "GET", {id}, true);

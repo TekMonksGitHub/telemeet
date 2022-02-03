@@ -51,8 +51,5 @@ export const APP_CONSTANTS = {  // application.mjs injects all the settings from
     },
 
     API_KEYS: {"*":"fheiwu98237hjief8923ydewjidw834284hwqdnejwr79389"},
-    KEY_HEADER: "X-API-Key",
-
-    MOBILE_MEDIA_QUERY_START: "<style>@media only screen and (max-width: 959px) {",
-    MOBILE_MEDIA_QUERY_END: "}</style>"
+    KEY_HEADER: "X-API-Key"
 }

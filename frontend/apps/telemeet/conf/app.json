@@ -2,5 +2,12 @@
     "TIMEOUT": 600000,
     "FW_HEARTBEATINTERVAL": 1000,
     "MIN_PASS_LENGTH": 8,
-    "ROOM_REFRESH_INTERVAL": 60000
+    "ROOM_REFRESH_INTERVAL": 60000,
+    "NUM_ROOM_IMAGES": 24,
+    "MOBILE_MEDIA_QUERY_START": "<style>@media only screen and (max-width: 959px) {",
+    "MOBILE_MEDIA_QUERY_END": "}</style>",
+    "MOBILE_MEDIA_QUERY_LANDSCAPE_START": "<style>@media only screen and (max-width: 959px) and (orientation: landscape) {",
+    "MOBILE_MEDIA_QUERY_LANDSCAPE_END": "}</style>",
+    "MOBILE_MEDIA_QUERY_PORTRAIT_START": "<style>@media only screen and (max-width: 959px) and (orientation: portrait) {",
+    "MOBILE_MEDIA_QUERY_PORTRAIT_END": "}</style>"
 }
