@@ -27,10 +27,9 @@ body, html {
 	margin: 0;
 	padding: 0;
 	font-family: 'Red Hat Text', sans-serif;
-	overflow: auto;
 	min-width: 880px;
 	min-height: 640px;
-	overflow: auto;
+	overflow: overlay;
 }
 
 body::after {
@@ -48,7 +47,7 @@ body::after {
 	bottom: 0;
 }
 
-span#header {
+span#desktopheader {
 	margin-top: 1em;
 	color: #41cf70;
 	font-size: 0.85em;
@@ -63,50 +62,50 @@ span#header {
     width: 100%;
 }
 
-span#header > img#textlogo {
+span#desktopheader > img#textlogo {
 	height: 1em;
 	user-select: none;
 	max-width: 20vw;
 	margin-left: 2em;
 }
 
-span#header > span#rightheader {
+span#desktopheader > span#rightheader {
 	height: 100%;
     display: inline-flex;
     align-items: center;
 }
 
-span#header > span#rightheader > span#name {
+span#desktopheader > span#rightheader > span#name {
 	padding-right: 4em;
 	font-family: "Red Hat Text";
 }
 
-span#header > span#rightheader > span-with-menu#status, span#header > span#rightheader > span-with-menu#gear {
+span#desktopheader > span#rightheader > span-with-menu#status, span#desktopheader > span#rightheader > span-with-menu#gear {
 	padding: 0em 2em 0em 4em;
 	display: inline-block;
 
 }
 
-span#header > span#rightheader > span#signoff {
+span#desktopheader > span#rightheader > span#signoff {
 	padding-left: 4em;
 	padding-right: 2em;
 	vertical-align: middle;
 }
 
-span#header > span#rightheader > span#signoff > img {
+span#desktopheader > span#rightheader > span#signoff > img {
 	height: 2em;
 	width: 2em;
 	vertical-align: middle;
 }
 
-span#header > span#rightheader > span#img {
+span#desktopheader > span#rightheader > span#img {
 	box-shadow: 1px 1px 20px -3px #41cf70;
 	border-radius: 50%;
 	display: inline-block;
 	vertical-align: middle;
 }
 
-span#header > span#rightheader > span#img > img {
+span#desktopheader > span#rightheader > span#img > img {
 	height: 3em;
 	width: 3em;
 	border-radius: 50%;
@@ -145,16 +144,32 @@ card-roll#myrooms {
     padding: 0.5em 1em 0.3em 1em;
 	width: min(66.67%, calc(100% - 14em))
 }
+
+span#mobilefooter {
+	width: 100%;
+    height: 4em;
+    position: fixed;
+    bottom: 0;
+    background: #4FB4ED;
+    border-radius: 0.2em 0.2em 0 0;
+	display: none;
+	flex-direction: row;
+	align-items: center;
+    padding: 1em;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
 </style>
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
 	body, html {min-width: 0; min-height: 0;}
-	span#header {display: none;}
+	span#desktopheader {display: none;}
 	div#maincontent {height: auto; margin: 0; padding: 1em 1em 0em 1em;}
 	card-roll#allrooms {height: 30vh; min-height: 15em;}
 	div#lowercontent {height: auto; flex-direction: column-reverse;}
-	telemeet-join#telemeet {margin: 0; height: 30vh; width: 100%; min-height: 40vw;}
+	telemeet-join#telemeet {margin: 0; height: 30vh; width: 100%; min-height: 40vw; margin-bottom: 5em;}
 	card-roll#myrooms {padding-bottom: 1em; margin-bottom: 2em; box-sizing: border-box; height: 30vh; 
 		width: 100%;  min-height: 15em;}
+	span#mobilefooter {display: flex;}
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
 
 <!doctype html>
@@ -183,7 +198,7 @@ card-roll#myrooms {
 </head>
 
 <body style="margin: 0%">
-<span id="header">
+<span id="desktopheader">
 	<img id="textlogo" src="./img/textlogo.png">
 	<span id="rightheader">
 	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
@@ -210,6 +225,13 @@ card-roll#myrooms {
 		<card-roll id="myrooms" background="#00C24E" value="{{{myroomsList}}}" title="{{i18n.MyRooms}}"></card-roll>
 	</div>
 </div>
+
+<span id="mobilefooter">
+	<img src="./img/mobilefooter_home.svg" onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MAIN_HTML)">
+	<img src="./img/mobilefooter_person.svg">
+	<img src="./img/mobilefooter_settings.svg">
+	<img src="./img/mobilefooter_logout.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()">
+</span>
 
 <dialog-box id="dialog"></dialog-box>
 
