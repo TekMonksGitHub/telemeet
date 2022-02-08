@@ -1,0 +1,3 @@
+div.menuitem {color: #4FB4ED;}
+div.menuitem:hover{background: #4FB4ED !important; color: white !important;}
+div.cancel {background-color: #4FB4ED !important;}

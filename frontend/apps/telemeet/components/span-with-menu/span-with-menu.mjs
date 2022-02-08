@@ -5,14 +5,22 @@
 import {util} from "/framework/js/util.mjs";
 import {monkshu_component} from "/framework/js/monkshu_component.mjs";
 
+const COMPONENT_PATH = util.getModulePath(import.meta);
+let conf;
+
 async function initialRender(element) {
 	const data = {}; data.content = _getContent(element);
-	if (element.getAttribute("styleBody")) data.styleBody = `<style>${element.getAttribute("styleBody")}</style>`;
+	if (element.getAttribute("styleBody")) data.styleBody = `<style>${await span_with_menu.getAttrValue(element, "styleBody")}</style>`;
 	const menuItems = element.children; if (menuItems && menuItems.length) {
 		data.menuitems = [];
 		for (const menuItem of menuItems) if (menuItem.nodeType == 1 && menuItem.tagName.toUpperCase() == "MENU-ITEM")
-			data.menuitems.push({entry: menuItem.innerText, onclick: menuItem.getAttribute("onclick")});
+			data.menuitems.push({entry: menuItem.getAttribute("label")||menuItem.innerText, onclick: menuItem.getAttribute("onclick")});
 	}
+	if (util.parseBoolean(element.getAttribute("bottommenu"))) data.risesFromBottom = true;
+
+	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`);
+	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) and (hover: none) {`;
+	data.MOBILE_MEDIA_QUERY_END = "}</style>";
 
 	span_with_menu.bindData(data, element.id);
 

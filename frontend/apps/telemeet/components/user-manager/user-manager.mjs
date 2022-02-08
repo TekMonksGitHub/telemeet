@@ -133,6 +133,8 @@ function _createData(host, users) {
 
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
 	if (users) data.users = users;
+	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
+	data.MOBILE_MEDIA_QUERY_END = "}</style>";
 
 	return data;
 }

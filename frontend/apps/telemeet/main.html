@@ -13,20 +13,20 @@ body::-webkit-scrollbar {
 body::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    margin: 40px;
-    border-radius: 10px !important;
+    margin: 5em;
+    border-radius: 1em !important;
 }
 
 body::-webkit-scrollbar-thumb {
     background-color: darkgrey !important;
-    border-radius: 10px !important;
+    border-radius: 1em !important;
     background-clip: padding-box;
 }
 
 body, html {
 	margin: 0;
 	padding: 0;
-	font-family: 'Red Hat Text', sans-serif;
+	font-family: 'Red Hat Text';
 	min-width: 880px;
 	min-height: 640px;
 	overflow: overlay;
@@ -49,9 +49,7 @@ body::after {
 
 span#desktopheader {
 	margin-top: 1em;
-	color: #41cf70;
-	font-size: 0.85em;
-	font-weight: 500;
+	color: #4FB4ED;
 	user-select: none;
     overflow: hidden;
     white-space: nowrap;
@@ -75,10 +73,7 @@ span#desktopheader > span#rightheader {
     align-items: center;
 }
 
-span#desktopheader > span#rightheader > span#name {
-	padding-right: 4em;
-	font-family: "Red Hat Text";
-}
+span#desktopheader > span#rightheader > span#name {padding-right: 4em;}
 
 span#desktopheader > span#rightheader > span-with-menu#status, span#desktopheader > span#rightheader > span-with-menu#gear {
 	padding: 0em 2em 0em 4em;
@@ -114,7 +109,7 @@ span#desktopheader > span#rightheader > span#img > img {
 div#maincontent {
 	background-color: transparent;
 	height: calc(100% - 9.6em);
-	margin: 1em 5em 3.5em 5em;
+	margin: 1em 5em 2.5em 5em;
 	display: flex;
 	flex-direction: column;
 }
@@ -203,16 +198,16 @@ span#mobilefooter {
 	<span id="rightheader">
 	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
 	<span id="img"><img src="./img/person.png"></span>
-	<span-with-menu id="status" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}">{{i18n.MyStatus}}&nbsp;&nbsp;▼
-		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Working')">{{i18n.Working}}</menu-item>
-		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Break')">{{i18n.OnBreak}}</menu-item>
-		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Offline')">{{i18n.Offline}}</menu-item>
+	<span-with-menu id="status" styleBody="url(./pages/menu.stylebody.css)">{{i18n.MyStatus}}&nbsp;&nbsp;▼
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Working')" label="{{i18n.Working}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Break')" label="{{i18n.OnBreak}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Offline')" label="{{i18n.Offline}}"></menu-item>
 	</span-with-menu>
-	<span-with-menu id="gear" styleBody="div.menuitem:hover{background: #41cf70 !important; color: white !important;}"><img src="./img/settings.svg" style="height: 2em;width: 2em;vertical-align: middle;">
-		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)">{{i18n.ChangePassword}}</menu-item>
-		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)">{{i18n.ChangePhone}}</menu-item>
-		<menu-item onclick="monkshu_env.apps.telemeet.main.changeProfile(this)">{{i18n.ChangeProfile}}</menu-item>
-		{{#admin}}<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)">{{i18n.ManageUsers}}</menu-item>{{/admin}}
+	<span-with-menu id="gear" styleBody="url(./pages/menu.stylebody.css)"><img src="./img/settings.svg" style="height: 2em;width: 2em;vertical-align: middle;">
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)" label="{{i18n.ChangePassword}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)" label="{{i18n.ChangePhone}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeProfile(this)" label="{{i18n.ChangeProfile}}"></menu-item>
+		{{#admin}}<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)" label="{{i18n.ManageUsers}}"></menu-item>{{/admin}}
 	</span-with-menu>
 	<span id="signoff"><img src="./img/poweroff.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()"></span>
 	</span>
@@ -228,8 +223,17 @@ span#mobilefooter {
 
 <span id="mobilefooter">
 	<img src="./img/mobilefooter_home.svg" onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MAIN_HTML)">
-	<img src="./img/mobilefooter_person.svg">
-	<img src="./img/mobilefooter_settings.svg">
+	<span-with-menu id="statusmobile" bottommenu="true" styleBody="url(./pages/menu.stylebody.css)"><img src="./img/mobilefooter_person.svg">
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Working')" label="{{i18n.Working}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Break')" label="{{i18n.OnBreak}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Offline')" label="{{i18n.Offline}}"></menu-item>
+	</span-with-menu>
+	<span-with-menu id="gearmobile" bottommenu="true" styleBody="url(./pages/menu.stylebody.css)"><img src="./img/mobilefooter_settings.svg">
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)" label="{{i18n.ChangePassword}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)" label="{{i18n.ChangePhone}}"></menu-item>
+		<menu-item onclick="monkshu_env.apps.telemeet.main.changeProfile(this)" label="{{i18n.ChangeProfile}}"></menu-item>
+		{{#admin}}<menu-item onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MANAGE_HTML)" label="{{i18n.ManageUsers}}"></menu-item>{{/admin}}
+	</span-with-menu>
 	<img src="./img/mobilefooter_logout.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()">
 </span>
 

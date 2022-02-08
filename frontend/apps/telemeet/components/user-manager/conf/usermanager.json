@@ -1,5 +1,6 @@
 {
     "roles":["user", "admin"],
     "userorg_session_variable": "userorg",
-    "user_role": "user"
+    "user_role": "user",
+    "mobileBreakpoint": "959px"
 }

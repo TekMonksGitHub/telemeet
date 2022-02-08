@@ -55,8 +55,8 @@ span#header > img {
 
 span#header > input, span#header > input:-internal-autofill-previewed, span#header > input:-internal-autofill-selected, span#header > input:focus {
     width: 80%;
-    border-radius: 20px;
-    padding: 10px;
+    border-radius: 0.5em;
+    padding: 1em;
     border: 1px solid #bbbbbb;
     outline: none;
     color: #444444;
@@ -67,9 +67,9 @@ span#header > input, span#header > input:-internal-autofill-previewed, span#head
 span#header > button {
     width: 20%;
     max-width: 10em;
-    padding: 10px 0px;
+    padding: 1em 0px;
     box-sizing: border-box;
-    border-radius: 20px;
+    border-radius: 0.5em;
     border-style: none;
     background-color: rgb(51, 204, 102);
     color: white;
@@ -115,6 +115,11 @@ div.user > img {
     margin-right: auto;
 }
 </style>
+{{{MOBILE_MEDIA_QUERY_START}}}
+span#header > input {margin-right: 0em; width: calc(100% - 9em);}
+span#header > button {padding: 0em 1em; width: 7em;}
+{{{MOBILE_MEDIA_QUERY_END}}}
+
 
 {{{styleBody}}}
 
