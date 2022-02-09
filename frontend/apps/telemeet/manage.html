@@ -25,25 +25,21 @@ body::after {
 	bottom: 0;
 }
 
-img#textlogo {
-	top: 30px;
-	left: 20px;
-	position: absolute;
-	height: 16px;
-	width: 100px;
+span#header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin: 0 2em 0 2em;
+	align-items: center;
 }
-
+img#textlogo {width: 6em;}
 span#middleheader {
-	top: 0px;
-	left: 140px;
-	background-color: #41cf70;
-	position: absolute;
-	width: calc(100% - 140px - 90px);
-	border-radius: 0px 0px 20px 20px;
+	background-color: #4FB4ED;
+	width: 80%;
+	border-radius: 0px 0px 1em 1em;
 	box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.25);
-	text-align: center;
 	color: #FFFFFF;
-	padding: 25px 0px 25px 0px;
+	padding: 1em 0 1em 0;
 	font-size: larger;
     cursor: default;
     user-select: none;
@@ -51,40 +47,22 @@ span#middleheader {
     flex-direction: row;
     justify-content: space-between;
 }
-
 span#middleheader > span#title {
 	flex-grow: 1;
 	white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+	text-align: center;
 }
-
 span#middleheader > span#close {
 	right: 20px;
 	font-size: x-large;
 	cursor: default;
 	padding-right: 1em;
 }
-
-span#rightheader {
-	top: 20px;
-	right: 20px;
-	position: absolute;
-	color: #41cf70;
-	font-size: 0.85em;
-	font-weight: 500;
-	font-family: "Raleway";
-}
-
-span#rightheader > span#signoff {
-	padding-right: 20px;
-	vertical-align: middle;
-}
-
-span#rightheader > span#signoff > img {
-	height: 30px;
-	width: 30px;
-	vertical-align: middle;
+img#logout {
+	height: 2em;
+	width: 2em;
 }
 
 div#maincontent {
@@ -141,10 +119,10 @@ span#mobilefooter {
 </head>
 
 <body style="margin: 0%">
-<img id="textlogo" src="./img/textlogo.png">
-<span id="middleheader"><span id="title">Manage Users</span><span id="close" onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MAIN_HTML)">X</span></span>
-<span id="rightheader">
-	<span id="signoff"><img src="./img/poweroff.svg" onclick="loginmanager.logout()"></span>
+<span id="header">
+<img id="textlogo" src="./img/textlogo.svg">
+<span id="middleheader"><span id="title">{{i18n.ManageUsers}}</span><span id="close" onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MAIN_HTML)">X</span></span>
+<img id="logout" src="./img/poweroff.svg" onclick="loginmanager.logout()">
 </span>
 
 <div id="maincontent">

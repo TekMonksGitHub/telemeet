@@ -48,7 +48,6 @@ body::after {
 }
 
 span#desktopheader {
-	margin-top: 1em;
 	color: #4FB4ED;
 	user-select: none;
     overflow: hidden;
@@ -57,53 +56,55 @@ span#desktopheader {
     display: inline-flex;
     align-items: center;
 	justify-content: space-between;
-    width: 100%;
+    width: calc(100% - 4em);
+	margin: 1em 2em 0 2em;
 }
 
-span#desktopheader > img#textlogo {
-	height: 1em;
-	user-select: none;
-	max-width: 20vw;
-	margin-left: 2em;
-}
+span#desktopheader > img#textlogo {width: 6em;}
 
 span#desktopheader > span#rightheader {
 	height: 100%;
     display: inline-flex;
+	flex-direction: row;
     align-items: center;
-}
-
-span#desktopheader > span#rightheader > span#name {padding-right: 4em;}
-
-span#desktopheader > span#rightheader > span-with-menu#status, span#desktopheader > span#rightheader > span-with-menu#gear {
-	padding: 0em 2em 0em 4em;
-	display: inline-block;
-
-}
-
-span#desktopheader > span#rightheader > span#signoff {
-	padding-left: 4em;
-	padding-right: 2em;
-	vertical-align: middle;
+	width: 80%;
+    justify-content: space-between;
 }
 
 span#desktopheader > span#rightheader > span#signoff > img {
 	height: 2em;
 	width: 2em;
-	vertical-align: middle;
 }
 
-span#desktopheader > span#rightheader > span#img {
+span#desktopheader > span#rightheader > span#greeting {
+	display: flex;
+    align-items: center;
+}
+span#desktopheader > span#rightheader > span#greeting > span-with-menu#status {
+	border-radius: 50%;
 	box-shadow: 1px 1px 20px -3px #41cf70;
-	border-radius: 50%;
-	display: inline-block;
-	vertical-align: middle;
 }
-
-span#desktopheader > span#rightheader > span#img > img {
-	height: 3em;
-	width: 3em;
-	border-radius: 50%;
+span#desktopheader > span#rightheader > span#greeting > span-with-menu#status.working {box-shadow: 1px 1px 20px -3px #41cf70}
+span#desktopheader > span#rightheader > span#greeting > span-with-menu#status.break {box-shadow: 1px 1px 20px -3px #bdbd00}
+span#desktopheader > span#rightheader > span#greeting > span-with-menu#status.offline {box-shadow: 1px 1px 20px -3px #cc0000}
+span#desktopheader > span#rightheader > span#greeting > span#name {margin-left: 1.5em;}
+span#desktopheader > span#rightheader > span#search {
+	width: 50%;
+    position: relative;
+}
+span#desktopheader > span#rightheader > span#search > input#searchtext {
+	padding: 0.8em;
+    outline: none;
+    border: 1px solid #4FB4ED;
+    border-radius: 0.5em;
+    width: 100%;
+    padding-left: 3em;
+}
+span#desktopheader > span#rightheader > span#search > img#searchimg {
+	position: absolute;
+    margin-left: 0.5em;
+    height: 2em;
+    top: 0.2em;
 }
 
 div#maincontent {
@@ -157,7 +158,10 @@ span#mobilefooter {
 </style>
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
 	body, html {min-width: 0; min-height: 0;}
-	span#desktopheader {display: none;}
+	span#desktopheader {margin: 0 1em 0 1em; width: calc(100% - 2em);}
+	span#rightheader {width: 100% !important;}
+	span#search {width: 100% !important;}
+	img#textlogo, span#greeting, span-with-menu#gear, span#signoff {display: none !important;}
 	div#maincontent {height: auto; margin: 0; padding: 1em 1em 0em 1em;}
 	card-roll#allrooms {height: 30vh; min-height: 15em;}
 	div#lowercontent {height: auto; flex-direction: column-reverse;}
@@ -194,15 +198,20 @@ span#mobilefooter {
 
 <body style="margin: 0%">
 <span id="desktopheader">
-	<img id="textlogo" src="./img/textlogo.png">
+	<img id="textlogo" src="./img/textlogo.svg">
 	<span id="rightheader">
-	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
-	<span id="img"><img src="./img/person.png"></span>
-	<span-with-menu id="status" styleBody="url(./pages/menu.stylebody.css)">{{i18n.MyStatus}}&nbsp;&nbsp;▼
+	<span id="greeting">
+	<span-with-menu id="status" styleBody="url(./pages/menu.stylebody.css)"><img src="./img/person.svg" style="width: 3em; height: 3em;">
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Working')" label="{{i18n.Working}}"></menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Break')" label="{{i18n.OnBreak}}"></menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changeStatus('Offline')" label="{{i18n.Offline}}"></menu-item>
 	</span-with-menu>
+	<span id="name">{{i18n.Hi}} {{#_org_monkshu_session}}username{{/_org_monkshu_session}}!</span>
+	</span>
+	<span id="search">
+		<img id="searchimg" src="./img/search.svg">
+		<input type="text" id="searchtext" placeholder="{{i18n.Search}}" onkeyup='monkshu_env.apps.telemeet.main.searchModified(this.value, this)'>
+	</span>
 	<span-with-menu id="gear" styleBody="url(./pages/menu.stylebody.css)"><img src="./img/settings.svg" style="height: 2em;width: 2em;vertical-align: middle;">
 		<menu-item onclick="monkshu_env.apps.telemeet.main.changePassword(this)" label="{{i18n.ChangePassword}}"></menu-item>
 		<menu-item onclick="monkshu_env.apps.telemeet.main.showOTPQRCode(this)" label="{{i18n.ChangePhone}}"></menu-item>

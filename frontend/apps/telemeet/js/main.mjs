@@ -9,18 +9,23 @@ import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 
-const TELEMEET_ID = "telemeet", ALL_ROOMS_CARDROLL = "allrooms", MY_ROOMS_CARDROLL = "myrooms";
+const TELEMEET_ID = "telemeet", ALL_ROOMS_CARDROLL = "allrooms", MY_ROOMS_CARDROLL = "myrooms", STATUS_SPAN = "span-with-menu#status";
 const dialog = _ => monkshu_env.components['dialog-box'];
 let telemeetJoin;
 
 async function changeStatus(status) {
     const req = {id: session.get(APP_CONSTANTS.USERID), status};
     const resp = await apiman.rest(APP_CONSTANTS.API_STATUS, "POST", req, true, false);
+
     if (!(resp && resp.result)) LOG.error("Status update failed");
-    else switch (status) {
-        case "Working": document.querySelector("#img").style.boxShadow = "1px 1px 20px -3px #41cf70"; break;
-        case "Break": document.querySelector("#img").style.boxShadow = "1px 1px 20px -3px #bdbd00"; break;
-        case "Offline": document.querySelector("#img").style.boxShadow = "1px 1px 20px -3px #cc0000"; break;
+    else {
+        const shadowElement = document.querySelector(STATUS_SPAN);
+        for (const className of shadowElement.classList) shadowElement.classList.remove(className);
+        switch (status) {
+            case "Working": shadowElement.classList.add("working"); break;
+            case "Break": shadowElement.classList.add("break"); break;
+            case "Offline": shadowElement.classList.add("offline"); break;
+        }
     }
 }
 
@@ -122,16 +127,18 @@ async function interceptPageLoadAndData(){
     });
 
     router.addOnLoadPageData(APP_CONSTANTS.MAIN_HTML, async data => {   // set the list of rooms
-        const {allRooms, myRooms} = await _getRoomsLists();
+        const {allRooms, myRooms} = await _getRoomsLists(true);
         data.allroomsList = encodeURIComponent(JSON.stringify(allRooms)); 
         data.myroomsList = encodeURIComponent(JSON.stringify(myRooms));
         if (securityguard.getCurrentRole()==APP_CONSTANTS.ADMIN_ROLE) data.admin = true; 
     });
 }
 
-async function _reloadRoomLists() {
+const searchModified = _ => _reloadRoomLists(false);
+
+async function _reloadRoomLists(callbackend) {
     const cardRoll = window.monkshu_env.components["card-roll"];
-    const {allRooms, myRooms} = await _getRoomsLists();
+    const {allRooms, myRooms} = await _getRoomsLists(callbackend != undefined && callbackend == false ? false : true);
     const allroomsCardRoll = cardRoll.getHostElementByID(ALL_ROOMS_CARDROLL);
     const myroomsCardRoll = cardRoll.getHostElementByID(MY_ROOMS_CARDROLL);
 
@@ -145,7 +152,7 @@ async function _getTOTPQRCode(key) {
 	    `otpauth://totp/${title}?secret=${key}&issuer=TekMonks&algorithm=sha1&digits=6&period=30`, (_, data_url) => resolve(data_url)));
 }
 
-async function _getRoomsLists() {
+async function _getRoomsLists(callbackend) {
     const allRoomsHTML = await $$.requireText("./pages/allrooms.html"), 
         myRoomsHTML = await $$.requireText("./pages/myrooms.html"), 
         createRoomHTML = await $$.requireText("./pages/createroom.html"),
@@ -154,10 +161,18 @@ async function _getRoomsLists() {
 
     const allroomsCards = [], myroomsCards = [router.getMustache().render(createRoomHTML, {APP_CONSTANTS, 
         i18n: await i18n.getI18NObject()})];
-    const roomsResult = await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString());
+    const roomsResult = callbackend ? await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString()) :
+        session.get("__telemeet_main_roomlists");
+    session.set("__telemeet_main_roomlists", roomsResult); 
+    const _passesFilter = (filter, room) => filter ? room.moderator.toLowerCase().includes(filter.toLowerCase()) ||
+        room.moderatorName.toLowerCase().includes(filter.toLowerCase()) ||
+        room.name.toLowerCase().includes(filter.toLowerCase()) : true;
+
     if (roomsResult?.result) for (const room of roomsResult.rooms) { 
+        const searchbox = document.querySelector("input#searchtext"), 
+            filter = searchbox && searchbox.value.trim() != "" ? searchbox.value : undefined;
         //room.startTime = Date.now();    // remove - only for design testing.       
-        if (room.startTime) allroomsCards.push(router.getMustache().render(allRoomsHTML, {room: room.name, 
+        if (room.startTime && _passesFilter(filter, room)) allroomsCards.push(router.getMustache().render(allRoomsHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join"), moderatorName: room.moderatorName,
             startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang()), image: (room.image||defaultRoomImage),
             APP_CONSTANTS}));   // active rooms only
@@ -178,4 +193,5 @@ const _getConfirmation = async message => {
 }
 
 export const main = {changeStatus, changePassword, showOTPQRCode, showLoginMessages, changeProfile, 
-    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, linkShareRoom, emailShareRoom, editRoom};
+    interceptPageLoadAndData, joinRoom, createRoom, deleteRoom, linkShareRoom, emailShareRoom, editRoom,
+    searchModified};
