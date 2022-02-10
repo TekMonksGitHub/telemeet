@@ -94,7 +94,7 @@ span#mobilefooter {
     div#maincontent {padding: 0 1em; height: calc(100% - 4em); position: inherit; top: 0;}
 	img#textlogo {display: none;}
 	span#middleheader {display: none;}
-	span#rightheader {display: none;}
+	img#logout {display: none;}
 	span#mobilefooter {display: flex;}
 {{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
 
@@ -109,10 +109,10 @@ span#mobilefooter {
 
 	<script type="module">
 	import {user_manager} from "./components/user-manager/user-manager.mjs";
-	import {loginmanager} from "./js/loginmanager.mjs"; window.loginmanager = loginmanager;
 	import "./components/span-with-menu/span-with-menu.mjs";
 	import "./components/dialog-box/dialog-box.mjs";
 	import {main} from "./js/main.mjs"; monkshu_env.apps.telemeet.main = main; 
+	import {loginmanager} from "./js/loginmanager.mjs"; monkshu_env.apps.telemeet.loginmanager = loginmanager;
 	</script>
 		
 	<title>{{i18n.Title}}</title>
@@ -122,7 +122,7 @@ span#mobilefooter {
 <span id="header">
 <img id="textlogo" src="./img/textlogo.svg">
 <span id="middleheader"><span id="title">{{i18n.ManageUsers}}</span><span id="close" onclick="monkshu_env.frameworklibs.router.navigate(APP_CONSTANTS.MAIN_HTML)">X</span></span>
-<img id="logout" src="./img/poweroff.svg" onclick="loginmanager.logout()">
+<img id="logout" src="./img/poweroff.svg" onclick="monkshu_env.apps.telemeet.loginmanager.logout()">
 </span>
 
 <div id="maincontent">

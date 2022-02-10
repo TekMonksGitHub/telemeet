@@ -77,6 +77,18 @@ span#toggler {
 .tgl-ios:checked + .tgl-btn:active {box-shadow: none;}
 .tgl-ios:checked + .tgl-btn:active:after {margin-left: -.8em;}
 </style>
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_START}}}
+    div#dialog {width: 98vw; height: 98vh; box-sizing: border-box; padding: 2em;}
+    body {width: 100%;}
+    span#close {display:none;}
+    div#buttonbar {position: absolute; width: calc(100% - 4em); bottom: 2em; justify-content: space-between;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_END}}}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_LANDSCAPE_START}}}
+    div#dialog {height: 96vh;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_LANDSCAPE_END}}}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_PORTRAIT_START}}}
+    div#dialog {width: 96vw;}
+{{{APP_CONSTANTS.MOBILE_MEDIA_QUERY_PORTRAIT_END}}}
 
 <input id="p1" type="password" placeholder="{{i18n.NewPassword}}" onkeypress="this.onchange();" 
     onpaste="this.onchange();" oninput="this.onchange();" onchange='pwFieldsChanged(this)'>

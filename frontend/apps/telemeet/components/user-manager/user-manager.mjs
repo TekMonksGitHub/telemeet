@@ -82,7 +82,7 @@ async function addUser(element) {
 async function editUser(name, id, role, approved, element) {
 	const roles = []; for (const thisrole of conf.roles) roles.push({label:await i18n.get(thisrole), value: thisrole, selected: thisrole==role?true:undefined});
 	monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/addeditprofile.html`, true, true, 
-			{name, id, role, approved:approved==1?true:undefined, roles}, "dialog", 
+			{name, id, role, approved:approved==1?true:undefined, roles, CONF:conf}, "dialog", 
 			["name", "id", "role", "approved", "old_id"], async ret => {
 		
 		if (ret.approved.toLowerCase() == "true") ret.approved = true; else ret.approved = false;
@@ -133,18 +133,17 @@ function _createData(host, users) {
 
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${host.getAttribute("styleBody")}</style>`;
 	if (users) data.users = users;
-	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
-	data.MOBILE_MEDIA_QUERY_END = "}</style>";
+	data.CONF = conf;
 
 	return data;
 }
 
 const _showError = async error => { await monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/error.html`, 
-	true, false, {error}, "dialog", []); monkshu_env.components['dialog-box'].hideDialog("dialog"); }
+	true, false, {error, CONF:conf}, "dialog", []); monkshu_env.components['dialog-box'].hideDialog("dialog"); }
 const _showMessage = async message => { await monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/message.html`, 
-	true, false, {message}, "dialog", []); monkshu_env.components['dialog-box'].hideDialog("dialog"); }
+	true, false, {message, CONF:conf}, "dialog", []); monkshu_env.components['dialog-box'].hideDialog("dialog"); }
 const _execOnConfirm = (message, cb) => monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/message.html`, 
-	true, true, {message}, "dialog", [], _=>{monkshu_env.components['dialog-box'].hideDialog("dialog"); cb();});
+	true, true, {message, CONF:conf}, "dialog", [], _=>{monkshu_env.components['dialog-box'].hideDialog("dialog"); cb();});
 
 export const user_manager = {trueWebComponentMode: true, elementConnected, userMenuClicked, addUser, editUser, 
 	searchModified, elementRendered}
