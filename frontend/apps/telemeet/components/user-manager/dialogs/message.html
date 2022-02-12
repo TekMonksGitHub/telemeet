@@ -10,19 +10,21 @@ span#message {
     width: 300px;
     display: inline-block;
 }
+
+div#error {display: none;}
 </style>
 {{{CONF.MOBILE_MEDIA_QUERY_START}}}
-    div#dialog {width: 98vw; height: 98vh; box-sizing: border-box; padding: 2em;}
+    div#dialog {box-sizing: border-box; padding: 2em;}
     body {width: 100%; min-width: 0;}
     span#close {display:none;}
     div#buttonbar {position: absolute; width: calc(100% - 4em); bottom: 2em; justify-content: space-between;}
     span#message {width: 100%;}
 {{{CONF.MOBILE_MEDIA_QUERY_END}}}
 {{{CONF.MOBILE_MEDIA_QUERY_LANDSCAPE_START}}}
-    div#dialog {height: 14em; width: 50vw;}
+    div#dialog {min-height: 12em; width: 50vw;}
 {{{CONF.MOBILE_MEDIA_QUERY_LANDSCAPE_END}}}
 {{{CONF.MOBILE_MEDIA_QUERY_PORTRAIT_START}}}
-    div#dialog {width: 96vw; height: 14em;}
+    div#dialog {width: 96vw; min-height: 12em;}
 {{{CONF.MOBILE_MEDIA_QUERY_PORTRAIT_END}}}
 
 <span id="message">{{message}}</span>

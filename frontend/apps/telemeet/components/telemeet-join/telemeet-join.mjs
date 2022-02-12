@@ -7,7 +7,6 @@ import {webrtc} from "./lib/webrtc.mjs";
 import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 import {fwcontrol} from "./lib/fwcontrol.mjs";
-import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
 import {loginmanager} from "../../js/loginmanager.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
@@ -22,12 +21,11 @@ const API_ENTERROOM = APP_CONSTANTS.API_PATH+"/enterroom", API_CREATEROOM = APP_
 	API_EDITROOM = APP_CONSTANTS.API_PATH+"/editroom", API_DELETEROOM = APP_CONSTANTS.API_PATH+"/deleteroom", 
 	API_EXITROOM = APP_CONSTANTS.API_PATH+"/exitroom", API_GETROOMS = APP_CONSTANTS.API_PATH+"/getrooms", 
 	DIV_TELEMEET = "div#telemeet", HOSTID_CONTEXT_MENU = "contextmenu", HOSTID_POSTIONABLE_HTML = "positionablehtml";
-let conf, mediaQueryStart, mediaQueryEnd;
+let conf;
 
 
 async function elementConnected(host) {
 	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`); 
-	mediaQueryStart = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`; mediaQueryEnd = "}</style>";
 	const data = {}; 
 
 	if (host.getAttribute("styleBody")) data.styleBody = `<style>${await telemeet_join.getAttrValue(host, "styleBody")}</style>`;
@@ -37,7 +35,7 @@ async function elementConnected(host) {
 	data.pass = host.getAttribute("pass")||"";
 	data["show-joiner-dialog"] = host.getAttribute("showJoinerDialog")?.toLowerCase() == "true" ? "true" : undefined;
 	if (!data["show-joiner-dialog"]) data.styleBody = (data.styleBody||"")+"<style>div#videodiv{height: 100%}</style>";
-	data.MOBILE_MEDIA_QUERY_START = mediaQueryStart; data.MOBILE_MEDIA_QUERY_END = mediaQueryEnd;
+	data.MOBILE_MEDIA_QUERY_START = conf.MOBILE_MEDIA_QUERY_START; data.MOBILE_MEDIA_QUERY_END = conf.MOBILE_MEDIA_QUERY_END;
 
 	telemeet_join.setDataByHost(host, data);
 
@@ -162,8 +160,7 @@ async function meetSettings(element, fromMeet) {
 	const data = await webrtc.getMediaDevices(); 
 	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
 	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
-	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) {`;
-	data.MOBILE_MEDIA_QUERY_END = "}</style>";
+	data.CONF = conf;
 
 	const memory = _getRoomMemory(element), exitListener = _ => { DIALOG.hideDialog("telemeetdialog"); 
 		webrtc.removeRoomExitListener(exitListener, memory); };
@@ -192,8 +189,8 @@ async function showChat(element, event, dontClose) {
 	const unsentMessage = _getRoomMemory(element).chatUnsentMessage || "";
 	await positionable_html.show(HOSTID_POSTIONABLE_HTML, chatHTML, event.x, event.y, "-20vw", "1em", 
 		{...util.clone(chats), unsentMessage, hostTelemeetJoinID: telemeet_join.getHostElementID(element), 
-			component_path: COMPONENT_PATH, MOBILE_MEDIA_QUERY_START: mediaQueryStart, 
-			MOBILE_MEDIA_QUERY_END: mediaQueryEnd}, true);
+			component_path: COMPONENT_PATH, MOBILE_MEDIA_QUERY_START: conf.MOBILE_MEDIA_QUERY_START, 
+			MOBILE_MEDIA_QUERY_END: conf.MOBILE_MEDIA_QUERY_END}, true);
 	for (const chat of chats.items) chat.isNew = false;	// all so far are now shown and no longer new
 	telemeet_join.getShadowRootByContainedElement(element).querySelector("img#chatcontrol").src = `${COMPONENT_PATH}/img/nochat.svg`;
 	const chatsDiv = positionable_html.getShadowRootByHostId(HOSTID_POSTIONABLE_HTML).querySelector("div#chats");
@@ -213,7 +210,7 @@ async function showNotifications(element, event) {
 	const notifications = _getRoomMemory(element).notifications || {items: [{subject: await i18n.get("NoNotifications"), 
 		message: await i18n.get("NoNewNotifications"), isNew: false}]};
 	context_menu.showMenu(HOSTID_CONTEXT_MENU, notificationsHTML, event.x, event.y, "-20vw", "1em", 
-		{...util.clone(notifications), MOBILE_MEDIA_QUERY_START: mediaQueryStart, MOBILE_MEDIA_QUERY_END: mediaQueryEnd}, 
+		{...util.clone(notifications), MOBILE_MEDIA_QUERY_START: conf.MOBILE_MEDIA_QUERY_START, MOBILE_MEDIA_QUERY_END: conf.MOBILE_MEDIA_QUERY_END}, 
 		true, true, true);
 	for (const notification of notifications.items) notification.isNew = false;	// all so far are now shown and no longer new
 	telemeet_join.getShadowRootByContainedElement(element).querySelector("img#notificationscontrol").src = 
@@ -263,7 +260,7 @@ function _stopMike(shadowRoot) {
 	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/nomike.svg`;
 }
 
-const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error}, 
+const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, conf}, 
 	"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
 
 function _resetRoomUI() {
