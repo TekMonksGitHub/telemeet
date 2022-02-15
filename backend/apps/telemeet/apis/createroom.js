@@ -23,7 +23,7 @@ exports.doService = async jsonReq => {
     // why? because only set will propogate it globally. that's how the distributed memory works
     DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);  
 
-    return {result: true, isModerator: true, url: `${telemeet.url}/${jsonReq.room}`};
+    return {result: true, isModerator: true, url: `${telemeet.webrtc_url}/${jsonReq.room}`};
 }
 
 const validateRequest = jsonReq => (jsonReq && jsonReq.room && jsonReq.pass && jsonReq.id);

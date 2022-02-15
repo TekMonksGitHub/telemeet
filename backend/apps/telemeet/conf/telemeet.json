@@ -1,5 +1,5 @@
 {
-    "url": "https://telemeetwebrtc1.eastus.cloudapp.azure.com/",
+    "webrtc_url": "https://telemeetwebrtc1.eastus.cloudapp.azure.com/",
     "fwHost": "telemeetwebrtc1.eastus.cloudapp.azure.com",
     "fwEnabled": false,
     "fwPort": 1003,

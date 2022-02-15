@@ -26,7 +26,7 @@ exports.doService = async jsonReq => {
 	DISTRIBUTED_MEMORY.set(APP_CONSTANTS.ROOMSKEY, telemeetRooms);  
 
 	return {result, reason, isModerator: jsonReq.id == telemeetRooms[roomID].moderator, 
-		url: `${telemeet.url}/${jsonReq.room}`, startTime: telemeetRooms[roomID].startTime, 
+		url: `${telemeet.webrtc_url}/${jsonReq.room}`, startTime: telemeetRooms[roomID].startTime, 
 		totalSessions: Object.keys(telemeetRooms[roomID].participants[jsonReq.id].sessions).length}; 
 }
 
