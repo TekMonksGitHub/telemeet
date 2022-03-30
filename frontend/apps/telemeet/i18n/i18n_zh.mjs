@@ -138,6 +138,7 @@ export const i18n = {
 "OpenGoogleAuthenticator": "Open Authenticator",
 "Speakers": "Speakers",
 "Microphone": "Microphone",
+"AudioInOutDevice": "Audio Device",
 "VideoCamera": "Video Camera",
 "MyRooms": "My Rooms",
 "MeetingImage": "Meeting image"
