@@ -67,6 +67,8 @@ async function getMediaDevices() {
 	} catch (err) { LOG.error("Error getting AV device list "+err); return null; }
 }
 
+const isSpeakerSelectionSupported = _ => document.createElement('audio').setSinkId != undefined;
+
 const addRoomEntryListener = (listener, memory) => memory.roomEntryListeners ?
 	memory.roomEntryListeners.push(listener) : memory.roomEntryListeners=[listener];
 const addRoomExitListener = (listener, memory) => memory.roomExitListeners ?
@@ -133,4 +135,4 @@ function _watchFlagAndCallOnTimeout(memory, flag, functions, timeout) {
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
 	addScreenShareListener, addSelfRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, 
 	toggleShareScreen, toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices, 
-	setAVDevices, addNotificationListener, addChatListener, sendMeetingMessage};
+	isSpeakerSelectionSupported, setAVDevices, addNotificationListener, addChatListener, sendMeetingMessage};

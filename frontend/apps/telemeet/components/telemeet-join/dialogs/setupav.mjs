@@ -34,7 +34,7 @@ async function startrecording(containedElement) {
         });
         mediaRecorder.start(); env.recording = true; setTimeout(_=>{if (env.recording) stoprecording(containedElement)}, MAX_RECORD_TIME);
     } catch (err) {
-        LOG.error(err);
+        LOG.error(err.toString());
     }
 }
 
@@ -50,10 +50,15 @@ async function playrecording(containedElement) {
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
     const videoOut = shadowRoot.querySelector(VIDEO_INOUT), videoHelp = shadowRoot.querySelector(VIDEO_HELP); 
     videoOut.style.display = "block"; videoHelp.style.display = "none";
-    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await videoOut.setSinkId(selectedAudioOut.value.split(",")[1]);
-    const playButton = shadowRoot.querySelector(PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(STOP_PLAY_BUTTON);
-    playButton.style.display = "none"; videoOut.currentTime = 0; videoOut.muted = false; videoOut.volume = 0.5; 
-    videoOut.play(); videoOut.addEventListener("ended", _=> stopplayrecording(containedElement)); stopPlayButton.style.display = "inline"; 
+    try {
+        const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); 
+        if (videoOut.setSinkId) await videoOut.setSinkId(_getDevID(selectedAudioOut));  // android chrome won't allow this
+        const playButton = shadowRoot.querySelector(PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(STOP_PLAY_BUTTON);
+        playButton.style.display = "none"; videoOut.currentTime = 0; videoOut.muted = false; videoOut.volume = 0.5; 
+        videoOut.play(); videoOut.addEventListener("ended", _=> stopplayrecording(containedElement)); stopPlayButton.style.display = "inline"; 
+    } catch (err) {
+        LOG.error(err.toString());
+    }
 }
 
 function stopplayrecording(containedElement) {
@@ -79,21 +84,27 @@ async function restartAVTracks(containedElement) {
     const selectedAudioIn = shadowRoot.querySelector(SELECTOR_MIKE);
     const selectedVideoIn = shadowRoot.querySelector(SELECTOR_CAM);
     const videoIn = shadowRoot.querySelector(VIDEO_INOUT);
-    const constraints = { audio: {deviceId: {exact: selectedAudioIn.value.split(",")[1] }}, 
-        video: {deviceId: {exact: selectedVideoIn.value.split(",")[1] }} };
+    const constraints = { audio: {deviceId: {exact: _getDevID(selectedAudioIn) }}, 
+        video: {deviceId: {exact: _getDevID(selectedVideoIn) }} };
 
     try {
         const stream = await window.navigator.mediaDevices.getUserMedia(constraints);
         videoIn.srcObject = stream; videoIn.muted = true; videoIn.play(); 
         return stream;
-    } catch (err) { LOG.error(err); return null; }
+    } catch (err) { 
+        LOG.error(`Error opening AV devices. Error is ${err.toString()}, the constraints are ${JSON.stringify(constraints)}`); 
+        LOG.error(`The audio device label,deviceID is ${selectedAudioIn.value}`); 
+        LOG.error(`The video device label,deviceID is ${selectedVideoIn.value}`); 
+        return null; 
+    }
 }
 
 async function playspeakers(containedElement) {
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
     const audioOut = shadowRoot.querySelector(AUDIO_OUT);
     const playButton = shadowRoot.querySelector(AUDIO_PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(AUDIO_STOP_BUTTON);
-    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); await audioOut.setSinkId(selectedAudioOut.value.split(",")[1]);
+    const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); 
+    if (audioOut.setSinkId) await audioOut.setSinkId(_getDevID(selectedAudioOut));  // android chrome won't allow this
     playButton.style.display = "none"; audioOut.currentTime = 0; audioOut.volume = 0.5; audioOut.play(); stopPlayButton.style.display = "inline";
     audioOut.addEventListener("ended", _=> stopplayspeakers(containedElement)); 
 }
@@ -109,6 +120,9 @@ const _getEnv = containedElement => {
     if (DIALOG.getMemoryByContainedElement(containedElement).setupavEnv) DIALOG.getMemoryByContainedElement(containedElement).setupavEnv;
     else DIALOG.getMemoryByContainedElement(containedElement).setupavEnv = {}; return DIALOG.getMemoryByContainedElement(containedElement).setupavEnv;
 }
+
+const _getDevID = optionElement => optionElement.options[optionElement.selectedIndex].value.substring(
+    optionElement.options[optionElement.selectedIndex].text.length+1);
 
 export const setupav = {init, startrecording, stoprecording, playrecording, stopplayrecording, stopAVTracks, playspeakers,
     stopplayspeakers};

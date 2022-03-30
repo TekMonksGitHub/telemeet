@@ -22,6 +22,7 @@ async function signin(id, pass, otp) {
         session.set(APP_CONSTANTS.USERORG, resp.org);
         session.set("__org_telemeet_cuser_pass", pass);
         securityguard.setCurrentRole(resp.role);
+        LOG.info(`Login succeeded for ${id}`);
         return true;
     } else {LOG.error(`Login failed for ${id}`); return false;}
 }
@@ -55,11 +56,12 @@ const addLogoutListener = listener => logoutListeners.push(listener);
 
 async function logout(dueToTimeout) {
     for (const listener of logoutListeners) await listener();
+    _stopAutoLogoutTimer(); 
 
     const savedLang = session.get($$.MONKSHU_CONSTANTS.LANG_ID);
-    _stopAutoLogoutTimer(); session.destroy(); 
-    securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
-    session.set($$.MONKSHU_CONSTANTS.LANG_ID, savedLang);
+    session.remove(APP_CONSTANTS.USERID); session.remove(APP_CONSTANTS.USERNAME);
+    session.remove(APP_CONSTANTS.USERORG); session.remove("__org_telemeet_cuser_pass");
+    session.set($$.MONKSHU_CONSTANTS.LANG_ID, savedLang);     securityguard.setCurrentRole(APP_CONSTANTS.GUEST_ROLE);
     
     if (dueToTimeout) application.main(APP_CONSTANTS.ERROR_HTML, {error: await i18n.get("Timeout_Error"), 
         button: await i18n.get("Relogin"), link: router.encodeURL(APP_CONSTANTS.LOGIN_HTML)}); 

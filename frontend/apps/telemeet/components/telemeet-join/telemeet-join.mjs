@@ -160,7 +160,7 @@ async function meetSettings(element, fromMeet) {
 	const data = await webrtc.getMediaDevices(); 
 	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
 	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
-	data.CONF = conf;
+	data.CONF = conf; if (!webrtc.isSpeakerSelectionSupported()) data.noSpeakerSelectionAllowed = true;
 
 	const memory = _getRoomMemory(element), exitListener = _ => { DIALOG.hideDialog("telemeetdialog"); 
 		webrtc.removeRoomExitListener(exitListener, memory); };
@@ -260,7 +260,7 @@ function _stopMike(shadowRoot) {
 	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/nomike.svg`;
 }
 
-const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, conf}, 
+const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, CONF: conf}, 
 	"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
 
 function _resetRoomUI() {

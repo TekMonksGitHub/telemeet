@@ -26,7 +26,11 @@ async function elementConnected(element) {
 	} else password_box.data = data;
 }
 
-const elementRendered = async element => _attachFormValidationControls(element);
+async function elementRendered(host) {
+	_attachFormValidationControls(host);
+	const eyeElement = password_box.getShadowRootByHost(host).querySelector("img#eye");
+	eyeElement.addEventListener("contextmenu", event => event.preventDefault());
+}
 
 function onKeyUp(element, _event) {
 	const hostElement = password_box.getShadowRootByContainedElement(element).host;

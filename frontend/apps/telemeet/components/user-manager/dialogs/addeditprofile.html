@@ -89,16 +89,16 @@ select {
 .tgl-ios:checked + .tgl-btn:active:after {margin-left: -.8em;}
 </style>
 {{{CONF.MOBILE_MEDIA_QUERY_START}}}
-    div#dialog {width: 98vw; height: 98vh; box-sizing: border-box; padding: 2em;}
-    body {width: 100%; min-width: 0;}
+    div#dialog {width: 98%; height: 98%; box-sizing: border-box; padding: 2em;}
+    body {width: 100%; min-width: 0; height: 100%;}
     span#close {display:none;}
     div#buttonbar {position: absolute; width: calc(100% - 4em); bottom: 2em; justify-content: space-between;}
 {{{CONF.MOBILE_MEDIA_QUERY_END}}}
 {{{CONF.MOBILE_MEDIA_QUERY_LANDSCAPE_START}}}
-    div#dialog {height: 96vh;}
+    div#dialog {height: 96%;}
 {{{CONF.MOBILE_MEDIA_QUERY_LANDSCAPE_END}}}
 {{{CONF.MOBILE_MEDIA_QUERY_PORTRAIT_START}}}
-    div#dialog {width: 96vw;}
+    div#dialog {width: 96%;}
 {{{CONF.MOBILE_MEDIA_QUERY_PORTRAIT_END}}}
 
 <input type="text" id="name" placeholder="{{i18n.Name}}" value="{{name}}" required 

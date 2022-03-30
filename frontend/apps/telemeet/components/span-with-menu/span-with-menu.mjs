@@ -19,8 +19,7 @@ async function initialRender(element) {
 	if (util.parseBoolean(element.getAttribute("bottommenu"))) data.risesFromBottom = true;
 
 	conf = await $$.requireJSON(`${COMPONENT_PATH}/conf/config.json`);
-	data.MOBILE_MEDIA_QUERY_START = `<style>@media only screen and (max-width: ${conf.mobileBreakpoint}) and (hover: none) {`;
-	data.MOBILE_MEDIA_QUERY_END = "}</style>";
+	for (const key in conf) data[key] = conf[key];
 
 	span_with_menu.bindData(data, element.id);
 

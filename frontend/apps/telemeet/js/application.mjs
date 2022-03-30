@@ -2,23 +2,29 @@
  * (C) 2015 TekMonks. All rights reserved.
  * License: See enclosed license.txt file.
  */
- 
+
 import {router} from "/framework/js/router.mjs";
 import {session} from "/framework/js/session.mjs";
 import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
+import {APP_CONSTANTS as AUTO_APP_CONSTANTS} from "./constants.mjs";
+
+const API_GETREMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/getremotelog", API_REMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/log";
 
 const init = async _ => {
 	window.monkshu_env.apps.telemeet = {};
-	window.APP_CONSTANTS = (await import ("./constants.mjs")).APP_CONSTANTS;
+	window.APP_CONSTANTS = AUTO_APP_CONSTANTS;
 	window.LOG = window.monkshu_env.frameworklibs.log;
 	if (!session.get($$.MONKSHU_CONSTANTS.LANG_ID)) session.set($$.MONKSHU_CONSTANTS.LANG_ID, "en");
 	securityguard.setPermissionsMap(APP_CONSTANTS.PERMISSIONS_MAP);
 	securityguard.setCurrentRole(securityguard.getCurrentRole() || APP_CONSTANTS.GUEST_ROLE);
+	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER); 
+	const remoteLogFlag = ((await apiman.rest(API_GETREMOTELOG, "GET", {})).remote_log||false);
+	LOG.setRemote(remoteLogFlag, API_REMOTELOG);
 }
 
 const main = async (desiredURL, desiredData) => {
-	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER); await _addPageLoadInterceptors(); await _readConfig();
+	await _addPageLoadInterceptors(); await _readConfig();
 	const decodedURL = new URL(desiredURL || router.decodeURL(window.location.href)), justURL = decodedURL.href.split("?")[0];
 
 	if (justURL == APP_CONSTANTS.INDEX_HTML) {
