@@ -32,7 +32,7 @@ const main = async (desiredURL, desiredData) => {
 		if (test || test == "") router.loadPage(`${APP_CONSTANTS.LOGIN_ROOM_HTML}?room=${test}&name=${params.get("name")||""}&pass=${params.get("pass")||""}`);
 		else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 	} else if (securityguard.isAllowed(justURL)) {
-		if (router.getLastSessionURL() && decodedURL.toString() == router.getLastSessionURL().toString()) router.reload();
+		if (router.getLastSessionURL() && (decodedURL.toString() == router.getLastSessionURL().toString())) router.reload();
 		else router.loadPage(decodedURL.href, desiredData);
 	} else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 }
