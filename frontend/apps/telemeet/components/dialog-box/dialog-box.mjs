@@ -19,6 +19,8 @@ function hideDialog(element) {
     const modalCurtain = shadowRoot.querySelector("div#modalcurtain");
     const dialog = shadowRoot.querySelector("div#dialog");
     dialog.classList.remove("visible"); modalCurtain.classList.remove("visible");
+    
+    shadowRoot.querySelector("html").style.height = "0"; shadowRoot.querySelector("body").style.height = "0";
 }
 
 function error(element, msg) {
@@ -68,6 +70,8 @@ function _resetUI(shadowRoot) {
     shadowRoot.querySelector("div#error").style.visibility = "hidden";
     shadowRoot.querySelector("span#ok").style.display = "inline";
     shadowRoot.querySelector("span#cancel").style.display = "inline";
+    shadowRoot.querySelector("html").style.height = "fit-content";
+    shadowRoot.querySelector("body").style.height = "fit-content";
 }
 
 const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM

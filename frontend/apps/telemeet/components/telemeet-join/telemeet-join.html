@@ -225,7 +225,7 @@ span#controls > img#mobilemenucontrol {display: none;}
 
 <div id="content">
 <div id="videodiv">
-<video id="video" autoplay onplay='this.parentElement.querySelector("span#camcontrol").classList.add("visible")'></video>
+<video id="video" muted playsinline autoplay onplay='this.parentElement.querySelector("span#camcontrol").classList.add("visible")'></video>
 <span id="camcontrol">
     <img id="camicon" src="{{componentpath}}/img/camera.svg" onclick="monkshu_env.components['telemeet-join'].toggleVideo(this)">
     <img id="mikeicon" src="{{componentpath}}/img/mike.svg" onclick="monkshu_env.components['telemeet-join'].toggleMike(this)">

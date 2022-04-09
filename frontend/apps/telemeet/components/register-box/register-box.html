@@ -12,6 +12,7 @@ body{
     margin: 0; padding: 0;
     font-family: inherit;
     font-size: inherit;
+    height: fit-content;
 }
 
 input {
@@ -67,6 +68,7 @@ span#password {
     margin-left: 5%;
     margin-right: 5%;
     justify-content: space-between;
+    margin-bottom: 1em;
 }
 
 span#otp > img {
@@ -98,8 +100,8 @@ span#otp > div#otp_help_and_input > input {
 span#otp > button {display: none;}
 </style>
 {{{MOBILE_MEDIA_QUERY_START}}}
-    input {margin: 0; margin-top: 1em; width: 100%;}
-    span#password {margin-left: 0; margin-right: 0; margin-bottom: 1em; justify-content: space-between;}
+    input {margin: 0; margin-top: 1em; width: 100%; border-radius: 0;}
+    span#password {margin-left: 0; margin-right: 0; margin-bottom: 2em; justify-content: space-between;}
     span#otp {justify-content: space-between; margin-bottom: 1em;}
     span#otp > img {display: none;}
     span#otp > button {display: inline-block;}
@@ -110,6 +112,7 @@ span#otp > button {display: none;}
     span#otp > div#otp_help_and_input > input::placeholder {color: transparent;}
     button {max-width: 30%; min-width: 30%; padding: 5px; text-transform: none; margin: 0;}
     button#submit {padding: 1em; margin-top: 1em;}
+    div#container {margin: 0 1em;}
 {{{MOBILE_MEDIA_QUERY_END}}}
 
 {{{styleBody}}}
@@ -128,9 +131,9 @@ span#otp > button {display: none;}
 <input type="text" id="org" placeholder="{{i18n.Org}}" value="{{org}}" required 
     oninvalid="this.setCustomValidity('{{i18n.FillField}}')" oninput="setCustomValidity('')" {{#reset}}readonly{{/reset}} {{#initial}}readonly{{/initial}}>
 <span id="password">
-    <password-box style="width:45%; padding: 10px 0px 10px 0px;" id="pass1" placeholder="{{Password}}" 
+    <password-box style="width:45%; padding: 10px 0px 10px 0px; height: 2em;" id="pass1" placeholder="{{Password}}" 
         required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
-    <password-box style="width:45%; padding: 10px 0px 10px 0px;" id="pass2" placeholder="{{PasswordAgain}}" 
+    <password-box style="width:45%; padding: 10px 0px 10px 0px; height: 2em;" id="pass2" placeholder="{{PasswordAgain}}" 
         required="true" minlength="{{minlength}}" customValidity="{{i18n.FillField}}"></password-box>
 </span>
 <span id="otp">
