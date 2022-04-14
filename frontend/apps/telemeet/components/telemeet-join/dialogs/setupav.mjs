@@ -15,21 +15,26 @@ async function init(_hostID) {
 }
 
 async function startrecording(containedElement) {
+    const _replaceVideo = _ => {    // to play new media this seems the only way - new video element. 
+        const videoIn = shadowRoot.querySelector(VIDEO_INOUT), newVideo = document.createElement("video"), parent = videoIn.parentNode;
+        newVideo.id = videoIn.id; parent.replaceChild(newVideo, videoIn); 
+        return newVideo;
+    }
+
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement), env = _getEnv(containedElement)
-    const videoIn = shadowRoot.querySelector(VIDEO_INOUT), videoHelp = shadowRoot.querySelector(VIDEO_HELP);
+    const videoIn = _replaceVideo(shadowRoot), videoHelp = shadowRoot.querySelector(VIDEO_HELP);
     const recordButton = shadowRoot.querySelector(RECORD_BUTTON), stoprecordingButton = shadowRoot.querySelector(STOP_RECORD_BUTTON);
 
     try {
         const stream = await restartAVTracks(containedElement); if (!stream) return;        // no stream to record
         recordButton.style.display = "none"; stoprecordingButton.style.display = "inline";  // flip buttons
         videoHelp.style.display = "none"; videoIn.style.display = "block";                  // hide help start video
-        const mediaRecorder = new MediaRecorder(stream, {mimeType: "video/webm"}); env.mediaRecorder = mediaRecorder;
+        const mediaRecorder = new MediaRecorder(stream); env.mediaRecorder = mediaRecorder;
         mediaRecorder.addEventListener("dataavailable", event => {
             if (event.data.size > 0) {
-                const recorderdVideo = new Blob([event.data], {"type" : "video/webm"});
-                const newVideo = document.createElement("video"); newVideo.id = videoIn.id;
-                newVideo.setAttribute("src", window.URL.createObjectURL(recorderdVideo)); newVideo.style.display = "block";
-                stopAVTracks(containedElement); const parent = videoIn.parentNode; parent.replaceChild(newVideo, videoIn);  // to play new media this seems the only way - new video element. 
+                stopAVTracks(containedElement); const recorderdVideo = new Blob([event.data], {"type" : mediaRecorder.mimeType});
+                const newVideo = _replaceVideo(shadowRoot); newVideo.style.display = "block"; 
+                newVideo.setAttribute("src", window.URL.createObjectURL(recorderdVideo)); 
             }
         });
         mediaRecorder.start(); env.recording = true; setTimeout(_=>{if (env.recording) stoprecording(containedElement)}, MAX_RECORD_TIME);
@@ -54,14 +59,17 @@ async function playrecording(containedElement) {
         const selectedAudioOut = shadowRoot.querySelector(SELECTOR_SPEAKER); 
         if (videoOut.setSinkId) await videoOut.setSinkId(_getDevID(selectedAudioOut));  // android chrome won't allow this
         const playButton = shadowRoot.querySelector(PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(STOP_PLAY_BUTTON);
+        LOG.info("Reached play button style change block.");
         playButton.style.display = "none"; videoOut.currentTime = 0; videoOut.muted = false; videoOut.volume = 0.5; 
         videoOut.play(); videoOut.addEventListener("ended", _=> stopplayrecording(containedElement)); stopPlayButton.style.display = "inline"; 
+        LOG.info("Reached end of play recording.");
     } catch (err) {
         LOG.error(err.toString());
     }
 }
 
 function stopplayrecording(containedElement) {
+    LOG.info("Stop play recording called.");
     const shadowRoot = DIALOG.getShadowRootByContainedElement(containedElement);
     const videoOut = shadowRoot.querySelector(VIDEO_INOUT), videoHelp = shadowRoot.querySelector(VIDEO_HELP);
     const playButton = shadowRoot.querySelector(PLAY_BUTTON), stopPlayButton = shadowRoot.querySelector(STOP_PLAY_BUTTON);

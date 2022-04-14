@@ -28,17 +28,19 @@ div#selectors, div#videotestcolumn {
     justify-content: space-between;
 }
 div#selectors{ width: 20em; } 
-div#selectors > span {text-align: left;}
-div#videotestcolumn{ min-width: 16em; width: 16em; margin-left: 3em; }
+div#selectors > div {display: flex; flex-direction: column;}
+div#selectors > div > span {text-align: left;}
+div#videotestcolumn{ min-width: 16em; width: 40%; margin-left: 3em; }
 
 select {
-    padding: 0.5em;
+    padding: 1em;
     border-radius: var(--border-radius);
     background-color: var(--button-color);
     margin-bottom: 2em;
     border: none;
     color: var(--button-text-color);
     outline: none;
+    -webkit-appearance : caret;
 }
 select:last-child {margin-bottom: 0em;}
 select:focus > option:hover {
@@ -113,7 +115,7 @@ span.testbutton {
 span.button:last-child {margin-right: 0em;}
 </style>
 {{{CONF.MOBILE_MEDIA_QUERY_START}}}
-    body {height: 100%; width: 100%;}
+    html, body {height: 100%; width: 100%;}
     div#maincontainer {height: 100%; max-width: 100%;}
 {{{CONF.MOBILE_MEDIA_QUERY_END}}}
 {{{CONF.MOBILE_MEDIA_QUERY_LANDSCAPE_START}}}
@@ -135,6 +137,7 @@ span.button:last-child {margin-right: 0em;}
     video#testvideo {height: 30vh; min-height: 18em;}
     span#testvideohelp {height: 30vh; min-height: 18em;}
     div#selectors {width: 100%;}
+    div#selectors > div {margin-bottom: 2em;}
 {{{CONF.MOBILE_MEDIA_QUERY_PORTRAIT_END}}}
 
 <script type="module">
@@ -147,27 +150,33 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
 <div id="maincontrols">
     <div id="selectors">
         {{^noSpeakerSelectionAllowed}}
+        <div>
         <span>{{i18n.Speakers}}</span>
         <select id="speaker">
             {{#speakers}}
             <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/speakers}}
         </select>
+        </div>
         {{/noSpeakerSelectionAllowed}}
 
+        <div>
         <span>{{^noSpeakerSelectionAllowed}}{{i18n.Microphone}}{{/noSpeakerSelectionAllowed}}{{#noSpeakerSelectionAllowed}}{{i18n.AudioInOutDevice}}{{/noSpeakerSelectionAllowed}}</span>
         <select id="microphone">
             {{#microphones}}
             <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/microphones}}
         </select>
+        </div>
 
+        <div>
         <span>{{i18n.VideoCamera}}</span>
         <select id="camera">
             {{#cameras}}
             <option value="{{label}},{{deviceId}}">{{label}}</option>
             {{/cameras}}
         </select>
+        </div>
     </div>
 
     <div id="videotestcolumn">
