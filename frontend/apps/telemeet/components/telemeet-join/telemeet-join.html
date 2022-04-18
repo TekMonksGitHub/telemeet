@@ -108,8 +108,8 @@ div#telemeet {
 
 div#telemeet.visible {
     display: block;
-    width: 98vw;
-    height: 98vh;
+    width: 98%;
+    height: 98%;
     visibility: visible;
     position: fixed;
     top: 1vh;
@@ -125,7 +125,8 @@ div#telemeet > iframe {
     border-radius: var(--border-radius);
     background-color: black;
     z-index: -1;
-    position: relative;
+    position: absolute;
+    top: 0;
 }
 
 span#controls, span#main_mobile_controls {

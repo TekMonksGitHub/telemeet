@@ -99,12 +99,14 @@ span#desktopheader > span#rightheader > span#search > input#searchtext {
     border-radius: 0.5em;
     width: 100%;
     padding-left: 3em;
+	font-size: medium;
+	color: #444444;
 }
 span#desktopheader > span#rightheader > span#search > img#searchimg {
 	position: absolute;
-    margin-left: 0.5em;
-    height: 2em;
-    top: 0.2em;
+    margin-left: 5px;
+	height: 80%;
+	top: 10%;
 }
 
 div#maincontent {
@@ -132,13 +134,16 @@ telemeet-join#telemeet {
 	margin-right: 2em;
 	width: 33.33%;
 	min-width: 10em;
+	height: 100%;
 }
 
 card-roll#myrooms {
 	background-color: #2ECC71;
     border-radius: 0.5em;
     padding: 0.5em 1em 0.3em 1em;
-	width: min(66.67%, calc(100% - 14em))
+	width: min(66.67%, calc(100% - 14em));
+	height: 100%;
+	box-sizing: border-box;
 }
 
 span#mobilefooter {
@@ -247,8 +252,5 @@ span#mobilefooter {
 </span>
 
 <dialog-box id="dialog"></dialog-box>
-
-<context-menu id="maincontextmenu" styleBody="span.menubreak > hr{background-color: #bbbbbb;} span.menuitem > span.menuicon {display:none} div#menu {border:none; background: #FFFFFF;} span.menuitem > span.menutext {padding: 0.5em 2em 0.5em 1em; font-size: small;} span.menuitem > span.menutext:hover {background-color: #41cf70; color: #ffffff;}"></context-menu>
-
 </body>
 </html>
