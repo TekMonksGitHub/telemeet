@@ -53,7 +53,7 @@ span#header > img {
     display: inline-block;
 }
 
-span#header > input, span#header > input:-internal-autofill-previewed, span#header > input:-internal-autofill-selected, span#header > input:focus {
+span#header > input {
     width: 80%;
     border-radius: 0.5em;
     padding: 1em;
@@ -62,6 +62,7 @@ span#header > input, span#header > input:-internal-autofill-previewed, span#head
     color: #444444;
     padding-left: 3em;
     margin-right: 5%;
+    font-size: medium;
 }
 
 span#header > button {
@@ -78,6 +79,8 @@ span#header > button {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-size: medium;
+    padding: 0em 1em;
 }
 
 span#header > button:hover {
@@ -117,7 +120,7 @@ div.user > img {
 </style>
 {{{CONF.MOBILE_MEDIA_QUERY_START}}}
 span#header > input {margin-right: 0em; max-width: calc(100% - 9em);}
-span#header > button {padding: 0em 1em; min-width: 7em;}
+span#header > button {min-width: 7em;}
 {{{CONF.MOBILE_MEDIA_QUERY_END}}}
 
 
@@ -132,9 +135,9 @@ span#header > button {padding: 0em 1em; min-width: 7em;}
     <div id="userlist">
         {{#users}}
         <div id="{{id}}" class="user" title="{{name}}&#10;{{id}}" 
-                oncontextmenu='event.stopPropagation(); monkshu_env.components["user-manager"].userMenuClicked(
-                    event, this, "{{name}}", "{{id}}", "{{org}}", "{{role}}", "{{approved}}"); return false;'
-                ondblclick='event.stopPropagation();  monkshu_env.components["user-manager"].editUser(
+                oncontextmenu='event.preventDefault(); event.stopPropagation(); monkshu_env.components["user-manager"].userMenuClicked(
+                    event, this, "{{name}}", "{{id}}", "{{org}}", "{{role}}", "{{approved}}");'
+                ondblclick='event.preventDefault(); event.stopPropagation();  monkshu_env.components["user-manager"].editUser(
                     "{{name}}", "{{id}}","{{role}}", "{{approved}}", this)'>
             <img src="{{componenturl}}/img/user.svg">
             <span>{{name}}</span>

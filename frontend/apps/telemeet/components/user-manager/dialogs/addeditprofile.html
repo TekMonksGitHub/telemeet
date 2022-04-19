@@ -4,7 +4,7 @@
 div#dialog {width: 350px;}
 body {width: 100%;}
 
-input, input:-internal-autofill-previewed, input:-internal-autofill-selected {
+input {
     width: 100%;
     border-style: none;
     outline: none;
@@ -34,11 +34,13 @@ span#toggler {
 select {
     border-radius: 10px;
     border: 1px darkgray solid;
+    border-style: solid; 
     padding: 0.7em;
     width: 100%;
     outline: none;
     margin-bottom: 2.5em;
     color: #444444;
+    -webkit-appearance: none;
 }
 
 .tgl {display: none;}
