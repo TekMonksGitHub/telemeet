@@ -14,5 +14,5 @@ for file in $FILES; do
     echo Processing file $file
     sed -i -r -e "s/http:\/\/localhost:8080/https:\/\/$DOMAIN/g" "$file"
     sed -i -r -e "s/http:\/\/localhost:9090/https:\/\/$DOMAIN:9090/g" "$file"
-    sed -i -r -e "s/\[\"127.0.0.1:9090\".*?\]/[\"$DOMAIN\"]/g" "$file"
+    sed -i -r -e "s/\[\"127.0.0.1:9090\".*?\]/[\"$DOMAIN:9090\"]/g" "$file"
 done
