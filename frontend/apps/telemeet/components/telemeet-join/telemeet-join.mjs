@@ -100,13 +100,13 @@ function joinRoomFromTelemeetInternal(element) {
 async function joinRoom(hostElement, roomName, roomPass, id, name) {	
 	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;};
 
-	const sessionID = self.crypto.randomUUID(), req = {room: roomName, pass: roomPass, id, name, sessionID};
+	const sessionID = util.generateUUID(), req = {room: roomName, pass: roomPass, id, name, sessionID};
 	const result = await apiman.rest(API_ENTERROOM, "GET", req, false, true);
+	LOG.info(`Backend result for enterroom request is ${JSON.stringify(result)}`);
 	if (result && !result.result) {	// backend refused
-		_showError(await i18n.get(result.reason=="NO_ROOM"?"RoomNotCreatedError":(result.reason=="NO_MODERATOR"?
-			"RoomNotOpenError":"RoomPasswordError")));
-		return;
-	}
+		const error = await i18n.get(result.reason=="NO_ROOM"?"RoomNotCreatedError":(result.reason=="NO_MODERATOR"?
+			"RoomNotOpenError":"RoomPasswordError")); _showError(error); return;
+	} else LOG.info(`Backend approved to join room ${roomName} for id ${id}.`);
 
 	const sessionMemory = telemeet_join.getSessionMemory(hostElement.id);
 	if (result && await fwcontrol.operateFirewall("allow", id, sessionMemory)) {	// open firewall and join the room add listeners to delete it on close and logouts
@@ -260,8 +260,10 @@ function _stopMike(shadowRoot) {
 	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/nomike.svg`;
 }
 
-const _showError = error => DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, CONF: conf}, 
-	"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
+const _showError = error => {
+	LOG.error(error); DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, CONF: conf}, 
+		"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
+}
 
 function _resetRoomUI() {
 	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML)) positionable_html.hide(HOSTID_POSTIONABLE_HTML);

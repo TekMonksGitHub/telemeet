@@ -16,7 +16,7 @@ async function init(_hostID) {
 
 async function startrecording(containedElement) {
     const _replaceVideo = _ => {    // to play new media this seems the only way - new video element. 
-        const videoIn = shadowRoot.querySelector(VIDEO_INOUT), newVideo = document.createElement("video"), parent = videoIn.parentNode;
+        const videoIn = shadowRoot.querySelector(VIDEO_INOUT), newVideo = videoIn.cloneNode(false), parent = videoIn.parentNode;
         newVideo.id = videoIn.id; parent.replaceChild(newVideo, videoIn); 
         return newVideo;
     }

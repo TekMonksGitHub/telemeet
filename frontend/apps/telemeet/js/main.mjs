@@ -69,13 +69,17 @@ async function createRoom(room, pass) {
 }
 
 async function joinRoom(room, moderator) {
+    LOG.info(`Join room called for room ${room} with ID ${moderator}`);
     if ((!room) || room.length==0) {_showMessage(await i18n.get("NoRoom")); return;}
     const userID = session.get(APP_CONSTANTS.USERID).toString(); let pass; 
     if (userID.toLowerCase() != moderator.toLowerCase()) pass = (await dialog().showDialog(
         `${APP_CONSTANTS.DIALOGS_PATH}/meetingpass.html`, true, true, {}, "dialog", ["knock","pass"])).pass;
 
-    const telemeet = window.monkshu_env.components["telemeet-join"]; telemeet.joinRoom(
-        telemeet.getHostElementByID(TELEMEET_ID), room, pass, userID, session.get(APP_CONSTANTS.USERNAME));
+    try {
+        const telemeet = window.monkshu_env.components["telemeet-join"]; telemeet.joinRoom(
+            telemeet.getHostElementByID(TELEMEET_ID), room, pass, userID, session.get(APP_CONSTANTS.USERNAME));
+        LOG.info(`Join room call to telemeet succeeded for ${room} with ID ${moderator}`);
+    } catch (err) {LOG.error(`Error joining room, the error is ${err}`);}
 }
 
 async function deleteRoom(room) {

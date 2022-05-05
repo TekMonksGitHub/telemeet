@@ -30,7 +30,7 @@ div#selectors, div#videotestcolumn {
 div#selectors{ width: 20em; } 
 div#selectors > div {display: flex; flex-direction: column;}
 div#selectors > div > span {text-align: left;}
-div#videotestcolumn{ min-width: 16em; width: 40%; margin-left: 3em; }
+div#videotestcolumn{ min-width: 16em; width: 16em; margin-left: 3em; }
 
 select {
     padding: 1em;
@@ -124,6 +124,7 @@ span.button:last-child {margin-right: 0em;}
     video#testvideo {width: 100%; height: 100%;}
     span#testvideohelp {width: 100%; height: 100%;}
     div#selectors {width: 45%;}
+    div#videotestcolumn {width: 40%;}
 {{{CONF.MOBILE_MEDIA_QUERY_LANDSCAPE_END}}}
 {{{CONF.MOBILE_MEDIA_QUERY_PORTRAIT_START}}}
     div#dialog {width: 96%; height: 98%; box-sizing: border-box; padding: 2em; overflow: auto; }
@@ -180,7 +181,7 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
     </div>
 
     <div id="videotestcolumn">
-        <video id="testvideo"></video>
+        <video id="testvideo" playsinline></video>
         <span id="testvideohelp"><span>{{i18n.SettingsHelp}}</span></span>
         <audio id="testaudio" src="{{{componentpath}}}/img/testaudio.mp3"></audio>
         <span id="testbuttons">
