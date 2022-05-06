@@ -21,7 +21,7 @@ async function signin(signInButton) {
 	const shadowRoot = login_box.getShadowRootByContainedElement(signInButton); _hideErrors(shadowRoot);
 	if (!_validateForm(shadowRoot)) return;	// HTML5 validation failed
 
-	const userid = shadowRoot.querySelector("#userid").value;
+	const userid = shadowRoot.querySelector("#userid").value.toLowerCase();
 	const pass = shadowRoot.querySelector("#pass").value;
 	const otp = shadowRoot.querySelector("#otp").value;
 	const routeOnSuccess = login_box.getHostElement(signInButton).getAttribute("routeOnSuccess");

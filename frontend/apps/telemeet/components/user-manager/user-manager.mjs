@@ -60,7 +60,7 @@ async function userMenuClicked(event, element, name, id, _org, role, approved) {
 async function addUser(element) {
 	const roles = []; for (const thisrole of conf.roles) roles.push({label:await i18n.get(thisrole), value: thisrole, selected: thisrole==conf.user_role?true:undefined});
 	monkshu_env.components['dialog-box'].showDialog(`${MODULE_PATH}/dialogs/addeditprofile.html`, true, true, 
-			{approved: true, roles}, "dialog", ["name", "id", "role", "approved"], async ret => {
+			{approved: true, roles, CONF:conf}, "dialog", ["name", "id", "role", "approved"], async ret => {
 		
 		if (ret.approved.toLowerCase() == "true") ret.approved = true; else ret.approved = false;
 		ret.org = session.get(conf.userorg_session_variable); ret.lang = i18n.getSessionLang();

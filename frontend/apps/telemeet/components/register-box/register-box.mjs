@@ -57,8 +57,8 @@ async function registerOrUpdate(element) {
 	const memory = register_box.getMemoryByContainedElement(element);
 
 	const nameSelector = shadowRoot.querySelector("input#name"); const name = nameSelector.value;
-	const idSelector = shadowRoot.querySelector("input#id"); const id = idSelector.value;
-	const id_old = register_box.getHostElement(element).getAttribute("email") ? shadowRoot.querySelector("input#oldid").value : undefined;
+	const idSelector = shadowRoot.querySelector("input#id"); const id = idSelector.value.toLowerCase();
+	const id_old = register_box.getHostElement(element).getAttribute("email") ? shadowRoot.querySelector("input#oldid").value.toLowerCase() : undefined;
 	const passSelector = shadowRoot.querySelector("password-box#pass1"); const pass = passSelector.value;
 	const orgSelector = shadowRoot.querySelector("input#org"); const org = orgSelector.value;
 	const totpCodeSelector = shadowRoot.querySelector("input#otp"); const totpCode = totpCodeSelector.value && totpCodeSelector.value != ""?totpCodeSelector.value:null;
