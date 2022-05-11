@@ -12,8 +12,11 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		parentNode, memory, avDevices, conf) {
 
 	const hostURL = new URL(url), roomName = hostURL.pathname.replace(/^\/+/,"");
-	let mappedDevices; if (avDevices) mappedDevices = { audioInput: avDevices.microphone.label,
-		audioOutput: avDevices.speaker.label, videoInput: avDevices.camera.label };
+	let mappedDevices; if (avDevices) mappedDevices = { 
+		audioInput: avDevices.microphone?avDevices.microphone.label:undefined,
+		audioOutput: avDevices.speaker?avDevices.speaker.label:undefined, 
+		videoInput: avDevices.camera?avDevices.camera.label:undefined };
+	LOG.info("AV device map requested for the meeting is -> "+JSON.stringify(mappedDevices));
 
 	memory.exitCalled = false; memory.entryCalled = false; memory.conf = conf;
 
@@ -35,7 +38,8 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	meetAPI.addEventListener("raiseHandUpdated", status => { if (status.id == meetAPI._myUserID) for (
 		const selfRaiseHandListener of memory.selfRaiseHandListeners||[]) selfRaiseHandListener(
 			status.handRaised?true:false, userName, userEmail); }); 
-	meetAPI.addEventListener("videoConferenceJoined", _confInfo => {
+	meetAPI.addEventListener("videoConferenceJoined", async _confInfo => {
+		LOG.info("AV device map being used for the meeting is -> "+JSON.stringify(await meetAPI.getCurrentDevices()));
 		if (memory.entryCalled) return; else memory.entryCalled = true;	// return if already called
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", meetAPI._events.videoConferenceJoined, memory.conf.webrtcWaitEntry);
@@ -96,9 +100,10 @@ const exitMeeting = memory => {
 	_executeMeetCommand(memory, "hangup"); 	delete memory.meetAPI;
 }
 const setAVDevices = (memory, devices) => {
-	_executeMeetCommand(memory, "setAudioInputDevice", [devices.microphone.label,devices.microphone.id]);
-	_executeMeetCommand(memory, "setAudioOutputDevice", [devices.speaker.label,devices.speaker.id]);
-	_executeMeetCommand(memory, "setVideoInputDevice", [devices.camera.label,devices.camera.id]);
+	LOG.info("Setting devices to this map -> "+JSON.stringify(devices));
+	if (devices.microphone) _executeMeetCommand(memory, "setAudioInputDevice", [devices.microphone.label,devices.microphone.id]);
+	if (devices.speaker) _executeMeetCommand(memory, "setAudioOutputDevice", [devices.speaker.label,devices.speaker.id]);
+	if (devices.camera) _executeMeetCommand(memory, "setVideoInputDevice", [devices.camera.label,devices.camera.id]);
 }
 const sendMeetingMessage = (memory, message) => {
 	_executeMeetCommand(memory, "sendChatMessage", [message]);

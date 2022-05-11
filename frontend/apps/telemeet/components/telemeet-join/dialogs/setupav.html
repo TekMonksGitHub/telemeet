@@ -155,7 +155,7 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
         <span>{{i18n.Speakers}}</span>
         <select id="speaker">
             {{#speakers}}
-            <option value="{{label}},{{deviceId}}">{{label}}</option>
+            <option value="{{label}},{{deviceId}}" {{#selected}}selected{{/selected}}>{{label}}</option>
             {{/speakers}}
         </select>
         </div>
@@ -165,7 +165,7 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
         <span>{{^noSpeakerSelectionAllowed}}{{i18n.Microphone}}{{/noSpeakerSelectionAllowed}}{{#noSpeakerSelectionAllowed}}{{i18n.AudioInOutDevice}}{{/noSpeakerSelectionAllowed}}</span>
         <select id="microphone">
             {{#microphones}}
-            <option value="{{label}},{{deviceId}}">{{label}}</option>
+            <option value="{{label}},{{deviceId}}" {{#selected}}selected{{/selected}}>{{label}}</option>
             {{/microphones}}
         </select>
         </div>
@@ -174,7 +174,7 @@ setupav.init("{{{hostID}}}"); monkshu_env.apps.telemeet.setupav = setupav;
         <span>{{i18n.VideoCamera}}</span>
         <select id="camera">
             {{#cameras}}
-            <option value="{{label}},{{deviceId}}">{{label}}</option>
+            <option value="{{label}},{{deviceId}}" {{#selected}}selected{{/selected}}>{{label}}</option>
             {{/cameras}}
         </select>
         </div>

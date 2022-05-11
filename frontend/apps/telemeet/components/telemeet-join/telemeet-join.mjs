@@ -157,8 +157,11 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 }
 
 async function meetSettings(element, fromMeet) {
-	const data = await webrtc.getMediaDevices(); 
+	const data = await webrtc.getMediaDevices(), selectedDevices = _getSessionMemoryVariable("avDevices", element);
 	if (!data) {_showError(await i18n.get("MediaDevicesFailed")); return;}; 
+	const selectDevice = (devices, deviceToSelect) => {for (const thisDevice of devices) if (thisDevice.deviceId == deviceToSelect?.id) thisDevice.selected = true;}
+	if (selectedDevices) { selectDevice(data.microphones, selectedDevices.microphone);	// selected previously selected devices
+		selectDevice(data.speakers, selectedDevices.speaker); selectDevice(data.cameras, selectedDevices.camera); }
 	data.componentpath = COMPONENT_PATH; data.hostID = "telemeetdialog"; data.themename = fromMeet?"dark":"light";
 	data.CONF = conf; if (!webrtc.isSpeakerSelectionSupported()) data.noSpeakerSelectionAllowed = true;
 
@@ -169,9 +172,12 @@ async function meetSettings(element, fromMeet) {
 		false, false, data, "telemeetdialog", ["speaker", "microphone", "camera"]);
 	if (fromMeet) webrtc.removeRoomExitListener(exitListener, memory);
 
-	DIALOG.hideDialog("telemeetdialog"); 
-	const _devStrToObj = deviceString => { return {label: deviceString.split(",")[0], id: deviceString.split(",")[1]} };
-	const devices = {speaker: _devStrToObj(retVals.speaker), microphone: _devStrToObj(retVals.microphone), camera: _devStrToObj(retVals.camera)};
+	DIALOG.hideDialog("telemeetdialog");  
+	const _devStrToObj = deviceString => { return {label: deviceString.substring(0, deviceString.lastIndexOf(",")), id: deviceString.substring(deviceString.lastIndexOf(",")+1)} };
+	const devices = {speaker: retVals.speaker?_devStrToObj(retVals.speaker):null, 
+		microphone: retVals.microphone?_devStrToObj(retVals.microphone):null, 
+		camera: retVals.camera?_devStrToObj(retVals.camera):null};
+	LOG.info("Device map from parsing -> "+JSON.stringify(devices));
 	if (fromMeet) {_executeMeetCommand(element, "setAVDevices", devices); _setSessionMemoryVariable("avDevices", element, devices)}
 	else _setSessionMemoryVariable("avDevices", element, devices);
 }
@@ -233,9 +239,9 @@ const getRooms = id => apiman.rest(API_GETROOMS, "GET", {id}, true);
 async function _startVideo(shadowRoot, containedElement) {
 	shadowRoot.querySelector("img#camicon").src = `${COMPONENT_PATH}/img/camera.svg`;
 	shadowRoot.querySelector("img#camcontrol").src = `${COMPONENT_PATH}/img/camera.svg`; 
-	const video = shadowRoot.querySelector("video#video"); 
+	const video = shadowRoot.querySelector("video#video"), selectedDevices = _getSessionMemoryVariable("avDevices", containedElement)
 	try {
-		const stream = await navigator.mediaDevices.getUserMedia({video: true});
+		const stream = await navigator.mediaDevices.getUserMedia({video: selectedDevices && selectedDevices.camera ? {id: selectedDevices.camera.id} : true});
 		video.srcObject = stream; _setSessionMemoryVariable("videoOn", containedElement, true);
 	} catch (err) { _showError(await i18n.get("NoCamera")); LOG.error(`Unable to access the camera: ${err}`); }
 }

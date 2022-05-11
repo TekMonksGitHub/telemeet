@@ -9,7 +9,8 @@ import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {APP_CONSTANTS as AUTO_APP_CONSTANTS} from "./constants.mjs";
 
-const API_GETREMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/getremotelog", API_REMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/log";
+const API_GETREMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/getremotelog", 
+	API_REMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/log", HEADERS = AUTO_APP_CONSTANTS.APP_PATH+"/conf/headers.html";
 
 const init = async _ => {
 	window.monkshu_env.apps.telemeet = {};
@@ -37,7 +38,10 @@ const main = async (desiredURL, desiredData) => {
 	} else router.loadPage(APP_CONSTANTS.REGISTER_HTML);
 }
 
-const interceptPageLoadData = _ => router.addOnLoadPageData("*", (data, _url) => data.APP_CONSTANTS = APP_CONSTANTS);
+const interceptPageLoadData = _ => router.addOnLoadPageData("*", async (data, _url) => {
+	data.APP_CONSTANTS = APP_CONSTANTS; 
+	data.headers = await $$.requireText(HEADERS);
+});
 
 async function _readConfig() {
 	const conf = await(await fetch(`${APP_CONSTANTS.APP_PATH}/conf/app.json`)).json();
