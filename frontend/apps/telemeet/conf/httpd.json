@@ -1,11 +1,13 @@
 {
-    "extensions": ["redirect"],
+    "extensions": ["redirect", "diskcache"],
     "redirects": [{"^http(.*)://([^/]+?)/index.html$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"},
         {"^http(.*)://([^/]+?)/$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"},
         {"^http(.*)://([^/]+?)$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"}],
+    "diskCache": {"refresh": 1000, "dontCache": [".*\\.pdf"], "maxSizeInMB": "1024", "ignoreAfterMaxHits":10},
     "httpdHeaders": {"Cache-Control": "no-cache"},
     "ssl": true,
     "sslKeyFile":"C:/Users/rvkapoor/source/etc/192.168.1.8_privkey.pem",
 	"sslCertFile":"C:/Users/rvkapoor/source/etc/192.168.1.8_fullchain.pem",
+    "enableGZIPEncoding": true,
     "port": 443
 }
