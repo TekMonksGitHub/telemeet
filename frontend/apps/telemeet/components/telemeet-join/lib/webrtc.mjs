@@ -41,6 +41,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 	meetAPI.addEventListener("videoConferenceJoined", async _confInfo => {
 		LOG.info("AV device map being used for the meeting is -> "+JSON.stringify(await meetAPI.getCurrentDevices()));
 		if (memory.entryCalled) return; else memory.entryCalled = true;	// return if already called
+		_flipRearCameraIfActive(memory);	// flip the back camera local video if it is being used
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
 	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", meetAPI._events.videoConferenceJoined, memory.conf.webrtcWaitEntry);
 	meetAPI.addEventListener("tileViewChanged", status => {
@@ -90,11 +91,13 @@ const addNotificationListener = (listener, memory) => memory.notificationListene
 const addChatListener = (listener, memory) => memory.chatListeners ? memory.chatListeners.push(listener) : memory.chatListeners=[listener];
 
 const toggleAudio = memory => _executeMeetCommand(memory, "toggleAudio");
-const toggleVideo = memory => _executeMeetCommand(memory, "toggleVideo");
+const toggleVideo = async memory => {await _executeMeetCommand(memory, "toggleVideo"); _flipRearCameraIfActive(memory); }
 const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScreen");
 const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
 const toggleTileVsFilmstrip = memory => _executeMeetCommand(memory, "toggleTileView");
 const changeBackground = memory => _executeMeetCommand(memory, "toggleVirtualBackgroundDialog");
+const toggleCamera = async memory => { await _executeMeetCommand(memory, "toggleCamera"); _flipRearCameraIfActive(memory); }
+
 const exitMeeting = memory => {
 	_watchFlagAndCallOnTimeout(memory, "exitCalled", memory.meetAPI._events.videoConferenceLeft, memory.conf.webrtcWaitExit); 
 	_executeMeetCommand(memory, "hangup"); 	delete memory.meetAPI;
@@ -137,7 +140,20 @@ function _watchFlagAndCallOnTimeout(memory, flag, functions, timeout) {
 		for (const functionThis of Array.isArray(functions)?functions:[functions]) functionThis(); }, timeout);
 }
 
+async function _flipRearCameraIfActive(memory) {
+	const currentCamLabel = (await _executeMeetCommand(memory, "getCurrentDevices")).videoInput.label;
+	if (currentCamLabel.toLowerCase().indexOf("back") != -1) { await _executeMeetCommand("toggleCameraMirror"); return; }
+
+	if ($$.getOS() == "ios") {	// first video camera on iOS is the front cam
+		const devices = await navigator.mediaDevices.enumerateDevices(), foundFirstCam = false;
+		for (const device of devices) if (device.kind == "videoinput" && !foundFirstCam) {
+			foundFirstCam = true; if (device.label != currentCamLabel) { await _executeMeetCommand("toggleCameraMirror"); return; }
+		}
+	}
+}
+
 export const webrtc = {openTelemeet, addRoomEntryListener, addRoomExitListener, removeRoomExitListener, 
 	addScreenShareListener, addSelfRaiseHandListener, addTileVsFilmstripListener, toggleAudio, toggleVideo, 
 	toggleShareScreen, toggleRaiseHand, toggleTileVsFilmstrip, exitMeeting, changeBackground, getMediaDevices, 
-	isSpeakerSelectionSupported, setAVDevices, addNotificationListener, addChatListener, sendMeetingMessage};
+	isSpeakerSelectionSupported, setAVDevices, addNotificationListener, addChatListener, sendMeetingMessage,
+	toggleCamera};

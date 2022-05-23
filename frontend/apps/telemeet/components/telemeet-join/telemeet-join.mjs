@@ -76,6 +76,7 @@ const toggleScreenshare = element => _executeMeetCommand(element, "toggleShareSc
 const toggleRaisehand = element => _executeMeetCommand(element, "toggleRaiseHand");
 const toggleTileVsFilmstrip = element => _executeMeetCommand(element, "toggleTileVsFilmstrip");
 const changeBackground = element => _executeMeetCommand(element, "changeBackground");
+const toggleCamera = element => _executeMeetCommand(element, "toggleCamera");
 
 async function createRoom(roomName, roomPass, roomImage, id) {	
 	if (roomName.trim() == "") {_showError(await i18n.get("NoRoom")); return;}
@@ -312,5 +313,6 @@ const _setRoom = (containedElement, room) => {const shadowRoot = telemeet_join.g
 const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
 	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, getRooms, meetSettings, showNotifications, 
-	exitMeeting, changeBackground, deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal, showChat, sendChatMessage};
+	exitMeeting, changeBackground, deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal, showChat, 
+	sendChatMessage, toggleCamera};
 monkshu_component.register("telemeet-join", `${APP_CONSTANTS.APP_PATH}/components/telemeet-join/telemeet-join.html`, telemeet_join);
