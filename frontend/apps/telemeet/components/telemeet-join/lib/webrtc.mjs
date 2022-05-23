@@ -91,7 +91,7 @@ const addNotificationListener = (listener, memory) => memory.notificationListene
 const addChatListener = (listener, memory) => memory.chatListeners ? memory.chatListeners.push(listener) : memory.chatListeners=[listener];
 
 const toggleAudio = memory => _executeMeetCommand(memory, "toggleAudio");
-const toggleVideo = async memory => {await _executeMeetCommand(memory, "toggleVideo"); _flipRearCameraIfActive(memory); }
+const toggleVideo = async memory => { await _executeMeetCommand(memory, "toggleVideo"); if (!memory.flipReverseCameraAlreadyCalledForToggleVideo) { _flipRearCameraIfActive(memory); memory.flipReverseCameraAlreadyCalledForToggleVideo = true; } }
 const toggleShareScreen = memory => _executeMeetCommand(memory, "toggleShareScreen");
 const toggleRaiseHand = memory => _executeMeetCommand(memory, "toggleRaiseHand");
 const toggleTileVsFilmstrip = memory => _executeMeetCommand(memory, "toggleTileView");
