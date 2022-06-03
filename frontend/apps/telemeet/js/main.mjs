@@ -163,7 +163,7 @@ async function _getRoomsLists(callbackend) {
         noMeetingsHTML = await $$.requireText("./pages/nomeetings.html"), 
         defaultRoomImage = `${APP_CONSTANTS.APP_PATH}/img/meeting1.jpg`;
 
-    const allroomsCards = [], myroomsCards = [router.getMustache().render(createRoomHTML, {APP_CONSTANTS, 
+    const allroomsCards = [], myroomsCards = [(await router.getMustache()).render(createRoomHTML, {APP_CONSTANTS, 
         i18n: await i18n.getI18NObject()})];
     const roomsResult = callbackend ? await telemeetJoin.getRooms(session.get(APP_CONSTANTS.USERID).toString()) :
         session.get("__telemeet_main_roomlists");
@@ -176,17 +176,17 @@ async function _getRoomsLists(callbackend) {
         const searchbox = document.querySelector("input#searchtext"), 
             filter = searchbox && searchbox.value.trim() != "" ? searchbox.value : undefined;
         //room.startTime = Date.now();    // remove - only for design testing.       
-        if (room.startTime && _passesFilter(filter, room)) allroomsCards.push(router.getMustache().render(allRoomsHTML, {room: room.name, 
+        if (room.startTime && _passesFilter(filter, room)) allroomsCards.push((await router.getMustache()).render(allRoomsHTML, {room: room.name, 
             moderator: room.moderator, joinText: await i18n.get("Join"), moderatorName: room.moderatorName,
             startTime: new Date(room.startTime).toLocaleString(i18n.getSessionLang()), image: (room.image||defaultRoomImage),
             APP_CONSTANTS}));   // active rooms only
 
         if (room.moderator == session.get(APP_CONSTANTS.USERID).toString()) myroomsCards.push(
-            router.getMustache().render(myRoomsHTML, {room: room.name, moderator: room.moderator, 
+            (await router.getMustache()).render(myRoomsHTML, {room: room.name, moderator: room.moderator, 
                 joinText: await i18n.get("Start"), creationTime: new Date(room.creationtime).toLocaleString(i18n.getSessionLang()),
                 password: room.password, image: (room.image||defaultRoomImage), APP_CONSTANTS}));
     } else LOG.error("Get rooms call failed.");
-    if (allroomsCards.length == 0) allroomsCards.push(router.getMustache().render(noMeetingsHTML, {APP_CONSTANTS}));
+    if (allroomsCards.length == 0) allroomsCards.push((await router.getMustache()).render(noMeetingsHTML, {APP_CONSTANTS}));
     return {allRooms: allroomsCards, myRooms: myroomsCards};
 }
 

@@ -2,8 +2,8 @@
  * (C) 2015 TekMonks. All rights reserved.
  * License: See enclosed license.txt file.
  */
-const FRONTEND = "https://192.168.220.117";
-const BACKEND = "https://192.168.220.117:9090";
+const FRONTEND = "https://{{{hostname}}}";
+const BACKEND = "https://{{{hostname}}}:9090";
 const APP_NAME = "telemeet";
 const APP_PATH = `${FRONTEND}/apps/${APP_NAME}`;
 const API_PATH = `${BACKEND}/apps/${APP_NAME}`;

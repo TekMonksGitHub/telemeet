@@ -9,17 +9,21 @@ import {securityguard} from "/framework/js/securityguard.mjs";
 import {apimanager as apiman} from "/framework/js/apimanager.mjs";
 import {APP_CONSTANTS as AUTO_APP_CONSTANTS} from "./constants.mjs";
 
-const API_GETREMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/getremotelog", 
-	API_REMOTELOG = AUTO_APP_CONSTANTS.API_PATH+"/log", HEADERS = AUTO_APP_CONSTANTS.APP_PATH+"/conf/headers.html";
-
-const init = async _ => {
+const init = async hostname => {
 	window.monkshu_env.apps.telemeet = {};
-	window.APP_CONSTANTS = AUTO_APP_CONSTANTS;
+
+	const mustache = await router.getMustache();
+	window.APP_CONSTANTS = JSON.parse(mustache.render(JSON.stringify(AUTO_APP_CONSTANTS), {hostname}));
+
 	window.LOG = window.monkshu_env.frameworklibs.log;
+
 	if (!session.get($$.MONKSHU_CONSTANTS.LANG_ID)) session.set($$.MONKSHU_CONSTANTS.LANG_ID, "en");
+
 	securityguard.setPermissionsMap(APP_CONSTANTS.PERMISSIONS_MAP);
 	securityguard.setCurrentRole(securityguard.getCurrentRole() || APP_CONSTANTS.GUEST_ROLE);
+
 	apiman.registerAPIKeys(APP_CONSTANTS.API_KEYS, APP_CONSTANTS.KEY_HEADER); 
+	const API_GETREMOTELOG = APP_CONSTANTS.API_PATH+"/getremotelog", API_REMOTELOG = APP_CONSTANTS.API_PATH+"/log";
 	const remoteLogFlag = ((await apiman.rest(API_GETREMOTELOG, "GET", {})).remote_log||false);
 	LOG.setRemote(remoteLogFlag, API_REMOTELOG);
 }
@@ -40,7 +44,7 @@ const main = async (desiredURL, desiredData) => {
 
 const interceptPageLoadData = _ => router.addOnLoadPageData("*", async (data, _url) => {
 	data.APP_CONSTANTS = APP_CONSTANTS; 
-	data.headers = await $$.requireText(HEADERS);
+	data.headers = await $$.requireText(APP_CONSTANTS.APP_PATH+"/conf/headers.html");
 });
 
 async function _readConfig() {

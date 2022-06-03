@@ -6,8 +6,8 @@
     "diskCache": {"refresh": 1000, "dontCache": [".*\\.pdf"], "maxSizeInMB": "1024", "ignoreAfterMaxHits":10},
     "httpdHeaders": {"Cache-Control": "no-cache"},
     "ssl": true,
-    "sslKeyFile":"C:/Users/rvkapoor/source/etc/192.168.220.117_privkey.pem",
-	"sslCertFile":"C:/Users/rvkapoor/source/etc/192.168.220.117_fullchain.pem",
+    "sslKeyFile":"C:/Users/rvkapoor/source/etc/dnsip_privkey.pem",
+	"sslCertFile":"C:/Users/rvkapoor/source/etc/dnsip_fullchain.pem",
     "enableGZIPEncoding": true,
     "port": 443
 }
