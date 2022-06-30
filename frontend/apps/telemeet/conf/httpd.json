@@ -1,5 +1,5 @@
 {
-    "extensions": ["redirect", "diskcache"],
+    "extensions": ["redirect"],
     "redirects": [{"^http(.*)://([^/]+?)/index.html$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"},
         {"^http(.*)://([^/]+?)/$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"},
         {"^http(.*)://([^/]+?)$":"http{{{$1}}}://{{{$2}}}/apps/telemeet/index.html"}],

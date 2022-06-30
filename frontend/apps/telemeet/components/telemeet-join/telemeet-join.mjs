@@ -180,7 +180,7 @@ async function meetSettings(element, fromMeet) {
 		camera: retVals.camera?_devStrToObj(retVals.camera):null};
 	LOG.info("Device map from parsing -> "+JSON.stringify(devices));
 	if (fromMeet) {_executeMeetCommand(element, "setAVDevices", devices); _setSessionMemoryVariable("avDevices", element, devices)}
-	else _setSessionMemoryVariable("avDevices", element, devices);
+	else {_setSessionMemoryVariable("avDevices", element, devices); _switchVideoCameraIfActive(element);}
 }
 
 async function showChat(element, event, dontClose) {
@@ -237,12 +237,21 @@ function editRoom(oldroom, newroom, newpassword, newimage, id) {
 
 const getRooms = id => apiman.rest(API_GETROOMS, "GET", {id}, true);
 
+function _switchVideoCameraIfActive(containedElement) {
+	const shadowRoot = telemeet_join.getShadowRootByContainedElement(containedElement);
+	if (_getSessionMemoryVariable("videoOn", containedElement)) {	// restart switches the video stream to the selected camera
+		_stopVideo(shadowRoot, containedElement); _startVideo(shadowRoot, containedElement); }
+}
+
 async function _startVideo(shadowRoot, containedElement) {
 	shadowRoot.querySelector("img#camicon").src = `${COMPONENT_PATH}/img/camera.svg`;
 	shadowRoot.querySelector("img#camcontrol").src = `${COMPONENT_PATH}/img/camera.svg`; 
 	const video = shadowRoot.querySelector("video#video"), selectedDevices = _getSessionMemoryVariable("avDevices", containedElement)
 	try {
-		const stream = await navigator.mediaDevices.getUserMedia({video: selectedDevices && selectedDevices.camera ? {id: selectedDevices.camera.id} : true});
+		LOG.info("Selected devices are "+JSON.stringify(selectedDevices));
+		const stream = await navigator.mediaDevices.getUserMedia({video: selectedDevices && selectedDevices.camera ? {deviceId: selectedDevices.camera.id} : true});
+		const isCurrentCamBackCam = selectedDevices ? await _isCamBackCam( selectedDevices.camera.label) : false;
+        if (isCurrentCamBackCam) video.classList.add("nomirror"); else video.classList.remove("nomirror");   // don't mirror back video
 		video.srcObject = stream; _setSessionMemoryVariable("videoOn", containedElement, true);
 	} catch (err) { _showError(await i18n.get("NoCamera")); LOG.error(`Unable to access the camera: ${err}`); }
 }
@@ -310,6 +319,18 @@ const _getRoom = containedElement => {const shadowRoot = telemeet_join.getShadow
 const _setRoom = (containedElement, room) => {const shadowRoot = telemeet_join.getShadowRootByContainedElement(containedElement);
 	return shadowRoot.querySelector(DIV_TELEMEET).dataset.room = room;}
 
+async function _isCamBackCam(camLabel) {
+	if (camLabel.toLowerCase().indexOf("back") != -1) return true;
+
+	if ($$.getOS() == "ios") {	// first video camera on iOS is the front cam
+		const devices = await navigator.mediaDevices.enumerateDevices(), foundFirstCam = false;
+		for (const device of devices) if (device.kind == "videoinput" && !foundFirstCam) {
+			foundFirstCam = true; if (device.label != camLabel) return true;
+		}
+	}
+
+	return false;
+}
 const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM
 export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
 	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, getRooms, meetSettings, showNotifications, 

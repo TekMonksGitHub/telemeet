@@ -97,6 +97,8 @@ async function restartAVTracks(containedElement) {
 
     try {
         const stream = await window.navigator.mediaDevices.getUserMedia(constraints);
+        const isCurrentCamBackCam = await _isCamBackCam(_getDevLabel(selectedVideoIn)); 
+        if (isCurrentCamBackCam) videoIn.classList.add("nomirror"); else videoIn.classList.remove("nomirror");   // don't mirror back video
         videoIn.srcObject = stream; videoIn.muted = true; videoIn.play(); 
         return stream;
     } catch (err) { 
@@ -131,6 +133,20 @@ const _getEnv = containedElement => {
 
 const _getDevID = optionElement => optionElement.options[optionElement.selectedIndex].value.substring(
     optionElement.options[optionElement.selectedIndex].text.length+1);
+const _getDevLabel = optionElement => optionElement.options[optionElement.selectedIndex].text;
+
+async function _isCamBackCam(camLabel) {
+    if (camLabel.toLowerCase().indexOf("back") != -1) return true;
+
+	if ($$.getOS() == "ios") {	// first video camera on iOS is the front cam
+		const devices = await navigator.mediaDevices.enumerateDevices(), foundFirstCam = false;
+		for (const device of devices) if (device.kind == "videoinput" && !foundFirstCam) {
+			foundFirstCam = true; if (device.label != camLabel) return true;
+		}
+	}
+
+    return false;
+}
 
 export const setupav = {init, startrecording, stoprecording, playrecording, stopplayrecording, stopAVTracks, playspeakers,
     stopplayspeakers};
