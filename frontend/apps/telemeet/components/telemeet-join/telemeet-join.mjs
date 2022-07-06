@@ -132,7 +132,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			spanMeetinginfo = shadowRoot.querySelector("span#meetinginfo");
 		webrtc.addRoomExitListener(exitListener, memory); 
 		webrtc.addRoomEntryListener(_=>{	
-			_stopVideo(shadowRoot, divTelemeet, true); 	// stop local video
+			const _savedVideoState = sessionMemory.videoOn; _stopVideo(shadowRoot, divTelemeet, true); sessionMemory.videoOn = _savedVideoState;	// stop local video
 			DIALOG.hideDialog("telemeetdialog"); divTelemeet.classList.add("visible"); 	// show telemeet div
 			spanControls.classList.add("animate"); spanControls.style.opacity = "1";	// animate controls
 			spanMeetinginfo.classList.add("animate"); spanMeetinginfo.style.opacity = "1";	// animate meeting info
@@ -149,8 +149,8 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 		webrtc.addChatListener(message=>_handleWebRTCChats(message, divTelemeet), memory);
 
 		webrtc.openTelemeet(result.url, roomPass, !result.isModerator, result.isModerator, 
-			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory, 
-			_getSessionMemoryVariable("avDevices", divTelemeet), conf);
+			name, id, sessionMemory.videoOn, sessionMemory.mikeOn, divTelemeet, memory,
+			_getInitializedSessionMemoryObject("webRTCSessionMemory", divTelemeet), sessionMemory.avDevices, conf);
 
 		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
 			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
@@ -250,7 +250,7 @@ async function _startVideo(shadowRoot, containedElement) {
 	try {
 		LOG.info("Selected devices are "+JSON.stringify(selectedDevices));
 		const stream = await navigator.mediaDevices.getUserMedia({video: selectedDevices && selectedDevices.camera ? {deviceId: selectedDevices.camera.id} : true});
-		const isCurrentCamBackCam = selectedDevices ? await _isCamBackCam( selectedDevices.camera.label) : false;
+		const isCurrentCamBackCam = selectedDevices ? await webrtc.isCamBackCam( selectedDevices.camera.label) : false;
         if (isCurrentCamBackCam) video.classList.add("nomirror"); else video.classList.remove("nomirror");   // don't mirror back video
 		video.srcObject = stream; _setSessionMemoryVariable("videoOn", containedElement, true);
 	} catch (err) { _showError(await i18n.get("NoCamera")); LOG.error(`Unable to access the camera: ${err}`); }
@@ -308,9 +308,16 @@ async function _handleWebRTCChats(message, containedElement) {
 	if (positionable_html.isShowing(HOSTID_POSTIONABLE_HTML)) showChat(..._getRoomMemory(containedElement).showChatParams, true);
 }
 
-const _executeMeetCommand = (containedElement, command, params) => webrtc[command](_getRoomMemory(containedElement), params);
+const _executeMeetCommand = (containedElement, command, params) => webrtc[command](_getRoomMemory(containedElement), params, _getInitializedSessionMemoryObject("webRTCSessionMemory", containedElement));
 const _getSessionMemoryVariable = (varName, element) => telemeet_join.getSessionMemoryByContainedElement(element)[varName];
-const _setSessionMemoryVariable = (varName, element, value) => telemeet_join.getSessionMemoryByContainedElement(element)[varName] = value;
+const _setSessionMemoryVariable = (varName, element, value) => {
+	telemeet_join.getSessionMemoryByContainedElement(element)[varName] = value;
+}
+const _getInitializedSessionMemoryObject = (varName, element) => {
+	let object = _getSessionMemoryVariable(varName, element); 
+	if (!object) {object = {}; _setSessionMemoryVariable(varName, element, object);}
+	return object; 
+}
 const _toggleIcon = (element, icons) => { if (element.src == icons[0]) element.src = icons[1]; else element.src = icons[0]; }
 const _getRoomMemory = (containedElement, reset) => { const room = _getRoom(containedElement), 
 	mem = telemeet_join.getMemoryByContainedElement(containedElement); if (!mem[room] || reset) mem[room] = {}; return mem[room]; }
@@ -319,20 +326,7 @@ const _getRoom = containedElement => {const shadowRoot = telemeet_join.getShadow
 const _setRoom = (containedElement, room) => {const shadowRoot = telemeet_join.getShadowRootByContainedElement(containedElement);
 	return shadowRoot.querySelector(DIV_TELEMEET).dataset.room = room;}
 
-async function _isCamBackCam(camLabel) {
-	if (camLabel.toLowerCase().indexOf("back") != -1) return true;
-
-	if ($$.getOS() == "ios") {	// first video camera on iOS is the front cam
-		const devices = await navigator.mediaDevices.enumerateDevices(), foundFirstCam = false;
-		for (const device of devices) if (device.kind == "videoinput" && !foundFirstCam) {
-			foundFirstCam = true; if (device.label != camLabel) return true;
-		}
-	}
-
-	return false;
-}
-const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM
-export const telemeet_join = {trueWebComponentMode, elementConnected, elementRendered, toggleVideo, toggleMike, 
+export const telemeet_join = {trueWebComponentMode: true, elementConnected, elementRendered, toggleVideo, toggleMike, 
 	toggleScreenshare, toggleRaisehand, toggleTileVsFilmstrip, createRoom, getRooms, meetSettings, showNotifications, 
 	exitMeeting, changeBackground, deleteRoom, editRoom, joinRoom, joinRoomFromTelemeetInternal, showChat, 
 	sendChatMessage, toggleCamera};
