@@ -141,5 +141,6 @@ export const i18n = {
 "AudioInOutDevice": "Audio Device",
 "VideoCamera": "Video Camera",
 "MyRooms": "My Rooms",
-"MeetingImage": "Meeting image"
+"MeetingImage": "Meeting image",
+"WebRTCLoadError": "Unable to start Telemeet. Please retry after sometime."
 }

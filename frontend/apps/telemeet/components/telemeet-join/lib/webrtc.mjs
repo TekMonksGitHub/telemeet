@@ -28,11 +28,11 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		interfaceConfigOverwrite: {...conf.meetInterfaceConfig}, remoteVideoMenu: {}, 
 		userInfo: {email: userEmail, displayName: userName}, devices: mappedDevices
 	}, meetAPI = new JitsiMeetExternalAPI(hostURL.host, options);
-	const _roomExited = _ => {
+	const _roomExited = webRTCTimeout => {
 		if (memory.exitCalled) return; else memory.exitCalled = true;	// check if already called
 		const meetIFRame = util.getChildrenByTagName(parentNode, "iframe")[0]; 
 		if (meetIFRame) parentNode.removeChild(meetIFRame);	meetAPI.dispose(); 
-		for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(roomName);
+		for (const roomExitListener of memory.roomExitListeners||[]) roomExitListener(roomName, webRTCTimeout);
 	}; meetAPI.addEventListener("videoConferenceLeft", _roomExited); 
 	meetAPI.addEventListener("screenSharingStatusChanged", status => {
 		for (const screenShareListener of memory.screenShareListeners||[]) screenShareListener(status.on);
@@ -45,7 +45,7 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		if (memory.entryCalled) return; else memory.entryCalled = true;	// return if already called
 		if (videoOn) _flipCameraIfNotFlipped(memory, sessionMemory);	// flip the camera local video if it is being used
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
-	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", meetAPI._events.videoConferenceJoined, memory.conf.webrtcWaitEntry);
+	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", _=>_roomExited(true), memory.conf.webrtcWaitEntry);
 	meetAPI.addEventListener("tileViewChanged", status => {
 		for (const tileVsFilmstripListener of memory.tileVsFilmstripListeners) tileVsFilmstripListener(status.enabled);
 	});

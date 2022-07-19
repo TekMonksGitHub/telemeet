@@ -116,7 +116,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 
 		const shadowRoot = telemeet_join.getShadowRootByHost(hostElement), divTelemeet = shadowRoot.querySelector(DIV_TELEMEET);
 		let roomClosed = false;	_setRoom(divTelemeet, roomName); // room is open now
-		let meetingInfoTimer; const exitListener = async (_roomName, callFromLogout) => {	
+		let meetingInfoTimer; const exitListener = async (_roomName, webRTCError, callFromLogout) => {	
 			if (roomClosed) return;	else roomClosed = true; // return if already closed, else close it
 			const exitResult = await apiman.rest(API_EXITROOM, "POST", req, true);	// exit the room
 			if (!exitResult || !exitResult.result) LOG.warn(`Room exit failed for ${id} due to ${exitResult.reason}`);
@@ -125,8 +125,9 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			if (meetingInfoTimer) {clearInterval(meetingInfoTimer); meetingInfoTimer = undefined;}	// stop updating meeting info
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
 			if (sessionMemory.videoOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
+			if (webRTCError) {DIALOG.hideDialog("telemeetdialog"); _showError(await i18n.get("WebRTCLoadError"));}
 		}; 
-		loginmanager.addLogoutListener(_=>exitListener(roomName, true));
+		loginmanager.addLogoutListener(_=>exitListener(roomName, false, true));
 
 		const memory = _getRoomMemory(divTelemeet, true), spanControls = shadowRoot.querySelector("span#controls"), 
 			spanMeetinginfo = shadowRoot.querySelector("span#meetinginfo");
@@ -154,7 +155,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 
 		DIALOG.showDialog(`${DIALOGS_PATH}/waiting.html`, false, false, {componentpath: COMPONENT_PATH, 
 			message: await i18n.get("ConferenceLoading")}, "telemeetdialog");
-	} else _showError(await i18n.get("InternalError", session.get($$.MONKSHU_CONSTANTS.LANG_ID)));
+	} else _showError(await i18n.get("InternalError"));
 }
 
 async function meetSettings(element, fromMeet) {
