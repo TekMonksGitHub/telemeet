@@ -125,7 +125,7 @@ async function joinRoom(hostElement, roomName, roomPass, id, name) {
 			if (meetingInfoTimer) {clearInterval(meetingInfoTimer); meetingInfoTimer = undefined;}	// stop updating meeting info
 			fwcontrol.operateFirewall("disallow", id, sessionMemory); 	// stop firewall*/
 			if (sessionMemory.videoOn && (!callFromLogout)) _startVideo(shadowRoot, divTelemeet); 	// restart local video if needed
-			if (webRTCError) {DIALOG.hideDialog("telemeetdialog"); _showError(await i18n.get("WebRTCLoadError"));}
+			if (webRTCError) _showError(await i18n.get("WebRTCLoadError"), true);
 		}; 
 		loginmanager.addLogoutListener(_=>exitListener(roomName, false, true));
 
@@ -277,9 +277,10 @@ function _stopMike(shadowRoot) {
 	shadowRoot.querySelector("img#mikecontrol").src = `${COMPONENT_PATH}/img/nomike.svg`;
 }
 
-const _showError = error => {
-	LOG.error(error); DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, CONF: conf}, 
-		"telemeetdialog", [], _=> DIALOG.hideDialog("telemeetdialog"));
+const _showError = (error, closeExistingDialog) => {
+	LOG.error(error); if (DIALOG.isDialogOpen("telemeetdialog") && closeExistingDialog) DIALOG.hideDialog("telemeetdialog"); 
+	DIALOG.showDialog(`${DIALOGS_PATH}/error.html`, true, false, {error, CONF: conf}, "telemeetdialog", 
+		[], _=> DIALOG.hideDialog("telemeetdialog"));
 }
 
 function _resetRoomUI() {

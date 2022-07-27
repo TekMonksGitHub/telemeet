@@ -8,6 +8,7 @@ import {i18n} from "/framework/js/i18n.mjs";
 import {util} from "/framework/js/util.mjs";
 
 const MODULE_PATH = util.getModulePath(import.meta);
+const EXTERNAL_API = `${MODULE_PATH}/../3p/external_api.js`;
 
 async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userEmail, videoOn, mikeOn, 
 		parentNode, memory, sessionMemory, avDevices, conf) {
@@ -22,13 +23,14 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 
 	memory.exitCalled = false; memory.entryCalled = false; memory.conf = conf;
 
-	await $$.require(`${MODULE_PATH}/../3p/external_api.js`); 
+	await $$.require(EXTERNAL_API); 
 	const options = { roomName, width: "100%", height: "100%", parentNode, noSSL: false,
 		configOverwrite: {startWithVideoMuted: !videoOn, startWithAudioMuted: !mikeOn, ...conf.meetConfig},
 		interfaceConfigOverwrite: {...conf.meetInterfaceConfig}, remoteVideoMenu: {}, 
 		userInfo: {email: userEmail, displayName: userName}, devices: mappedDevices
 	}, meetAPI = new JitsiMeetExternalAPI(hostURL.host, options);
-	const _roomExited = webRTCTimeout => {
+	LOG.info("Meet API loaded and executed.");
+	const _roomExited = (_roomInfo, webRTCTimeout) => {
 		if (memory.exitCalled) return; else memory.exitCalled = true;	// check if already called
 		const meetIFRame = util.getChildrenByTagName(parentNode, "iframe")[0]; 
 		if (meetIFRame) parentNode.removeChild(meetIFRame);	meetAPI.dispose(); 
@@ -45,11 +47,11 @@ async function openTelemeet(url, roomPass, isGuest, isModerator, userName, userE
 		if (memory.entryCalled) return; else memory.entryCalled = true;	// return if already called
 		if (videoOn) _flipCameraIfNotFlipped(memory, sessionMemory);	// flip the camera local video if it is being used
 		for (const roomEntryListener of memory.roomEntryListeners) roomEntryListener(isGuest, isModerator, roomName, roomPass);
-	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", _=>_roomExited(true), memory.conf.webrtcWaitEntry);
+	}); _watchFlagAndCallOnTimeout(memory, "entryCalled", _=>_roomExited({roomName}, true), memory.conf.webrtcWaitEntry);
 	meetAPI.addEventListener("tileViewChanged", status => {
 		for (const tileVsFilmstripListener of memory.tileVsFilmstripListeners) tileVsFilmstripListener(status.enabled);
 	});
-	meetAPI.addEventListener("log", logObject => { if (logObject.logLevel == "warn" || logObject.logLevel == "error") 
+	meetAPI.addEventListener("log", logObject => { if (conf.meetLogLevels.includes(logObject.logLevel.toLowerCase()))
 		LOG[logObject.logLevel](`[WEB_RTC] ${logObject.args}`) });
 	meetAPI.addEventListener("incomingMessage", async message => {for (const chatListener of memory.chatListeners) 
 		chatListener({fromName: meetAPI.getDisplayName(message.from)||await i18n.get("UnknownUser"), 
@@ -138,7 +140,7 @@ async function isCamBackCam(camLabel) {
 
 async function _getDefaultMediaDevices() {
 	const avDevicesAll = await getMediaDevices();
-	return {camera: avDevicesAll.cameras?.[0], microphone: avDevicesAll.microphones?.[0], speaker: avDevicesAll.speakers?.[0]};
+	return {camera: avDevicesAll?.cameras?.[0], microphone: avDevicesAll?.microphones?.[0], speaker: avDevicesAll?.speakers?.[0]};
 }
 
 async function _executeMeetCommand(memory, command, params) {

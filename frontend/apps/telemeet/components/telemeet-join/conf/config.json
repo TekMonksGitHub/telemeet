@@ -1,5 +1,5 @@
 {
-    "webrtcWaitEntry": 20000,
+    "webrtcWaitEntry": 50000,
     "webrtcWaitExit": 2000,
     "roomHeartbeatInterval": 1000,
     "meetingDurationUpdateInterval": 10000,
@@ -38,8 +38,10 @@
         "JITSI_WATERMARK_LINK": "http://teleworkr.com",
         "HIDE_INVITE_MORE_HEADER": true,
         "SHOW_POWERED_BY": false,
-        "SUPPORT_URL": "http://teleworkr.com"
+        "SUPPORT_URL": "http://teleworkr.com",
+        "SHOW_JITSI_WATERMARK": false
     },
+    "meetLogLevels": ["info", "error", "debug", "warn"],
     "MOBILE_MEDIA_QUERY_START": "<style>@media only screen and (max-width: 959px) {",
     "MOBILE_MEDIA_QUERY_END": "}</style>",
     "MOBILE_MEDIA_QUERY_LANDSCAPE_START": "<style>@media only screen and (max-width: 959px) and (orientation: landscape) {",

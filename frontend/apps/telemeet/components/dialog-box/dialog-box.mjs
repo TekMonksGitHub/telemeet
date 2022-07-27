@@ -19,8 +19,12 @@ function hideDialog(element) {
     const modalCurtain = shadowRoot.querySelector("div#modalcurtain");
     const dialog = shadowRoot.querySelector("div#dialog");
     dialog.classList.remove("visible"); modalCurtain.classList.remove("visible");
-    
-    shadowRoot.querySelector("html").style.height = "0"; shadowRoot.querySelector("body").style.height = "0";
+    const memory = element instanceof Element ? dialog_box.getMemoryByContainedElement(element) : 
+        dialog_box.getMemory(element); memory.isDialogOpen = false;
+}
+
+function isDialogOpen(hostID) {
+    const memory = dialog_box.getMemory(hostID); return (memory.isDialogOpen == true);
 }
 
 function error(element, msg) {
@@ -63,7 +67,7 @@ function _showDialogInternal(templateHTML, showOK, showCancel, hostID, retValIDs
     if (!showOK) shadowRoot.querySelector("span#ok").style.display = "none";
     if (!showCancel) shadowRoot.querySelector("span#cancel").style.display = "none";
     
-    const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback;
+    const memory = dialog_box.getMemory(hostID); memory.retValIDs = retValIDs; memory.callback = callback; memory.isDialogOpen = true;
 }
 
 function _resetUI(shadowRoot) {
@@ -75,5 +79,5 @@ function _resetUI(shadowRoot) {
 }
 
 const trueWebComponentMode = true;	// making this false renders the component without using Shadow DOM
-export const dialog_box = {showDialog, trueWebComponentMode, hideDialog, error, showMessage, hideError, submit}
+export const dialog_box = {showDialog, trueWebComponentMode, hideDialog, error, showMessage, hideError, submit, isDialogOpen}
 monkshu_component.register("dialog-box", `${APP_CONSTANTS.APP_PATH}/components/dialog-box/dialog-box.html`, dialog_box);
